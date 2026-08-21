@@ -60,23 +60,31 @@ TWData *_Nonnull TWHDWalletEntropy(struct TWHDWallet *_Nonnull wallet) {
     return TWDataCreateWithBytes(wallet->impl.getEntropy().data(), wallet->impl.getEntropy().size());
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
-    return new TWPrivateKey{ wallet->impl.getMasterKey(curve) };
+struct TWPrivateKey *_Nullable TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
+    try {
+        return new TWPrivateKey{ wallet->impl.getMasterKey(curve) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
+struct TWPrivateKey *_Nullable TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
     return TWHDWalletGetKeyDerivation(wallet, coin, TWDerivationDefault);
 }
 
-TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
+TWString *_Nullable TWHDWalletGetAddressForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
     return TWHDWalletGetAddressDerivation(wallet, coin, TWDerivationDefault);
 }
 
-TWString *_Nonnull TWHDWalletGetAddressDerivation(struct TWHDWallet *wallet, TWCoinType coin, enum TWDerivation derivation) {
-    auto derivationPath = TW::derivationPath(coin, derivation);
-    PrivateKey privateKey = wallet->impl.getKey(coin, derivationPath);
-    std::string address = deriveAddress(coin, privateKey, derivation);
-    return TWStringCreateWithUTF8Bytes(address.c_str());
+TWString *_Nullable TWHDWalletGetAddressDerivation(struct TWHDWallet *wallet, TWCoinType coin, enum TWDerivation derivation) {
+    try {
+        auto derivationPath = TW::derivationPath(coin, derivation);
+        PrivateKey privateKey = wallet->impl.getKey(coin, derivationPath);
+        std::string address = deriveAddress(coin, privateKey, derivation);
+        return TWStringCreateWithUTF8Bytes(address.c_str());
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWPrivateKey *_Nullable TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
@@ -89,14 +97,22 @@ struct TWPrivateKey *_Nullable TWHDWalletGetKey(struct TWHDWallet *_Nonnull wall
     }
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKeyDerivation(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation) {
-    auto derivationPath = TW::derivationPath(coin, derivation);
-    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
+struct TWPrivateKey *_Nullable TWHDWalletGetKeyDerivation(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, enum TWDerivation derivation) {
+    try {
+        auto derivationPath = TW::derivationPath(coin, derivation);
+        return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
-    const auto derivationPath = DerivationPath(TW::purpose(coin), TW::slip44Id(coin), account, change, address);
-    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
+struct TWPrivateKey *_Nullable TWHDWalletGetDerivedKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
+    try {
+        const auto derivationPath = DerivationPath(TW::purpose(coin), TW::slip44Id(coin), account, change, address);
+        return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWPrivateKey *_Nullable TWHDWalletGetKeyByCurve(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve, TWString *_Nonnull derivationPath) {
