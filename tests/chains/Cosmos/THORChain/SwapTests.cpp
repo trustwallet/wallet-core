@@ -57,6 +57,68 @@ TEST(THORChainSwap, OverflowFixEth) {
     ASSERT_EQ(errorCode, 0);
 }
 
+TEST(THORChainSwap, RejectNonNumericFromAmount) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    toAsset.set_symbol("ETH");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(Address1Btc)
+                                         .toAddress(Address1Eth)
+                                         .vault(VaultBtc)
+                                         .fromAmount("not_a_number")
+                                         .toAmountLimit("140000000000000000")
+                                         .build();
+    EXPECT_EQ(errorCode, static_cast<int>(Proto::ErrorCode::Error_general));
+    EXPECT_EQ(error, "Invalid from amount");
+    EXPECT_TRUE(out.empty());
+}
+
+TEST(THORChainSwap, RejectNonNumericToAmountLimit) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    toAsset.set_symbol("ETH");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(Address1Btc)
+                                         .toAddress(Address1Eth)
+                                         .vault(VaultBtc)
+                                         .fromAmount("1000000")
+                                         .toAmountLimit("abc")
+                                         .build();
+    EXPECT_EQ(errorCode, static_cast<int>(Proto::ErrorCode::Error_general));
+    EXPECT_EQ(error, "Invalid to amount limit");
+    EXPECT_TRUE(out.empty());
+}
+
+TEST(THORChainSwap, RejectNonNumericStreamParams) {
+    Proto::Asset fromAsset;
+    fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
+    Proto::Asset toAsset;
+    toAsset.set_chain(static_cast<Proto::Chain>(Chain::ETH));
+    toAsset.set_symbol("ETH");
+    auto&& [out, errorCode, error] = SwapBuilder::builder()
+                                         .from(fromAsset)
+                                         .to(toAsset)
+                                         .fromAddress(Address1Btc)
+                                         .toAddress(Address1Eth)
+                                         .vault(VaultBtc)
+                                         .fromAmount("1000000")
+                                         .toAmountLimit("140000000000000000")
+                                         .streamInterval("x")
+                                         .streamQuantity("0")
+                                         .build();
+    EXPECT_EQ(errorCode, static_cast<int>(Proto::ErrorCode::Error_general));
+    EXPECT_EQ(error, "Invalid stream params");
+    EXPECT_TRUE(out.empty());
+}
+
 TEST(THORChainSwap, SwapBtcEth) {
     Proto::Asset fromAsset;
     fromAsset.set_chain(static_cast<Proto::Chain>(Chain::BTC));
