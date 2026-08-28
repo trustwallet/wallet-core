@@ -191,9 +191,10 @@ struct TWPrivateKey* _Nullable TWHDWalletGetDerivedKey(struct TWHDWallet* _Nonnu
 /// \param coin a coin type
 /// \param version hd version
 /// \note Returned object needs to be deleted with \TWStringDelete
-/// \return  Extended private key as a non-null TWString
+/// \note Null is returned if the key cannot be derived (e.g. empty mnemonic entropy)
+/// \return Extended private key, or null on failure
 TW_EXPORT_METHOD
-TWString* _Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
+TWString* _Nullable TWHDWalletGetExtendedPrivateKey(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 
 /// Returns the extended public key (for default 0 account).
 ///
@@ -202,9 +203,10 @@ TWString* _Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet* _Nonnull w
 /// \param coin a coin type
 /// \param version hd version
 /// \note Returned object needs to be deleted with \TWStringDelete
-/// \return  Extended public key as a non-null TWString
+/// \note Null is returned if the key cannot be derived (e.g. empty mnemonic entropy)
+/// \return Extended public key, or null on failure
 TW_EXPORT_METHOD
-TWString* _Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
+TWString* _Nullable TWHDWalletGetExtendedPublicKey(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWHDVersion version);
 
 /// Returns the extended private key, for custom account.
 ///
@@ -215,9 +217,10 @@ TWString* _Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet* _Nonnull wa
 /// \param version an hd version
 /// \param account valid bip44 account
 /// \note Returned object needs to be deleted with \TWStringDelete
-/// \return  Extended private key as a non-null TWString
+/// \note Null is returned if the key cannot be derived (e.g. empty mnemonic entropy)
+/// \return Extended private key, or null on failure
 TW_EXPORT_METHOD
-TWString* _Nonnull TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version, uint32_t account);
+TWString* _Nullable TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version, uint32_t account);
 
 /// Returns the extended public key, for custom account.
 ///
@@ -228,9 +231,10 @@ TWString* _Nonnull TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet* _No
 /// \param version an hd version
 /// \param account valid bip44 account
 /// \note Returned object needs to be deleted with \TWStringDelete
-/// \return Extended public key as a non-null TWString
+/// \note Null is returned if the key cannot be derived (e.g. empty mnemonic entropy)
+/// \return Extended public key, or null on failure
 TW_EXPORT_METHOD
-TWString* _Nonnull TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version, uint32_t account);
+TWString* _Nullable TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version, uint32_t account);
 
 /// Returns the extended private key (for default 0 account with derivation).
 ///
@@ -240,9 +244,10 @@ TWString* _Nonnull TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet* _Non
 /// \param derivation a derivation
 /// \param version an hd version
 /// \note Returned object needs to be deleted with \TWStringDelete
-/// \return  Extended private key as a non-null TWString
+/// \note Null is returned if the key cannot be derived (e.g. empty mnemonic entropy)
+/// \return Extended private key, or null on failure
 TW_EXPORT_METHOD
-TWString* _Nonnull TWHDWalletGetExtendedPrivateKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version);
+TWString* _Nullable TWHDWalletGetExtendedPrivateKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version);
 
 /// Returns the extended public key (for default 0 account with derivation).
 ///
@@ -252,9 +257,10 @@ TWString* _Nonnull TWHDWalletGetExtendedPrivateKeyDerivation(struct TWHDWallet* 
 /// \param derivation a derivation
 /// \param version an hd version
 /// \note Returned object needs to be deleted with \TWStringDelete
-/// \return  Extended public key as a non-null TWString
+/// \note Null is returned if the key cannot be derived (e.g. empty mnemonic entropy)
+/// \return Extended public key, or null on failure
 TW_EXPORT_METHOD
-TWString* _Nonnull TWHDWalletGetExtendedPublicKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version);
+TWString* _Nullable TWHDWalletGetExtendedPublicKeyDerivation(struct TWHDWallet* _Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, enum TWDerivation derivation, enum TWHDVersion version);
 
 /// Computes the public key from an extended public key representation.
 ///

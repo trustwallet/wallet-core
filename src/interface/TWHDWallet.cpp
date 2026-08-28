@@ -125,28 +125,52 @@ struct TWPrivateKey *_Nullable TWHDWalletGetKeyByCurve(struct TWHDWallet *_Nonnu
     }
 }
 
-TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
-    return new std::string(wallet->impl.getExtendedPrivateKey(purpose, coin, version));
+TWString *_Nullable TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
+    try {
+        return new std::string(wallet->impl.getExtendedPrivateKey(purpose, coin, version));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
-    return new std::string(wallet->impl.getExtendedPublicKey(purpose, coin, version));
+TWString *_Nullable TWHDWalletGetExtendedPublicKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
+    try {
+        return new std::string(wallet->impl.getExtendedPublicKey(purpose, coin, version));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-TWString *_Nonnull TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version, uint32_t account) {
-    return new std::string(wallet->impl.getExtendedPrivateKeyAccount(purpose, coin, derivation, version, account));
+TWString *_Nullable TWHDWalletGetExtendedPrivateKeyAccount(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version, uint32_t account) {
+    try {
+        return new std::string(wallet->impl.getExtendedPrivateKeyAccount(purpose, coin, derivation, version, account));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-TWString *_Nonnull TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version, uint32_t account) {
-    return new std::string(wallet->impl.getExtendedPublicKeyAccount(purpose, coin, derivation, version, account));
+TWString *_Nullable TWHDWalletGetExtendedPublicKeyAccount(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version, uint32_t account) {
+    try {
+        return new std::string(wallet->impl.getExtendedPublicKeyAccount(purpose, coin, derivation, version, account));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-TWString *_Nonnull TWHDWalletGetExtendedPrivateKeyDerivation(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version) {
-    return new std::string(wallet->impl.getExtendedPrivateKeyDerivation(purpose, coin, derivation, version));
+TWString *_Nullable TWHDWalletGetExtendedPrivateKeyDerivation(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version) {
+    try {
+        return new std::string(wallet->impl.getExtendedPrivateKeyDerivation(purpose, coin, derivation, version));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-TWString *_Nonnull TWHDWalletGetExtendedPublicKeyDerivation(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version) {
-    return new std::string(wallet->impl.getExtendedPublicKeyDerivation(purpose, coin, derivation, version));
+TWString *_Nullable TWHDWalletGetExtendedPublicKeyDerivation(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWDerivation derivation, TWHDVersion version) {
+    try {
+        return new std::string(wallet->impl.getExtendedPublicKeyDerivation(purpose, coin, derivation, version));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
