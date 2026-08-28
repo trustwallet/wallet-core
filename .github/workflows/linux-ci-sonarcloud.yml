@@ -60,6 +60,21 @@ jobs:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++
 
+      - name: Build and run tests
+        run: |
+          ninja -Cbuild tests TrezorCryptoTests
+          find . -name "*.gcda" -exec rm {} \;
+          build/trezor-crypto/crypto/tests/TrezorCryptoTests
+          build/tests/tests --gtest_output=xml
+        env:
+          CC: /usr/bin/clang
+          CXX: /usr/bin/clang++
+          CK_TIMEOUT_MULTIPLIER: 4
+
+      - name: Generate coverage report for SonarCloud
+        run: |
+          tools/coverage sonar
+
       - name: SonarCloud Scan
         run: |
           ./tools/sonarcloud-analysis

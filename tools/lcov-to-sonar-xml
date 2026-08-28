@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+"""Convert an LCOV tracefile to the SonarQube generic coverage format.
+
+Usage: tools/lcov-to-sonar-xml coverage.info coverage-sonar.xml
+
+SonarCloud cannot ingest LCOV for C/C++ directly, so the CI converts the
+tracefile produced by tools/coverage into the generic format consumed via
+the sonar.coverageReportPaths property.
+"""
+
+import os
+import sys
+import xml.sax.saxutils
+
+
+def parse_lcov(path):
+    files = {}
+    current = None
+    with open(path) as fp:
+        for line in fp:
+            line = line.strip()
+            if line.startswith("SF:"):
+                source = os.path.relpath(line[3:], os.getcwd())
+                current = files.setdefault(source, {})
+            elif line.startswith("DA:") and current is not None:
+                lineno, hits = line[3:].split(",")[:2]
+                lineno = int(lineno)
+                current[lineno] = max(current.get(lineno, 0), int(hits))
+            elif line == "end_of_record":
+                current = None
+    return files
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.exit(__doc__.strip().splitlines()[2])
+    files = parse_lcov(sys.argv[1])
+    with open(sys.argv[2], "w") as out:
+        out.write('<coverage version="1">\n')
+        for source in sorted(files):
+            # Files outside the repository (system headers, build output)
+            # are already stripped by the lcov filters in tools/coverage.
+            if source.startswith(".."):
+                continue
+            out.write('  <file path=%s>\n' % xml.sax.saxutils.quoteattr(source))
+            for lineno, hits in sorted(files[source].items()):
+                out.write('    <lineToCover lineNumber="%d" covered="%s"/>\n'
+                          % (lineno, "true" if hits > 0 else "false"))
+            out.write('  </file>\n')
+        out.write('</coverage>\n')
+
+
+if __name__ == "__main__":
+    main()
