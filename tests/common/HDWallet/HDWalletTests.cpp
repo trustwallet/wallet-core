@@ -121,6 +121,19 @@ TEST(HDWallet, createFromSpanishMnemonic) {
     }
 }
 
+TEST(HDWallet, CardanoKeyFromEmptyEntropyThrows) {
+    // A mnemonic with words outside the English BIP-0039 wordlist, created unchecked, ends up
+    // with empty entropy (see createFromSpanishMnemonic above). Cardano key derivation relies on
+    // entropy, not just the seed, so it must reject this instead of deriving a constant key that
+    // would be shared by every wallet in this state.
+    HDWallet wallet = HDWallet("llanto radical atraer riesgo actuar masa fondo cielo dieta archivo sonrisa mamut", "", false);
+    ASSERT_TRUE(wallet.getEntropy().empty());
+    EXPECT_EXCEPTION(wallet.getKey(TWCoinTypeCardano, DerivationPath("m/1852'/1815'/0'/0/0")), "Cannot derive a Cardano key: mnemonic entropy is empty");
+
+    // Non-entropy-based coins are unaffected by empty entropy.
+    EXPECT_NO_THROW(wallet.getKey(TWCoinTypeEthereum, DerivationPath("m/44'/60'/0'/0/0")));
+}
+
 TEST(HDWallet, createFromMnemonicInvalid) {
     EXPECT_EXCEPTION(HDWallet("THIS IS AN INVALID MNEMONIC", gPassphrase), "Invalid mnemonic");
     EXPECT_EXCEPTION(HDWallet("", gPassphrase), "Invalid mnemonic");
