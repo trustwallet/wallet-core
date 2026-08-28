@@ -170,6 +170,7 @@ std::string Address::hashTypeString() const {
         return HashTypeString[2];
     }
     }
+    throw std::invalid_argument("Unknown hash type");
 }
 
 } // namespace TW::Nervos

@@ -43,7 +43,7 @@ public:
 private:
     std::size_t mShard{0};
     std::size_t mRealm{0};
-    std::size_t mNum;
+    std::size_t mNum{0};
     Alias mAlias;
 };
 
