@@ -16,7 +16,7 @@ RUN apt-get update \
 
 # Add latest cmake
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
+RUN wget --https-only --max-redirect=0 -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
     && apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -sc) main"
 
 # Install required packages for dev
@@ -55,7 +55,7 @@ ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
 # Instal Swift
-RUN curl -sSL \
+RUN curl -sSL --proto '=https' --proto-redir =https \
 	https://download.swift.org/swift-5.8-release/ubuntu2204/swift-5.8-RELEASE/swift-5.8-RELEASE-ubuntu22.04.tar.gz \
 	-o swift-5.8.tar.gz && \
     mkdir -p swift-5.8 && \
