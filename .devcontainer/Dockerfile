@@ -54,7 +54,7 @@ RUN apt-get update \
 ENV CC=/usr/bin/clang-14
 ENV CXX=/usr/bin/clang++-14
 
-# Instal Swift
+# Install Swift
 RUN curl -sSL --proto '=https' --proto-redir =https \
 	https://download.swift.org/swift-5.8-release/ubuntu2204/swift-5.8-RELEASE/swift-5.8-RELEASE-ubuntu22.04.tar.gz \
 	-o swift-5.8.tar.gz && \
