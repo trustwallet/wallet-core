@@ -26,7 +26,7 @@ public:
     PackedTransaction(const Transaction& transaction, CompressionType type = CompressionType::None) noexcept;
 
     void serialize(Data& os) const noexcept;
-    nlohmann::json serialize() const noexcept;
+    nlohmann::json serialize() const;
 };
 
 } // namespace TW::EOS

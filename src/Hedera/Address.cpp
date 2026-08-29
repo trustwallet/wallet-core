@@ -54,14 +54,6 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    // Only the numeric `shard.realm.num` form (with optional checksum) is representable
-    // here; alias entity IDs also accepted by isValid() have no numeric num, and partial
-    // parsing would silently misdirect them to a wrong account.
-    std::smatch match;
-    if (!std::regex_match(string, match, internal::gEntityIDRegex)) {
-        throw std::invalid_argument("Hedera alias entity IDs are not supported");
-    }
-
     auto toInt = [](const std::string& s) -> std::size_t {
         std::size_t value = 0;
         const auto result = std::from_chars(s.data(), s.data() + s.size(), value);
@@ -70,9 +62,26 @@ Address::Address(const std::string& string) {
         }
         return value;
     };
-    mShard = toInt(match[1].str());
-    mRealm = toInt(match[2].str());
-    mNum = toInt(match[3].str());
+
+    // Numeric `shard.realm.num` form (with optional checksum suffix). Full numeric
+    // consumption is required: partial parsing would silently misdirect alias entity
+    // IDs to a wrong account.
+    std::smatch match;
+    if (std::regex_match(string, match, internal::gEntityIDRegex)) {
+        mShard = toInt(match[1].str());
+        mRealm = toInt(match[2].str());
+        mNum = toInt(match[3].str());
+        return;
+    }
+
+    // Alias form also accepted by isValid(): `shard.realm.<DER-prefixed ed25519 public key hex>`.
+    auto parts = TW::ssplit(string, '.');
+    mShard = toInt(parts[0]);
+    mRealm = toInt(parts[1]);
+    const auto& aliasPart = parts[2];
+    const auto keyOffset =
+        aliasPart.find(gHederaDerPrefixPublic) + std::string(gHederaDerPrefixPublic).size();
+    mAlias = Alias(PublicKey(parse_hex(aliasPart.substr(keyOffset)), TWPublicKeyTypeED25519));
 }
 
 Address::Address(const PublicKey& publicKey)
