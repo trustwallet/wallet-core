@@ -14,7 +14,7 @@ RUN apt-get update \
 
 # Add latest cmake/boost
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN wget --https-only --max-redirect=0 -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
+RUN curl -fsSL --proto '=https' --proto-redir '=https' https://apt.kitware.com/keys/kitware-archive-latest.asc | apt-key add - \
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main' \
     && apt-add-repository -y ppa:mhier/libboost-latest
 

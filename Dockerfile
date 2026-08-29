@@ -39,7 +39,7 @@ RUN ln -s /usr/bin/clang-14 /usr/bin/clang
 RUN ln -s /usr/bin/clang++-14 /usr/bin/clang++
 
 # Install rust
-RUN wget --https-only --max-redirect=0 "https://sh.rustup.rs" -O rustup.sh \
+RUN curl -fsSL --proto '=https' --proto-redir '=https' "https://sh.rustup.rs" -o rustup.sh \
     && sh rustup.sh -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default nightly-2025-12-11

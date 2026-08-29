@@ -66,7 +66,7 @@ jobs:
         GO_VERSION: 1.19
         GO_ARCH: amd64
       run: |
-        curl -O -L --proto '=https' --proto-redir =https "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
+        curl -O -L --proto '=https' --proto-redir '=https' "https://golang.org/dl/go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
         tar -xf "go${GO_VERSION}.linux-${GO_ARCH}.tar.gz"
         sudo chown -R root:root ./go
         sudo mv -v go /usr/local
