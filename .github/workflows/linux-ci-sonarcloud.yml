@@ -63,7 +63,7 @@ jobs:
       - name: Build and run tests
         run: |
           ninja -Cbuild tests TrezorCryptoTests
-          find . -name "*.gcda" -exec rm {} \;
+          find build -name "*.gcda" -delete
           build/trezor-crypto/crypto/tests/TrezorCryptoTests
           build/tests/tests --gtest_output=xml
         env:

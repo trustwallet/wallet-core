@@ -33,7 +33,7 @@ def parse_lcov(path):
 
 def main():
     if len(sys.argv) != 3:
-        sys.exit(__doc__.strip().splitlines()[2])
+        sys.exit("Usage: tools/lcov-to-sonar-xml coverage.info coverage-sonar.xml")
     files = parse_lcov(sys.argv[1])
     with open(sys.argv[2], "w") as out:
         out.write('<coverage version="1">\n')
