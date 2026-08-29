@@ -57,6 +57,7 @@ include/TrustWalletCore/TWBiz.h
 include/TrustWalletCore/TWBizPasskeySession.h
 include/TrustWalletCore/TWEip7702.h
 include/TrustWalletCore/TWWebAuthnSolidity.h
+include/TrustWalletCore/TWResultVoid.h
 
 # Wasm
 emsdk/

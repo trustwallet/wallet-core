@@ -8,6 +8,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWStoredKey.h>
+#include <TrustWalletCore/TWResultVoid.h>
 #include <TrustWalletCore/TWData.h>
 #include "../src/HexCoding.h"
 
@@ -744,7 +745,8 @@ TEST(TWStoredKey, fixScryptWithEmptySaltAes256Ctr) {
     const auto ivBefore   = jsonBefore["crypto"]["cipherparams"]["iv"].get<std::string>();
     EXPECT_EQ(saltBefore, "");
 
-    EXPECT_TRUE(TWStoredKeyFixEncryption(key.get(), password.get()));
+    const auto fixResult = WRAP(TWResultVoid, TWStoredKeyFixEncryption(key.get(), password.get()));
+    EXPECT_TRUE(TWResultVoidIsSuccess(fixResult.get()));
 
     // id, name, accounts, and cipher must be unchanged.
     const auto keyIdAfter = WRAPS(TWStoredKeyIdentifier(key.get()));
@@ -780,6 +782,82 @@ TEST(TWStoredKey, fixScryptWithEmptySaltAes256Ctr) {
     EXPECT_EQ(string(TWStringUTF8Bytes(mnemonic.get())), "team engine square letter hero song dizzy scrub tornado fabric divert saddle");
 }
 
+TEST(TWStoredKey, validateFile) {
+    // Valid file: store a freshly created key and validate it.
+    const auto key = createDefaultStoredKey();
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_validateFile.json");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    ASSERT_TRUE(TWStoredKeyStore(key.get(), outFileNameStr.get()));
+
+    {
+        const auto result = WRAP(TWResultVoid, TWStoredKeyValidateFile(outFileNameStr.get()));
+        EXPECT_TRUE(TWResultVoidIsSuccess(result.get()));
+        EXPECT_FALSE(TWResultVoidIsErr(result.get()));
+    }
+
+    // File with valid JSON syntax but missing required crypto field.
+    {
+        const auto invalidFileName = string(getTestTempDir() + "/TWStoredKey_validateFile_invalid.json");
+        const auto invalidFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(invalidFileName.c_str()));
+        const string missingCrypto = R"({"id":"abc","version":3,"name":"test","type":"mnemonic"})";
+        { ofstream f(invalidFileName); f << missingCrypto; }
+
+        const auto result = WRAP(TWResultVoid, TWStoredKeyValidateFile(invalidFileNameStr.get()));
+        EXPECT_TRUE(TWResultVoidIsErr(result.get()));
+        EXPECT_FALSE(TWResultVoidIsSuccess(result.get()));
+        const auto errMsg = WRAPS(TWResultVoidGetErr(result.get()));
+        ASSERT_NE(errMsg, nullptr);
+        assertStringsEqual(errMsg, "Missing 'crypto' field in stored key JSON");
+    }
+
+    // Non-existent file path.
+    {
+        const auto missingPath = WRAPS(TWStringCreateWithUTF8Bytes("/no/such/file.json"));
+        const auto result = WRAP(TWResultVoid, TWStoredKeyValidateFile(missingPath.get()));
+        EXPECT_TRUE(TWResultVoidIsErr(result.get()));
+        EXPECT_FALSE(TWResultVoidIsSuccess(result.get()));
+        const auto errMsg = WRAPS(TWResultVoidGetErr(result.get()));
+        ASSERT_NE(errMsg, nullptr);
+        assertStringsEqual(errMsg, "Can't open file");
+    }
+}
+
+TEST(TWStoredKey, validateJson) {
+    // Valid JSON exported from a freshly created key.
+    const auto key = createDefaultStoredKey();
+    const auto jsonData = WRAPD(TWStoredKeyExportJSON(key.get()));
+    ASSERT_NE(jsonData, nullptr);
+
+    {
+        const auto result = WRAP(TWResultVoid, TWStoredKeyValidateJson(jsonData.get()));
+        EXPECT_TRUE(TWResultVoidIsSuccess(result.get()));
+        EXPECT_FALSE(TWResultVoidIsErr(result.get()));
+    }
+
+    // Invalid JSON syntax.
+    {
+        const string badSyntax = "]]]this_is_not_json[[[";
+        const auto badData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(badSyntax.c_str()), badSyntax.size()));
+        const auto result = WRAP(TWResultVoid, TWStoredKeyValidateJson(badData.get()));
+        EXPECT_TRUE(TWResultVoidIsErr(result.get()));
+        EXPECT_FALSE(TWResultVoidIsSuccess(result.get()));
+        const auto errMsg = WRAPS(TWResultVoidGetErr(result.get()));
+        ASSERT_NE(errMsg, nullptr);
+        EXPECT_FALSE(string(TWStringUTF8Bytes(errMsg.get())).empty());
+    }
+
+    // Syntactically valid JSON but missing required crypto field.
+    {
+        const string missingCrypto = R"({"id":"abc","version":3,"name":"test","type":"mnemonic"})";
+        const auto missingData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(missingCrypto.c_str()), missingCrypto.size()));
+        const auto result = WRAP(TWResultVoid, TWStoredKeyValidateJson(missingData.get()));
+        EXPECT_TRUE(TWResultVoidIsErr(result.get()));
+        const auto errMsg = WRAPS(TWResultVoidGetErr(result.get()));
+        ASSERT_NE(errMsg, nullptr);
+        assertStringsEqual(errMsg, "Missing 'crypto' field in stored key JSON");
+    }
+}
+
 TEST(TWStoredKey, FixEncryptionWrongPassword) {
     const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/scrypt-empty-salt-aes-256-ctr.json").c_str()));
     const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
@@ -792,7 +870,13 @@ TEST(TWStoredKey, FixEncryptionWrongPassword) {
     const auto wrongPasswordString = WRAPS(TWStringCreateWithUTF8Bytes("wrong-password"));
     const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(TWStringUTF8Bytes(wrongPasswordString.get())), TWStringSize(wrongPasswordString.get())));
 
-    EXPECT_FALSE(TWStoredKeyFixEncryption(key.get(), wrongPassword.get()));
+    const auto fixResult = WRAP(TWResultVoid, TWStoredKeyFixEncryption(key.get(), wrongPassword.get()));
+    EXPECT_TRUE(TWResultVoidIsErr(fixResult.get()));
+    EXPECT_FALSE(TWResultVoidIsSuccess(fixResult.get()));
+
+    const auto errMsg = WRAPS(TWResultVoidGetErr(fixResult.get()));
+    ASSERT_NE(errMsg, nullptr);
+    assertStringsEqual(errMsg, "Invalid password: MAC verification failed");
 
     // JSON must be unchanged - a failed fix must leave the key untouched.
     const auto jsonDataAfter = WRAPD(TWStoredKeyExportJSON(key.get()));

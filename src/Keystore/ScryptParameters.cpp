@@ -116,7 +116,14 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
         || json.count(CodingKeys::SP::p) == 0
         || json.count(CodingKeys::SP::r) == 0
         || json.count(CodingKeys::SP::desiredKeyLength) == 0) {
-        throw std::invalid_argument("Missing required scrypt parameters n, p, r, or dklen");
+        std::stringstream ss;
+        ss << "Missing required scrypt parameters n, p, r, or dklen"
+           << " (n=" << json.count(CodingKeys::SP::n)
+           << ", p=" << json.count(CodingKeys::SP::p)
+           << ", r=" << json.count(CodingKeys::SP::r)
+           << ", dklen=" << json.count(CodingKeys::SP::desiredKeyLength)
+            << ")";
+        throw std::invalid_argument(ss.str());
     }
 
     // For backward compatibility with existing keys, we allow missing salt, and fallback to empty salt in that case.

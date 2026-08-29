@@ -57,15 +57,6 @@ struct EncryptionParameters {
     virtual ~EncryptionParameters() = default;
 };
 
-/// Errors thrown when decrypting a key.
-enum class DecryptionError {
-    unsupportedKDF,
-    unsupportedCipher,
-    unsupportedCoin,
-    invalidKeyFile,
-    invalidCipher,
-    invalidPassword,
-};
 
 /// An encrypted payload data
 struct EncryptedPayload {

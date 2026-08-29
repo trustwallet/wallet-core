@@ -441,7 +441,7 @@ TEST(StoredKey, ReadMyEtherWallet) {
 TEST(StoredKey, InvalidPassword) {
     const auto key = StoredKey::load(testDataPath("key.json"));
 
-    ASSERT_THROW(key.payload.decrypt(gPassword), DecryptionError);
+    ASSERT_THROW(key.payload.decrypt(gPassword), std::runtime_error);
 }
 
 TEST(StoredKey, InvalidIv) {
