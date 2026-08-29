@@ -10,6 +10,7 @@
 #include "TestUtilities.h"
 
 #include <gtest/gtest.h>
+#include <stdexcept>
 #include <vector>
 
 namespace TW::Hedera::tests {
@@ -67,6 +68,13 @@ TEST(HederaAddress, Valid) {
 TEST(HederaAddress, FromString) {
     auto address = Address("0.0.1377988");
     ASSERT_EQ(address.string(), "0.0.1377988");
+}
+
+TEST(HederaAddress, FromInvalidString) {
+    EXPECT_THROW(Address("invalid"), std::invalid_argument);
+    // Well-formed but out of range for std::size_t, so the numeric parse must fail
+    // rather than wrap around.
+    EXPECT_THROW(Address("0.0.99999999999999999999999"), std::invalid_argument);
 }
 
 } // namespace TW::Hedera::tests
