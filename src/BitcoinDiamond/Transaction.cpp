@@ -9,6 +9,7 @@
 #include "../Data.h"
 
 #include <cassert>
+#include <stdexcept>
 
 using namespace TW;
 namespace TW::BitcoinDiamond {
@@ -120,11 +121,13 @@ void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
                                    enum Bitcoin::SignatureVersion version) const {
-    if (version == Bitcoin::BASE) {
+    switch (version) {
+    case Bitcoin::BASE:
         return getSignatureHashBase(scriptCode, index, hashType);
+    case Bitcoin::WITNESS_V0:
+        return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
     }
-    // version == Bitcoin::WITNESS_V0
-    return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
+    throw std::invalid_argument("Unknown signature version");
 }
 
 /// Generates the signature hash for Witness version 0 scripts.

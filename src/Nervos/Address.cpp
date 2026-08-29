@@ -59,6 +59,9 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
         codeHashIndex = -1;
         codeHash = Data(decodedPayload.begin() + codeHashOffset,
                         decodedPayload.begin() + codeHashOffset + codeHashSize);
+        if (decodedPayload[hashTypeOffset] > HashType::Data1) {
+            return false;
+        }
         hashType = HashType(decodedPayload[hashTypeOffset]);
         args = Data(decodedPayload.begin() + argsOffset, decodedPayload.end());
         break;

@@ -54,25 +54,25 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    auto toInt = [](std::string_view s) -> std::optional<std::size_t> {
-        if (std::size_t value = 0; std::from_chars(s.data(), s.data() + s.size(), value).ec == std::errc{}) {
-            return value;
-        } else {
-            return std::nullopt;
-        }
-    };
-
-    // When creating an Address by string - we assume to only sent to 0.0.1 format, alias is internal.
-    auto parts = TW::ssplit(string, '.');
-    const auto shard = toInt(parts[0]);
-    const auto realm = toInt(parts[1]);
-    const auto num = toInt(parts[2]);
-    if (!shard.has_value() || !realm.has_value() || !num.has_value()) {
-        throw std::invalid_argument("Invalid entity ID");
+    // Only the numeric `shard.realm.num` form (with optional checksum) is representable
+    // here; alias entity IDs also accepted by isValid() have no numeric num, and partial
+    // parsing would silently misdirect them to a wrong account.
+    std::smatch match;
+    if (!std::regex_match(string, match, internal::gEntityIDRegex)) {
+        throw std::invalid_argument("Hedera alias entity IDs are not supported");
     }
-    mShard = *shard;
-    mRealm = *realm;
-    mNum = *num;
+
+    auto toInt = [](const std::string& s) -> std::size_t {
+        std::size_t value = 0;
+        const auto result = std::from_chars(s.data(), s.data() + s.size(), value);
+        if (result.ec != std::errc{} || result.ptr != s.data() + s.size()) {
+            throw std::invalid_argument("Invalid entity ID");
+        }
+        return value;
+    };
+    mShard = toInt(match[1].str());
+    mRealm = toInt(match[2].str());
+    mNum = toInt(match[3].str());
 }
 
 Address::Address(const PublicKey& publicKey)
