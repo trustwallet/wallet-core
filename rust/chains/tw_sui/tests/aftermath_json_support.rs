@@ -31,7 +31,7 @@ fn test_aftermath_json_support() {
 fn test_raw_json_with_invalid_version() {
     let raw_json = r#"
     {
-        "version": 2,
+        "version": 3,
         "sender": "0x1",
         "expiration": null,
         "gasConfig": {
@@ -53,7 +53,7 @@ fn test_raw_json_with_invalid_version() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        "Incorrect input parameter\nContext:\n0. Invalid transaction version. Only version 1 is supported."
+        "Incorrect input parameter\nContext:\n0. Invalid transaction version '3'. Only versions 1 and 2 are supported."
     );
 }
 
