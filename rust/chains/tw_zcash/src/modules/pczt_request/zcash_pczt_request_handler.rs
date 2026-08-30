@@ -9,7 +9,10 @@ use crate::modules::transaction_builder::ZcashTransactionBuilder;
 use crate::transaction::{ZcashTransaction, TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID};
 use std::marker::PhantomData;
 use tw_bitcoin::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
-use tw_bitcoin::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
+use tw_bitcoin::modules::signing_request::standard_signing_request::{
+    chain_info, StandardSigningRequestBuilder,
+};
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
 use tw_hash::H32;
 use tw_memory::Data;
@@ -24,9 +27,11 @@ where
     Context: UtxoContext<Transaction = ZcashTransaction, Psbt = pczt::Pczt>,
 {
     fn parse_request(
+        coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<PsbtRequest<Context>> {
+        let chain_info = chain_info(coin, &input.chain_info)?;
         let pczt = pczt::Pczt::deserialize(&psbt_input.psbt)?;
 
         let version = pczt.global.tx_version;
@@ -76,7 +81,7 @@ where
 
         // Add all outputs to the unsigned transaction builder.
         for txout in pczt.transparent.outputs.iter() {
-            let output = OutputPczt::new(txout)
+            let output = OutputPczt::new(txout, &chain_info)
                 .build()
                 .context("Error creating Output from PCZT")?;
             builder.push_output(output);
