@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lazy_static = "1.4.0"
+lazy_static = "1.5.0"
 tw_coin_entry = { path = "../../tw_coin_entry" }
 tw_encoding = { path = "../../tw_encoding" }
 tw_hash = { path = "../../tw_hash" }
