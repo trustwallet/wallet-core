@@ -168,7 +168,7 @@ public:
         return *this;
     }
 
-    std::string buildMemo(bool shortened = true) noexcept;
+    std::string buildMemo(bool shortened = true);
 
     SwapBundled build(bool shortened = true);
 };

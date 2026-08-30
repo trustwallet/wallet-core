@@ -9,7 +9,7 @@ class NervosTests: XCTestCase {
 
     func testDerive() throws {
         let wallet = HDWallet(mnemonic: "disorder wolf eager ladder fence renew dynamic idea metal camera bread obscure", passphrase: "")!
-        let address = wallet.getAddressForCoin(coin: .nervos)
+        let address = wallet.getAddressForCoin(coin: .nervos)!
 
         XCTAssertEqual(address, "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsqga4k4agxexsd3zdq0wvrlyumfz7n5r7fsjxtnw8")
     }

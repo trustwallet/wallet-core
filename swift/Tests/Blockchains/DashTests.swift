@@ -16,8 +16,8 @@ class DashAddressTests: XCTestCase {
     func testExtendedKeys() {
         let wallet = HDWallet.test
 
-        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .dash, version: .xprv)
-        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .dash, version: .xpub)
+        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .dash, version: .xprv)!
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .dash, version: .xpub)!
 
         XCTAssertEqual(xprv, "xprv9zSMAfz7nQUZDQXMifsT5Cbss1Kh8XgnsKsrFfx83bvbuubs6ra84k95XMpAJmt51jymfNrXid81bu9tUTW2W2g7CBU5e6F297XBuXfSmjJ")
         XCTAssertEqual(xpub, "xpub6DRhaBX1cn2rRtbpphQTSLYcR3ABXzQeEYoT44MjbwTanhw1ePtNcYTZNeHyrJMsMGTbig4iFMSvht7RviohzFxkpjURgHDThygLqbZ1tib")
