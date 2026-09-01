@@ -67,7 +67,9 @@ ENV PATH="/usr/share/swift/usr/bin:${PATH}"
 USER vscode
 
 # Install rust
-RUN curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path -y
+ADD --chown=vscode --checksum=sha256:6c30b75a75b28a96fd913a037c8581b580080b6ee9b8169a3c0feb1af7fe8caf https://sh.rustup.rs /tmp/rustup.sh
+RUN sh /tmp/rustup.sh --no-modify-path -y \
+    && rm /tmp/rustup.sh
 ENV PATH="/home/vscode/.cargo/bin:${PATH}"
 RUN cargo install --force cbindgen \
     && rustup target add wasm32-unknown-emscripten

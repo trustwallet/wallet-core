@@ -40,7 +40,9 @@ RUN ln -s /usr/bin/clang++-14 /usr/bin/clang++
 
 # Install rust
 RUN curl -fsSL --proto '=https' --proto-redir '=https' "https://sh.rustup.rs" -o rustup.sh \
-    && sh rustup.sh -y
+    && echo "6c30b75a75b28a96fd913a037c8581b580080b6ee9b8169a3c0feb1af7fe8caf  rustup.sh" | sha256sum -c - \
+    && sh rustup.sh -y \
+    && rm rustup.sh
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default nightly-2025-12-11
 RUN cargo install --force cbindgen --locked \
