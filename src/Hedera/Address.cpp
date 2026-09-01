@@ -35,6 +35,13 @@ std::string Alias::string() const noexcept {
 /// consumed and to fit the signed int64 wire field, so that isValid() and the string
 /// constructor accept exactly the same inputs.
 static std::optional<std::size_t> parseEntityIdPart(std::string_view part) {
+    // Canonical decimal only. The numeric regex already rejects leading zeroes; the
+    // alias branch must agree, or "00.0.<key>" would validate and then render as
+    // "0.0.<key>" instead of round-tripping.
+    if (part.size() > 1 && part.front() == '0') {
+        return std::nullopt;
+    }
+
     std::size_t value = 0;
     const auto result = std::from_chars(part.data(), part.data() + part.size(), value);
     if (result.ec != std::errc{} || result.ptr != part.data() + part.size()) {
