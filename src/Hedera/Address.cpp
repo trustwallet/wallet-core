@@ -98,10 +98,9 @@ Address::Address(const std::string& string) {
     auto parts = TW::ssplit(string, '.');
     mShard = toInt(parts[0]);
     mRealm = toInt(parts[1]);
-    const auto& aliasPart = parts[2];
-    const auto keyOffset =
-        aliasPart.find(gHederaDerPrefixPublic) + std::string(gHederaDerPrefixPublic).size();
-    mAlias = Alias(PublicKey(parse_hex(aliasPart.substr(keyOffset)), TWPublicKeyTypeED25519));
+    // isValid() has established that the component starts with the DER prefix.
+    const auto keyOffset = std::string(gHederaDerPrefixPublic).size();
+    mAlias = Alias(PublicKey(parse_hex(parts[2].substr(keyOffset)), TWPublicKeyTypeED25519));
 }
 
 Address::Address(const PublicKey& publicKey)

@@ -9,10 +9,13 @@
 namespace TW::Hedera {
 
 bool hasDerPrefix(const std::string& input) noexcept {
-    if (std::size_t pos = input.find(gHederaDerPrefixPublic); pos != std::string::npos) {
-        return PublicKey::isValid(parse_hex(input.substr(pos + std::string(gHederaDerPrefixPublic).size())), TWPublicKeyTypeED25519);
+    // Anchored at the start: accepting the prefix anywhere would validate strings that
+    // carry leading junk and then fail to round-trip through Address::string().
+    const std::string prefix(gHederaDerPrefixPublic);
+    if (!input.starts_with(prefix)) {
+        return false;
     }
-    return false;
+    return PublicKey::isValid(parse_hex(input.substr(prefix.size())), TWPublicKeyTypeED25519);
 }
 
 } // namespace TW::Hedera
