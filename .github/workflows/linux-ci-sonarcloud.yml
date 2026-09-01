@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          # SonarCloud needs full history for blame data; a shallow clone drops SCM
+          # info and with it issue auto-assignment.
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
