@@ -9,9 +9,17 @@
 #include "Protobuf/transaction_contents.pb.h"
 #include "../PublicKey.h"
 
+#include <stdexcept>
+
 namespace TW::Hedera::internals {
 static inline proto::AccountID accountIDfromStr(const std::string& input) {
     const auto hederaAccount = Address(input);
+    if (hederaAccount.alias().mPubKey.has_value()) {
+        // AccountID can carry an alias, but populating that oneof means serialising a
+        // Key protobuf. Until that is implemented, refuse the address: falling through
+        // would set accountNum from mNum and silently target shard.realm.0.
+        throw std::invalid_argument("Hedera alias addresses are not supported as a transfer target");
+    }
     auto accountID = proto::AccountID();
     accountID.set_accountnum(static_cast<std::int64_t>(hederaAccount.num()));
     accountID.set_realmnum(static_cast<std::int64_t>(hederaAccount.realm()));

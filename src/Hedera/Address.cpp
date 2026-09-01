@@ -8,6 +8,8 @@
 #include "algorithm/string.hpp"
 
 #include <charconv>
+#include <cstdint>
+#include <limits>
 #include <regex>
 
 namespace TW::Hedera::internal {
@@ -30,12 +32,18 @@ std::string Alias::string() const noexcept {
 }
 
 /// Parses one decimal component of an entity ID. Requires the whole component to be
-/// consumed and to fit std::size_t, so that isValid() and the string constructor accept
-/// exactly the same inputs.
+/// consumed and to fit the signed int64 wire field, so that isValid() and the string
+/// constructor accept exactly the same inputs.
 static std::optional<std::size_t> parseEntityIdPart(std::string_view part) {
     std::size_t value = 0;
     const auto result = std::from_chars(part.data(), part.data() + part.size(), value);
     if (result.ec != std::errc{} || result.ptr != part.data() + part.size()) {
+        return std::nullopt;
+    }
+    // Hedera serialises shard, realm and num as signed int64, so a component above
+    // INT64_MAX would reach the wire as a negative id.
+    if (static_cast<std::uint64_t>(value) >
+        static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max())) {
         return std::nullopt;
     }
     return value;

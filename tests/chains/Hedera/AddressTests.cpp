@@ -64,6 +64,9 @@ TEST(HederaAddress, Valid) {
     // so that isValid() accepts exactly what the string constructor can build.
     ASSERT_FALSE(Address::isValid("0.0.99999999999999999999999"));
     ASSERT_FALSE(Address::isValid("99999999999999999999999.0.1"));
+    // Components are serialised as signed int64, so INT64_MAX is the last accepted value.
+    ASSERT_TRUE(Address::isValid("0.0.9223372036854775807"));
+    ASSERT_FALSE(Address::isValid("0.0.9223372036854775808"));
     ASSERT_TRUE(Address::isValid("0.0.1"));
     ASSERT_TRUE(Address::isValid("0.0.1377988"));
     ASSERT_TRUE(Address::isValid("0.0.302a300506032b65700321007df3e1ab790b28de4706d36a7aa99a0e043cb3e2c3d6ec6686e4af7f638b0860"));
