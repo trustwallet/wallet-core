@@ -9,6 +9,7 @@ settings:
     CLANG_CXX_LANGUAGE_STANDARD: c++20
     SWIFT_VERSION: 5.1
     IPHONEOS_DEPLOYMENT_TARGET: 13.0
+    WATCHOS_DEPLOYMENT_TARGET: 10.0
   configs:
     release:
       SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
@@ -17,7 +18,7 @@ targets:
   WalletCore:
     type: framework
     platform: iOS
-    sources:
+    sources: &wallet-core-sources
       - path: include
         headerVisibility: public
         excludes:
@@ -75,7 +76,7 @@ targets:
   trezor-crypto:
     type: library.static
     platform: iOS
-    sources:
+    sources: &trezor-crypto-sources
       - trezor-crypto/crypto/bignum.c
       - trezor-crypto/crypto/ecdsa.c
       - trezor-crypto/crypto/curves.c
@@ -136,14 +137,14 @@ targets:
       - trezor-crypto/crypto/sodium/private/ed25519_ref10.c
       - trezor-crypto/crypto/sodium/private/ed25519_ref10_fe_25_5.c
       - trezor-crypto/crypto/sodium/keypair.c
-    settings:
+    settings: &trezor-crypto-settings
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
       OTHER_CFLAGS: $(inherited) -Wno-comma
 
   protobuf:
     type: library.static
     platform: iOS
-    sources:
+    sources: &protobuf-sources
       - protobuf/google/protobuf/any.cc
       - protobuf/google/protobuf/any.pb.cc
       - protobuf/google/protobuf/any_lite.cc
@@ -228,6 +229,43 @@ targets:
       - protobuf/google/protobuf/wire_format.cc
       - protobuf/google/protobuf/wire_format_lite.cc
       - protobuf/google/protobuf/wrappers.pb.cc
-    settings:
+    settings: &protobuf-settings
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
       OTHER_CFLAGS: $(inherited) -DHAVE_PTHREAD=1 -Wno-comma -Wno-unreachable-code
+
+  # watchOS builds as separate targets so the iOS target names stay unchanged;
+  # PRODUCT_NAME keeps the framework and module named WalletCore on both platforms.
+  WalletCore-watchOS:
+    type: framework
+    platform: watchOS
+    sources: *wallet-core-sources
+    dependencies:
+      - target: trezor-crypto-watchOS
+        link: true
+      - target: protobuf-watchOS
+        link: true
+      - sdk: libc++.tbd
+      - framework: WalletCoreRs.xcframework
+    scheme:
+      testTargets: []
+    settings:
+      PRODUCT_NAME: WalletCore
+      SKIP_INSTALL: false
+      DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+      BUILD_LIBRARY_FOR_DISTRIBUTION: true
+      INFOPLIST_FILE: 'Info.plist'
+      CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
+      CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
+      OTHER_CFLAGS: $(inherited) -Wno-comma -DNDEBUG
+
+  trezor-crypto-watchOS:
+    type: library.static
+    platform: watchOS
+    sources: *trezor-crypto-sources
+    settings: *trezor-crypto-settings
+
+  protobuf-watchOS:
+    type: library.static
+    platform: watchOS
+    sources: *protobuf-sources
+    settings: *protobuf-settings

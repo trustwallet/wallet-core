@@ -9,9 +9,17 @@ project 'TrustWalletCore.xcodeproj'
 target 'WalletCore' do
   use_frameworks!
 
-  pod 'WalletCoreSwiftProtobuf'
+  # Repo-local podspec: the published pod does not declare watchOS yet.
+  pod 'WalletCoreSwiftProtobuf', :podspec => '../WalletCoreSwiftProtobuf.podspec'
 
   target 'WalletCoreTests'
+end
+
+target 'WalletCore-watchOS' do
+  platform :watchos, '10.0'
+  use_frameworks!
+
+  pod 'WalletCoreSwiftProtobuf', :podspec => '../WalletCoreSwiftProtobuf.podspec'
 end
 
 post_install do |installer|
