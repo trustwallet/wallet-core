@@ -18,7 +18,7 @@ static inline proto::AccountID accountIDfromStr(const std::string& input) {
         // AccountID can carry an alias, but populating that oneof means serialising a
         // Key protobuf. Until that is implemented, refuse the address: falling through
         // would set accountNum from mNum and silently target shard.realm.0.
-        throw std::invalid_argument("Hedera alias addresses are not supported as a transfer target");
+        throw std::invalid_argument("Hedera alias addresses are not supported in signing input");
     }
     auto accountID = proto::AccountID();
     accountID.set_accountnum(static_cast<std::int64_t>(hederaAccount.num()));
