@@ -29,24 +29,35 @@ std::string Alias::string() const noexcept {
     return gHederaDerPrefixPublic + pubkeyBytes;
 }
 
+/// Parses one decimal component of an entity ID. Requires the whole component to be
+/// consumed and to fit std::size_t, so that isValid() and the string constructor accept
+/// exactly the same inputs.
+static std::optional<std::size_t> parseEntityIdPart(std::string_view part) {
+    std::size_t value = 0;
+    const auto result = std::from_chars(part.data(), part.data() + part.size(), value);
+    if (result.ec != std::errc{} || result.ptr != part.data() + part.size()) {
+        return std::nullopt;
+    }
+    return value;
+}
+
 bool Address::isValid(const std::string& string) {
     using namespace internal;
     std::smatch match;
-    auto isValid = std::regex_match(string, match, gEntityIDRegex);
-    if (!isValid) {
-        auto parts = TW::ssplit(string, '.');
-        if (parts.size() != 3) {
-            return false;
-        }
-        auto isNumberFunctor = [](std::string_view input) {
-            return input.find_first_not_of("0123456789") == std::string::npos;
-        };
-        if (!isNumberFunctor(parts[0]) || !isNumberFunctor(parts[1])) {
-            return false;
-        }
-        isValid = hasDerPrefix(parts[2]);
+    if (std::regex_match(string, match, gEntityIDRegex)) {
+        return parseEntityIdPart(match[1].str()).has_value() &&
+               parseEntityIdPart(match[2].str()).has_value() &&
+               parseEntityIdPart(match[3].str()).has_value();
     }
-    return isValid;
+
+    auto parts = TW::ssplit(string, '.');
+    if (parts.size() != 3) {
+        return false;
+    }
+    if (!parseEntityIdPart(parts[0]).has_value() || !parseEntityIdPart(parts[1]).has_value()) {
+        return false;
+    }
+    return hasDerPrefix(parts[2]);
 }
 
 Address::Address(const std::string& string) {
@@ -54,13 +65,14 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    auto toInt = [](const std::string& s) -> std::size_t {
-        std::size_t value = 0;
-        const auto result = std::from_chars(s.data(), s.data() + s.size(), value);
-        if (result.ec != std::errc{} || result.ptr != s.data() + s.size()) {
+    // isValid() has already checked every component with the same parser, so the
+    // optionals below cannot be empty; the throw guards against the two drifting apart.
+    auto toInt = [](std::string_view part) -> std::size_t {
+        const auto value = parseEntityIdPart(part);
+        if (!value.has_value()) {
             throw std::invalid_argument("Invalid entity ID");
         }
-        return value;
+        return *value;
     };
 
     // Numeric `shard.realm.num` form (with optional checksum suffix). Full numeric
