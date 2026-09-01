@@ -76,13 +76,7 @@ struct Script {
     Script(const Proto::Script& script) {
         auto&& scriptCodeHash = script.code_hash();
         codeHash.insert(codeHash.end(), scriptCodeHash.begin(), scriptCodeHash.end());
-        auto&& hashTypeString = script.hash_type();
-        hashType = HashType::Data0;
-        for (int i = 0; i < (int)(sizeof(HashTypeString) / sizeof(HashTypeString[0])); i++) {
-            if (hashTypeString == HashTypeString[i]) {
-                hashType = (HashType)i;
-            }
-        }
+        hashType = hashTypeFromString(script.hash_type()).value_or(HashType::Data0);
         auto&& scriptArgs = script.args();
         args.insert(args.end(), scriptArgs.begin(), scriptArgs.end());
     }
@@ -96,7 +90,7 @@ struct Script {
     Proto::Script proto() const {
         auto script = Proto::Script();
         script.set_code_hash(std::string(codeHash.begin(), codeHash.end()));
-        script.set_hash_type(HashTypeString[hashType]);
+        script.set_hash_type(hashTypeString(hashType));
         script.set_args(std::string(args.begin(), args.end()));
         return script;
     }

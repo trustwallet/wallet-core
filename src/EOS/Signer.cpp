@@ -118,12 +118,12 @@ Transaction Signer::buildTx(const Proto::SigningInput& input) const {
     return tx;
 }
 
-Data Signer::buildUnsignedTx(const Proto::SigningInput& input) noexcept {
+Data Signer::buildUnsignedTx(const Proto::SigningInput& input) {
     auto tx = buildTx(input);
     return serializeTx(tx);
 }
 
-std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept {
+std::string Signer::buildSignedTx(const Proto::SigningInput& input, const Data& signature) {
     auto tx = buildTx(input);
 
     // get key type

@@ -6,6 +6,7 @@
 
 #include "rust/bindgen/WalletCoreRSBindgen.h"
 #include "rust/Wrapper.h"
+#include <stdexcept>
 #include <string>
 
 using namespace TW;
@@ -49,6 +50,7 @@ TW::Hash::HasherSimpleType Hash::functionPointerFromEnum(TW::Hash::Hasher hasher
     case Hash::HasherGroestl512d:
         return Hash::groestl512d;
     }
+    throw std::invalid_argument("Unknown hasher");
 }
 
 Data Hash::sha1(const byte* data, size_t size) {

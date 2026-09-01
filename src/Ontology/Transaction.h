@@ -15,15 +15,15 @@ namespace TW::Ontology {
 class Transaction {
 
   private:
-    uint8_t version;
+    uint8_t version = 0;
 
-    uint8_t txType;
+    uint8_t txType = 0;
 
-    uint32_t nonce;
+    uint32_t nonce = 0;
 
-    uint64_t gasPrice;
+    uint64_t gasPrice = 0;
 
-    uint64_t gasLimit;
+    uint64_t gasLimit = 0;
 
     std::string payer;
 
