@@ -56,6 +56,23 @@ jobs:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++
 
+      - name: Compile JNI Java sources for SonarCloud
+        run: |
+          set -eux
+          mkdir -p build/sonar-java
+          # codegen above already wrote jni/java/wallet/core/jni; giving the Java
+          # analyser bytecode is what lifts it out of its less precise fallback mode.
+          curl -fsSL --proto '=https' --proto-redir '=https' \
+            "https://repo1.maven.org/maven2/com/google/protobuf/protobuf-javalite/${PROTOBUF_JAVALITE_VERSION}/protobuf-javalite-${PROTOBUF_JAVALITE_VERSION}.jar" \
+            -o build/protobuf-javalite.jar
+          echo "9d26bebd2607fd0553cedbfc3e4a3d3f06c6e7a207d2b74c87fa6181838ed1bf  build/protobuf-javalite.jar" | sha256sum -c -
+          find jni/java -name '*.java' > build/java-sources.txt
+          javac -nowarn -proc:none -d build/sonar-java \
+            -cp build/protobuf-javalite.jar -sourcepath jni/java @build/java-sources.txt
+        env:
+          # Keep in step with android/wallet-core-proto/build.gradle.
+          PROTOBUF_JAVALITE_VERSION: 3.22.3
+
       - name: CMake (coverage/clang-tidy/clang-asan)
         run: |
           cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DTW_CODE_COVERAGE=ON -DTW_ENABLE_CLANG_TIDY=ON -DTW_CLANG_ASAN=ON -GNinja
