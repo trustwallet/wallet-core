@@ -55,4 +55,11 @@ if [[ "$1" == "html" ]]; then
         coverage.info
 fi
 
+# Convert to SonarQube generic coverage format if requested; the regression
+# check against coverage.stats is skipped in this mode (linux-ci owns it).
+if [[ "$1" == "sonar" ]]; then
+    tools/lcov-to-sonar-xml coverage.info coverage-sonar.xml
+    exit 0
+fi
+
 tools/check-coverage coverage.stats coverage.info
