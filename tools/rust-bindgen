@@ -21,7 +21,7 @@ HEADER_NAME="WalletCoreRSBindgen.h"
 
 create_xc_framework() {
   rm -rf $TARGET_XCFRAMEWORK_NAME
-  xcodebuild -create-xcframework -library $BUILD_FOLDER/$TARGET_NAME -library $BUILD_FOLDER/darwin_universal/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-ios/release/$TARGET_NAME -output $TARGET_XCFRAMEWORK_NAME
+  xcodebuild -create-xcframework -library $BUILD_FOLDER/$TARGET_NAME -library $BUILD_FOLDER/darwin_universal/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-ios/release/$TARGET_NAME -library $BUILD_FOLDER/watchos_device/$TARGET_NAME -library $BUILD_FOLDER/aarch64-apple-watchos-sim/release/$TARGET_NAME -output $TARGET_XCFRAMEWORK_NAME
   mkdir -p $TARGET_XCFRAMEWORK_NAME/ios-arm64_x86_64-maccatalyst
   cp $BUILD_FOLDER/catalyst/$TARGET_NAME $TARGET_XCFRAMEWORK_NAME/ios-arm64_x86_64-maccatalyst
 }
@@ -59,6 +59,14 @@ if isTargetSpecified "ios" && [[ $(uname -s) == "Darwin" ]]; then
   echo "Generating iOS targets"
   cargo build -Z build-std=std,panic_abort --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release --lib &
   wait
+
+  # watchOS. These are tier-3 targets, so they rely on the same -Zbuild-std
+  # the other targets here already use. arm64_32 is the ILP32 architecture
+  # required by Apple Watch Series 6-8 and Ultra 1.
+  cargo build -Z build-std=std,panic_abort --target aarch64-apple-watchos --target arm64_32-apple-watchos --target aarch64-apple-watchos-sim --release --lib &
+  wait
+  mkdir -p $BUILD_FOLDER/watchos_device
+  lipo $BUILD_FOLDER/aarch64-apple-watchos/release/$TARGET_NAME $BUILD_FOLDER/arm64_32-apple-watchos/release/$TARGET_NAME -create -output $BUILD_FOLDER/watchos_device/$TARGET_NAME
   lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
   mkdir -p $BUILD_FOLDER/darwin_universal
   lipo $BUILD_FOLDER/x86_64-apple-darwin/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-darwin/release/$TARGET_NAME -create -output $BUILD_FOLDER/darwin_universal/$TARGET_NAME
@@ -136,6 +144,33 @@ cat > $TARGET_XCFRAMEWORK_NAME/Info.plist << EOF
 			</array>
 			<key>SupportedPlatform</key>
 			<string>ios</string>
+			<key>SupportedPlatformVariant</key>
+			<string>simulator</string>
+		</dict>
+		<dict>
+			<key>LibraryIdentifier</key>
+			<string>watchos-arm64_arm64_32</string>
+			<key>LibraryPath</key>
+			<string>libwallet_core_rs.a</string>
+			<key>SupportedArchitectures</key>
+			<array>
+				<string>arm64</string>
+				<string>arm64_32</string>
+			</array>
+			<key>SupportedPlatform</key>
+			<string>watchos</string>
+		</dict>
+		<dict>
+			<key>LibraryIdentifier</key>
+			<string>watchos-arm64-simulator</string>
+			<key>LibraryPath</key>
+			<string>libwallet_core_rs.a</string>
+			<key>SupportedArchitectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>SupportedPlatform</key>
+			<string>watchos</string>
 			<key>SupportedPlatformVariant</key>
 			<string>simulator</string>
 		</dict>
