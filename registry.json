@@ -5111,5 +5111,34 @@
       "rpc": "https://rpc.mainnet.chain.robinhood.com",
       "documentation": "https://docs.robinhood.com/chain/"
     }
+  },
+  {
+    "id": "arc",
+    "name": "Arc",
+    "displayName": "Arc",
+    "nativeTokenName": "USD Coin",
+    "coinId": 10005042,
+    "symbol": "USDC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "5042",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.arc.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.arc.io",
+      "rpc": "",
+      "documentation": "https://docs.arc.io"
+    }
   }
 ]
