@@ -3,8 +3,44 @@ name: Kotlin CI
 on:
   push:
     branches: [ dev, master ]
+    paths-ignore:
+      # Nothing below can change an Apple, Android, Kotlin or Rust build, and every
+      # run of these workflows bills macOS Large or XLarge minutes.
+      - '**/*.md'
+      - 'docs/**'
+      - 'audit/**'
+      - 'sonar-project.properties'
+      - 'tools/sonar-scanner.properties'
+      - 'tools/sonarcloud-analysis'
+      - 'tools/coverage'
+      - 'tools/check-coverage'
+      - 'tools/lcov-to-sonar-xml'
+      - '.github/workflows/linux-ci-sonarcloud.yml'
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/claude-bc-risk-router.yml'
+      - 'Dockerfile'
+      - 'gitpod.Dockerfile'
+      - '.devcontainer/**'
   pull_request:
     branches: [ dev, master ]
+    paths-ignore:
+      # Nothing below can change an Apple, Android, Kotlin or Rust build, and every
+      # run of these workflows bills macOS Large or XLarge minutes.
+      - '**/*.md'
+      - 'docs/**'
+      - 'audit/**'
+      - 'sonar-project.properties'
+      - 'tools/sonar-scanner.properties'
+      - 'tools/sonarcloud-analysis'
+      - 'tools/coverage'
+      - 'tools/check-coverage'
+      - 'tools/lcov-to-sonar-xml'
+      - '.github/workflows/linux-ci-sonarcloud.yml'
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/claude-bc-risk-router.yml'
+      - 'Dockerfile'
+      - 'gitpod.Dockerfile'
+      - '.devcontainer/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
