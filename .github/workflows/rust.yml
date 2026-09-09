@@ -3,8 +3,46 @@ name: Rust CI
 on:
   push:
     branches: [ dev, master ]
+    paths-ignore:
+      # Nothing below can change an Apple, Android, Kotlin or Rust build, and every
+      # run of these workflows bills macOS Large or XLarge minutes.
+      - '**/*.md'
+      - 'docs/**'
+      - 'audit/**'
+      - 'sonar-project.properties'
+      - 'tools/sonar-scanner.properties'
+      - 'tools/sonarcloud-analysis'
+      # tools/check-coverage is NOT ignored here: this workflow runs it for the
+      # Rust coverage gate, unlike the Apple and Android ones.
+      - 'tools/coverage'
+      - 'tools/lcov-to-sonar-xml'
+      - '.github/workflows/linux-ci-sonarcloud.yml'
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/claude-bc-risk-router.yml'
+      - 'Dockerfile'
+      - 'gitpod.Dockerfile'
+      - '.devcontainer/**'
   pull_request:
     branches: [ dev, master ]
+    paths-ignore:
+      # Nothing below can change an Apple, Android, Kotlin or Rust build, and every
+      # run of these workflows bills macOS Large or XLarge minutes.
+      - '**/*.md'
+      - 'docs/**'
+      - 'audit/**'
+      - 'sonar-project.properties'
+      - 'tools/sonar-scanner.properties'
+      - 'tools/sonarcloud-analysis'
+      # tools/check-coverage is NOT ignored here: this workflow runs it for the
+      # Rust coverage gate, unlike the Apple and Android ones.
+      - 'tools/coverage'
+      - 'tools/lcov-to-sonar-xml'
+      - '.github/workflows/linux-ci-sonarcloud.yml'
+      - '.github/workflows/docker.yml'
+      - '.github/workflows/claude-bc-risk-router.yml'
+      - 'Dockerfile'
+      - 'gitpod.Dockerfile'
+      - '.devcontainer/**'
 
 env:
   SCCACHE_GHA_ENABLED: "true"
