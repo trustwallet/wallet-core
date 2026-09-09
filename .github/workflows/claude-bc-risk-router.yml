@@ -2,83 +2,67 @@ name: bc-risk-router
 
 # To make verify-bc-check-comment actually BLOCK merging, add it as a required
 # status check in Settings -> Branches -> branch protection rules for master and dev.
+#
+# Security model:
+#   bc-scanner    — pull_request, fork context, no secrets, does the checkout + file detection.
+#   bc-risk-router — workflow_run (base-repo context, write token) reads the artifact and
+#                    posts the gating comment. No checkout ever happens here.
 
 on:
-  pull_request:
-    branches: [ master, dev ]
-    types: [ opened, synchronize, reopened, edited, ready_for_review ]
+  workflow_run:
+    workflows: [ "bc-scanner" ]
+    types: [ completed ]
   issue_comment:
     types: [ created, edited, deleted ]
-
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
 
 env:
   BC_SIGNOFF_MIN_CHARS: 60
 
 jobs:
-  scan-and-flag:
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
+  post-reminder-comment:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    outputs:
-      flags: ${{ steps.scan.outputs.flags }}
+    permissions:
+      actions: read       # download artifact from the scanner run
+      issues: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Download scan result
+        id: download
+        continue-on-error: true   # gracefully handles skipped scanner jobs (e.g. draft PRs)
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          fetch-depth: 0
-
-      - name: Detect hot-path changes
-        id: scan
-        run: |
-          set -e
-          BASE="origin/${{ github.base_ref }}"
-
-          # Any change to a persistence-sensitive path warrants a BC audit.
-          # The auditor decides what's risky — not grep patterns.
-          CHANGED=$(git diff --name-only "$BASE"...HEAD -- \
-            'src/Keystore/' \
-            'src/proto/' \
-            'include/TrustWalletCore/' \
-            'registry.json' \
-            'src/PrivateKey*' \
-            'src/PublicKey*' \
-            'src/HDWallet*' \
-            'swift/Sources/KeyStore*' \
-            'swift/Sources/Wallet.swift' \
-            'swift/Sources/Watch.swift' \
-            'wasm/src/keystore/' \
-            '**/Migration*' \
-            '**/StoredKey*' \
-            '**/backup/**' \
-            '**/schema*.sql' \
-            2>/dev/null || true)
-
-          if [ -n "$CHANGED" ]; then
-            echo "flags=$(echo "$CHANGED" | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
-          else
-            echo "flags=" >> "$GITHUB_OUTPUT"
-          fi
+          name: bc-scan-result
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Post reminder comment (once per PR)
-        if: steps.scan.outputs.flags != ''
+        if: steps.download.outcome == 'success'
         uses: actions/github-script@v7
         env:
-          FLAGS: ${{ steps.scan.outputs.flags }}
+          BC_SIGNOFF_MIN_CHARS: ${{ env.BC_SIGNOFF_MIN_CHARS }}
         with:
           script: |
-            const changedFiles = (process.env.FLAGS || '').trim().split(/\s+/).filter(Boolean);
-            const marker = '<!-- bc-risk-router:reminder -->';
+            const fs = require('fs');
 
-            const { data: comments } = await github.rest.issues.listComments({
-              issue_number: context.issue.number,
+            const changedContent = fs.readFileSync('changed-files.txt', 'utf8').trim();
+            if (!changedContent) {
+              core.info('No hot-path files changed; skipping.');
+              return;
+            }
+            const changedFiles = changedContent.split('\n').filter(Boolean);
+
+            const prNumber = parseInt(fs.readFileSync('pr-number.txt', 'utf8').trim(), 10);
+            const base     = fs.readFileSync('base-ref.txt',     'utf8').trim();
+
+            const marker = '<!-- bc-risk-router:reminder -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
+              per_page: 100,
             });
             if (comments.some(c => c.body.includes(marker))) return;
-
-            const base = context.payload.pull_request.base.ref;
 
             // Build the prompt as an array to avoid multi-line template literal
             // indentation problems inside this YAML block scalar.
@@ -148,7 +132,7 @@ jobs:
               '- `[bc-check: Risk-Accepted]` — audit found RISK or BLOCKER; **investigation confirms blast radius is effectively zero** (no user data in the wild can trigger it). Must include audit output + explicit evidence (who confirmed it, what data or reasoning).',
               "- `[bc-check: N/A]` — scanner fired on a file with **zero BC relevance** (comment edit, test fixture, renamed variable). **Invalid if the audit found a real risk.**",
               '',
-              'Each token must be accompanied by >=${{ env.BC_SIGNOFF_MIN_CHARS }} chars of reasoning. The reasoning must be fresh — posted or edited at or after the HEAD commit.',
+              `Each token must be accompanied by >=${process.env.BC_SIGNOFF_MIN_CHARS} chars of reasoning. The reasoning must be fresh — posted or edited at or after the HEAD commit.`,
               '',
               "**Why audit evidence is required for Pass / Mitigated:** humans don't reliably ask the right BC question on every PR. AI being in the loop is the whole point of this gate. The bot does not judge whether your reasoning is *correct* — reviewers do, like any other code review.",
               '',
@@ -166,33 +150,81 @@ jobs:
             ].join('\n');
 
             await github.rest.issues.createComment({
-              issue_number: context.issue.number,
+              issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body
             });
 
   verify-bc-check-comment:
+    # No `needs` — runs independently on both workflow_run and issue_comment events.
+    # Uses the Checks API to post a check run directly onto pr.head.sha, so the result
+    # always lands on the right commit regardless of which event triggered this job.
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: read
+      issues: read
     steps:
       - name: Verify sign-off token
         uses: actions/github-script@v7
+        env:
+          BC_SIGNOFF_MIN_CHARS: ${{ env.BC_SIGNOFF_MIN_CHARS }}
         with:
           script: |
             let prNumber, pr;
-            if (context.payload.pull_request) {
-              pr = context.payload.pull_request;
-              prNumber = pr.number;
-            } else if (context.payload.issue && context.payload.issue.pull_request) {
+            if (context.payload.issue && context.payload.issue.pull_request) {
               prNumber = context.payload.issue.number;
               const { data } = await github.rest.pulls.get({
                 owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber
               });
               pr = data;
+            } else if (context.payload.workflow_run) {
+              const prs = context.payload.workflow_run.pull_requests;
+              if (!prs || prs.length === 0) {
+                // Fork PRs: workflow_run.pull_requests is empty — look up by head SHA.
+                const headSha = context.payload.workflow_run.head_sha;
+                const headOwner = context.payload.workflow_run.head_repository.owner.login;
+                const headBranch = context.payload.workflow_run.head_branch;
+                const { data: openPRs } = await github.rest.pulls.list({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state: 'open',
+                  head: `${headOwner}:${headBranch}`,
+                });
+                pr = openPRs.find(p => p.head.sha === headSha);
+                if (!pr) {
+                  core.info('Could not resolve PR from workflow_run; skipping.');
+                  return;
+                }
+                prNumber = pr.number;
+              } else {
+                prNumber = prs[0].number;
+                const { data } = await github.rest.pulls.get({
+                  owner: context.repo.owner, repo: context.repo.repo, pull_number: prNumber
+                });
+                pr = data;
+              }
             } else {
               core.info('Not a PR-related event; skipping.');
               return;
+            }
+
+            // Posts a check run pinned to the PR head commit. Works from any trigger event —
+            // issue_comment-triggered runs are not automatically associated with a PR commit
+            // by GitHub, so this explicit API call is the only way to update the PR check.
+            async function postCheck(conclusion, title, summary) {
+              await github.rest.checks.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'verify-bc-check-comment',
+                head_sha: pr.head.sha,
+                status: 'completed',
+                conclusion,
+                output: { title, summary },
+              });
             }
 
             if (pr.draft) {
@@ -201,25 +233,22 @@ jobs:
             }
             if (!['master', 'dev'].includes(pr.base.ref)) {
               core.info(`PR targets '${pr.base.ref}'; BC gate only applies to master and dev. Skipping.`);
+              await postCheck('success', 'Not applicable', `BC gate only applies to master and dev; this PR targets '${pr.base.ref}'.`);
               return;
             }
 
-            // Fetch comments early — needed for both the reminder-gate check and sign-off search.
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
+              per_page: 100,
             });
 
-            // Gate on the reminder comment's presence. This job runs independently of
-            // scan-and-flag (no `needs` dependency) so that it fires on every
-            // issue_comment event. The cascade that enforces the gate on PR open is:
-            // scan-and-flag posts the reminder → that triggers an issue_comment event
-            // → this job runs, finds the reminder, and fails until a sign-off exists.
             const reminderMarker = '<!-- bc-risk-router:reminder -->';
             const hasReminder = comments.some(c => c.body.includes(reminderMarker));
             if (!hasReminder) {
               core.info('No BC-risk reminder posted; nothing to verify.');
+              await postCheck('success', 'No hot-path files changed', 'This PR does not touch persistence-sensitive files; no BC audit required.');
               return;
             }
 
@@ -257,7 +286,7 @@ jobs:
             });
 
             if (!signoff) {
-              core.setFailed(
+              const msg =
                 'No fresh, evidence-backed sign-off found. Required:\n' +
                 '  * Token: `[bc-check: Pass|Mitigated|Risk-Accepted|N/A]`\n' +
                 `  * Token + reasoning >= ${minChars} chars.\n` +
@@ -265,8 +294,10 @@ jobs:
                 '  * Pass / Mitigated / Risk-Accepted: must include audit output (a `# BC-risk audit ...` header or a `Verdict:` line).\n' +
                 '  * Risk-Accepted: must also include explicit evidence that blast radius is effectively zero.\n' +
                 "  * N/A is only valid when the change has zero BC relevance; rejected if the audit shows a RISK or BLOCKER verdict.\n" +
-                'If you pushed new commits after a previous sign-off, edit the existing comment (any edit counts as a refresh) so it reflects the current diff.'
-              );
+                'If you pushed new commits after a previous sign-off, edit the existing comment (any edit counts as a refresh) so it reflects the current diff.';
+              await postCheck('failure', 'BC sign-off required', msg);
+              core.setFailed('BC sign-off required — see the verify-bc-check-comment check on this PR.');
               return;
             }
+            await postCheck('success', 'BC sign-off verified', `Sign-off by @${signoff.user.login} is valid and current (posted at ${signoff.updated_at}).`);
             core.info(`Found fresh sign-off by @${signoff.user.login} at ${signoff.updated_at}.`);
