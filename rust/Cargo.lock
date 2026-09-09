@@ -2664,6 +2664,7 @@ dependencies = [
  "tw_ton",
  "tw_ton_sdk",
  "tw_utxo",
+ "tw_zcash",
  "wallet-core-rs",
 ]
 

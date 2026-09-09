@@ -32,7 +32,7 @@ impl<Context: BitcoinSigningContext> PsbtPlanner<Context> {
     ) -> SigningResult<Proto::TransactionPlan<'static>> {
         let chain_info = chain_info(coin, &input.chain_info)?;
         let PsbtRequest { unsigned_tx, .. } =
-            Context::PsbtRequestHandler::parse_request(input, psbt_input)?;
+            Context::PsbtRequestHandler::parse_request(coin, input, psbt_input)?;
 
         let total_input = unsigned_tx.total_input()?;
         let fee_estimate = unsigned_tx.fee()?;
