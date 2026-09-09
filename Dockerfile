@@ -40,7 +40,7 @@ RUN ln -s /usr/bin/clang++-14 /usr/bin/clang++
 
 # Install rust
 RUN wget "https://sh.rustup.rs" -O rustup.sh \
-    && echo "6c30b75a75b28a96fd913a037c8581b580080b6ee9b8169a3c0feb1af7fe8caf  rustup.sh" | sha256sum -c - \
+    && echo "7d0ea0f8eba7fa1ebfe998091cd7ec4501e33ec5ca6b884eb4d894d7da5170af  rustup.sh" | sha256sum -c - \
     && sh rustup.sh -y \
     && rm rustup.sh
 ENV PATH="/root/.cargo/bin:${PATH}"
