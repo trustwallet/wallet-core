@@ -1,0 +1,347 @@
+{
+  "version": 2,
+  "sender": "0xfc3af6dd6dc614cc6ee17974033d76116843536f9b3e0524b4d48c54bfb9472d",
+  "expiration": null,
+  "gasData": {
+    "budget": "28457880",
+    "price": "750",
+    "owner": null,
+    "payment": [
+      {
+        "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+        "version": "486126455",
+        "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "Pure": {
+        "bytes": "AMqaOwAAAAA="
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "WV08AAAAAAA="
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0x72fbc93a45192357c87557fe73ea62fe5968efb5482834e9243f850377251534",
+          "initialSharedVersion": "228660837",
+          "mutable": false
+        }
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0x7d84c29a96d66a95a5df71e59e585913aef0bf5872221600dd876d9d60b996ce",
+          "initialSharedVersion": "228660837",
+          "mutable": false
+        }
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AA=="
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AA=="
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AA=="
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AAAAAAAAAAA="
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0xb0aac37113bca6997a68ab591682350b5d709ca9afe6f08ad1114e03f635241d",
+          "initialSharedVersion": "228660854",
+          "mutable": true
+        }
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0x2c6fc12bf0d093b5391e7c0fed7e044d52bc14eb29f6352a3fb358e33e80729e",
+          "initialSharedVersion": "2550517",
+          "mutable": true
+        }
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AAAAAAAAAAA="
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+          "initialSharedVersion": "1",
+          "mutable": false
+        }
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0xf1cf0e81048df168ebeb1b8030fad24b3e0b53ae827c25053fff0779c1445b6f",
+          "initialSharedVersion": "1621135",
+          "mutable": false
+        }
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0x19f21ba3dfcca79bab65e2ce704da43fd10708a0b83ab0cb5206d2ad47e85aaa",
+          "initialSharedVersion": "470862906",
+          "mutable": true
+        }
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AAAAAAAAAAA="
+      }
+    },
+    {
+      "Object": {
+        "SharedObject": {
+          "objectId": "0x339ee67f613310dd493d6f72c19cebbdf027e3b1d710734ca019eb1bec81689c",
+          "initialSharedVersion": "470861600",
+          "mutable": true
+        }
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "AAAAAAAAAAA="
+      }
+    },
+    {
+      "Pure": {
+        "bytes": "/Dr23W3GFMxu4Xl0Az12EWhDU2+bPgUktNSMVL+5Ry0="
+      }
+    }
+  ],
+  "commands": [
+    {
+      "SplitCoins": {
+        "coin": {
+          "GasCoin": true
+        },
+        "amounts": [
+          {
+            "Input": 0
+          }
+        ]
+      }
+    },
+    {
+      "MoveCall": {
+        "package": "0xa2f06318d797e3a2ba734069165e164870677f705d95d8a18b6d9aabbd588709",
+        "module": "router",
+        "function": "begin_router_tx_and_collect_fees",
+        "typeArguments": [
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+          "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+        ],
+        "arguments": [
+          {
+            "Result": 0
+          },
+          {
+            "Input": 1
+          },
+          {
+            "Input": 2
+          },
+          {
+            "Input": 3
+          },
+          {
+            "Input": 4
+          },
+          {
+            "Input": 5
+          },
+          {
+            "Input": 6
+          }
+        ]
+      }
+    },
+    {
+      "MoveCall": {
+        "package": "0xa2f06318d797e3a2ba734069165e164870677f705d95d8a18b6d9aabbd588709",
+        "module": "router",
+        "function": "initiate_path_by_percent",
+        "typeArguments": [
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
+        ],
+        "arguments": [
+          {
+            "Result": 1
+          },
+          {
+            "Input": 7
+          }
+        ]
+      }
+    },
+    {
+      "MoveCall": {
+        "package": "0x2f354e93e638ca66cecba769cd0827b89c84cfe08a0c76a9dd3910b00a55a8bc",
+        "module": "router",
+        "function": "swap_b_a",
+        "typeArguments": [
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+          "0x5d1f47ea69bb0de31c313d7acf89b890dbb8991ea8e03c6c355171f84bb1ba4a::turbos::TURBOS",
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+          "0x91bfbc386a41afcfd9b2533058d7e915a1d3829089cc268ff4333d54d6339ca1::fee3000bps::FEE3000BPS"
+        ],
+        "arguments": [
+          {
+            "Input": 8
+          },
+          {
+            "Result": 1
+          },
+          {
+            "Input": 9
+          },
+          {
+            "Result": 2
+          },
+          {
+            "Input": 10
+          },
+          {
+            "Input": 11
+          },
+          {
+            "Input": 12
+          }
+        ]
+      }
+    },
+    {
+      "MoveCall": {
+        "package": "0x2f354e93e638ca66cecba769cd0827b89c84cfe08a0c76a9dd3910b00a55a8bc",
+        "module": "router",
+        "function": "swap_b_a",
+        "typeArguments": [
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+          "0x3599429d66965021f6ce08a997e81bb3c1f2c1b9a8fbb19953e26f5dc55e91ef::suidepin::SUIDEPIN",
+          "0x5d1f47ea69bb0de31c313d7acf89b890dbb8991ea8e03c6c355171f84bb1ba4a::turbos::TURBOS",
+          "0x91bfbc386a41afcfd9b2533058d7e915a1d3829089cc268ff4333d54d6339ca1::fee10000bps::FEE10000BPS"
+        ],
+        "arguments": [
+          {
+            "Input": 8
+          },
+          {
+            "Result": 1
+          },
+          {
+            "Input": 13
+          },
+          {
+            "Result": 3
+          },
+          {
+            "Input": 14
+          },
+          {
+            "Input": 11
+          },
+          {
+            "Input": 12
+          }
+        ]
+      }
+    },
+    {
+      "MoveCall": {
+        "package": "0x2f354e93e638ca66cecba769cd0827b89c84cfe08a0c76a9dd3910b00a55a8bc",
+        "module": "router",
+        "function": "swap_a_b",
+        "typeArguments": [
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+          "0x3599429d66965021f6ce08a997e81bb3c1f2c1b9a8fbb19953e26f5dc55e91ef::suidepin::SUIDEPIN",
+          "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+          "0x91bfbc386a41afcfd9b2533058d7e915a1d3829089cc268ff4333d54d6339ca1::fee10000bps::FEE10000BPS"
+        ],
+        "arguments": [
+          {
+            "Input": 8
+          },
+          {
+            "Result": 1
+          },
+          {
+            "Input": 15
+          },
+          {
+            "Result": 4
+          },
+          {
+            "Input": 16
+          },
+          {
+            "Input": 11
+          },
+          {
+            "Input": 12
+          }
+        ]
+      }
+    },
+    {
+      "MoveCall": {
+        "package": "0xa2f06318d797e3a2ba734069165e164870677f705d95d8a18b6d9aabbd588709",
+        "module": "router",
+        "function": "end_router_tx",
+        "typeArguments": [
+          "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
+          "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
+        ],
+        "arguments": [
+          {
+            "Result": 1
+          },
+          {
+            "Result": 5
+          }
+        ]
+      }
+    },
+    {
+      "TransferObjects": {
+        "objects": [
+          {
+            "Result": 5
+          }
+        ],
+        "address": {
+          "Input": 17
+        }
+      }
+    }
+  ],
+  "digest": "5ne5WwshjP1wTmNnsChhHTneG67kJa3PbD2kTPft1PY9"
+}

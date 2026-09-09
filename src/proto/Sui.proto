@@ -10,10 +10,12 @@ option java_package = "wallet.core.jni.proto";
 import "Common.proto";
 
 // Object info (including Coins).
+// Maps one-to-one onto the `sui.rpc.v2.ObjectReference` gRPC message.
 message ObjectRef {
     // Hex string representing the object ID.
     string object_id = 1;
     // Object version.
+    // Note the JSON-RPC API used to return this as a string, while gRPC returns a real uint64.
     uint64 version = 2;
     // Base58 string representing the object digest.
     string object_digest = 3;
@@ -24,16 +26,19 @@ message Amount {
     uint64 amount = 1;
 }
 
-// Base64 encoded msg to sign (string)
+// A pre-built transaction to sign.
 message SignDirect {
-    // Obtain by calling any write RpcJson on SUI
+    // BCS serialized `TransactionData`, base64 encoded.
+    // Obtain it by building the transaction locally, e.g. via `Transaction.build()` of the
+    // `@mysten/sui` TypeScript SDK, or via one of the transaction payloads below.
+    // Note the JSON-RPC `unsafe_*` methods that used to return these bytes have been removed
+    // in favour of the gRPC API, which has no server-side transaction builder.
     string unsigned_tx_msg = 1;
 }
 
 // Send `Coin<T>` to a list of addresses, where T can be any coin type, following a list of amounts.
 // The object specified in the gas field will be used to pay the gas fee for the transaction.
 // The gas object can not appear in input_coins.
-// https://docs.sui.io/sui-api-ref#unsafe_pay
 message Pay {
     // The Sui coins to be used in this transaction, including the coin for gas payment.
     repeated ObjectRef input_coins = 1;
@@ -50,7 +55,6 @@ message Pay {
 
 // Send SUI coins to a list of addresses, following a list of amounts.
 // This is for SUI coin only and does not require a separate gas coin object.
-// https://docs.sui.io/sui-api-ref#unsafe_paysui
 message PaySui {
     // The Sui coins to be used in this transaction, including the coin for gas payment.
     repeated ObjectRef input_coins = 1;
@@ -64,7 +68,6 @@ message PaySui {
 
 // Send all SUI coins to one recipient.
 // This is for SUI coin only and does not require a separate gas coin object.
-// https://docs.sui.io/sui-api-ref#unsafe_payallsui
 message PayAllSui {
     // The Sui coins to be used in this transaction, including the coin for gas payment.
     repeated ObjectRef input_coins = 1;
@@ -74,7 +77,6 @@ message PayAllSui {
 }
 
 // Add stake to a validator's staking pool using multiple coins and amount.
-// https://docs.sui.io/sui-api-ref#unsafe_requestaddstake
 message RequestAddStake {
     // Coin<SUI> objects to stake.
     repeated ObjectRef coins = 1;
@@ -90,7 +92,6 @@ message RequestAddStake {
 }
 
 // Withdraw stake from a validator's staking pool.
-// https://docs.sui.io/sui-api-ref#unsafe_requestwithdrawstake
 message RequestWithdrawStake {
     // StakedSui object ID.
     ObjectRef staked_sui = 1;
@@ -100,7 +101,6 @@ message RequestWithdrawStake {
 }
 
 /// Transfer an object from one address to another. The object's type must allow public transfers.
-/// https://docs.sui.io/sui-api-ref#unsafe_transferobject
 message TransferObject {
     // Object ID to be transferred.
     ObjectRef object = 1;
@@ -129,22 +129,34 @@ message SigningInput {
         RequestAddStake request_add_stake = 7;
         RequestWithdrawStake request_withdraw_stake = 8;
         TransferObject transfer_object = 9;
+        // Transaction serialized by the `@mysten/sui` TypeScript SDK.
+        // Both the version 1 (`Transaction.serialize()`) and the version 2 (`Transaction.toJSON()`)
+        // formats are accepted. The transaction must be fully resolved - unresolved inputs and
+        // `$Intent` commands require network lookups and are therefore rejected.
         string raw_json = 10;
     }
 
     // The gas budget, the transaction will fail if the gas cost exceed the budget.
+    // Estimate it via `TransactionExecutionService.SimulateTransaction`.
+    // Takes precedence over the gas budget embedded in `raw_json`.
     uint64 gas_budget = 12;
 
     // Reference gas price.
+    // Obtain it via `LedgerService.GetEpoch`.
+    // Takes precedence over the gas price embedded in `raw_json`.
     uint64 reference_gas_price = 13;
 }
 
 // Transaction signing output.
 message SigningOutput {
-    /// The raw transaction without indent in base64
+    /// The raw transaction without indent in base64.
+    /// Base64-decode it to get the bytes expected by
+    /// `ExecuteTransactionRequest.transaction.bcs.value` of the gRPC API.
     string unsigned_tx = 1;
 
-    /// The signature encoded in base64
+    /// The signature encoded in base64.
+    /// Base64-decode it to get the bytes expected by
+    /// `ExecuteTransactionRequest.signatures[].bcs.value` of the gRPC API.
     string signature = 2;
 
     // Error code, 0 is ok, other codes will be treated as errors.
