@@ -6,7 +6,7 @@
     <title>Emscripten-Generated Code</title>
     <style>
       body {
-        font-family: arial;
+        font-family: arial, sans-serif;
         margin: 0;
         padding: none;
       }
@@ -1199,8 +1199,8 @@
     <div class="emscripten" id="status">Downloading...</div>
 
 <span id='controls'>
-  <span><input type="checkbox" id="resize">Resize canvas</span>
-  <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
+  <span><label><input type="checkbox" id="resize">Resize canvas</label></span>
+  <span><label><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</label></span>
   <span><input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
                                                                             document.getElementById('resize').checked)">
   </span>
@@ -1214,7 +1214,7 @@
     <div class="emscripten_border">
       <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     </div>
-    <textarea id="output" rows="8"></textarea>
+    <textarea id="output" rows="8" aria-label="Output log"></textarea>
 
     <script type='text/javascript'>
       var statusElement = document.getElementById('status');
@@ -1232,7 +1232,7 @@
           var wallet = new Module.HDWallet.create(128, "");
           Module.print("==> HDWallet.mnemonic(): ", wallet.mnemonic());
           Module.print("==> HDWallet.getAddressForCoin(bitcoin): ", wallet.getAddressForCoin(Module.CoinType.bitcoin));
-          delete wallet;
+          wallet.delete();
         }),
         print: (function() {
           var element = document.getElementById('output');
@@ -1300,7 +1300,7 @@
       };
     </script>
     <script async type="text/javascript" src="./wallet-core.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/dcodeIO/protobuf.js@6.11.3/dist/minimal/protobuf.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/dcodeIO/protobuf.js@6.11.3/dist/minimal/protobuf.js" integrity="sha384-yH0pzd60YQYtFag1Wv8ofy0VS3g+Tam8KCQKbvKFEHOdYX+A7l97SljOjotdBOkw" crossorigin="anonymous"></script>
     <script type="text/javascript" src="./core_proto.js"></script>
     <script>
       Module.print("<== TW protobuf models loaded");

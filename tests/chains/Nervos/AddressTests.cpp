@@ -58,6 +58,23 @@ TEST(NervosAddress, FromString) {
                                  "p60qclvpfmaa582lu860dja5h0fk0v");
 }
 
+TEST(NervosAddress, HashTypeData2) {
+    // Same code hash and args as the address above, re-encoded with hash type data2 (byte 4),
+    // valid on CKB since the CKB2023 hardfork.
+    auto address = Address("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwspxyk5x9erg8fur"
+                           "ras980hksatlslfaktks6085zu");
+    ASSERT_EQ(address.hashType, HashType::Data2);
+    ASSERT_EQ(address.hashTypeString(), "data2");
+    ASSERT_EQ(address.string(), "ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwspxyk5x9er"
+                                "g8furras980hksatlslfaktks6085zu");
+}
+
+TEST(NervosAddress, UnknownHashTypeRejected) {
+    // Byte 3 is not assigned by CKB; a full-version address carrying it must not decode.
+    ASSERT_FALSE(Address::isValid("ckb1qzda0cr08m85hc8jlnfp3zer7xulejywt49kt2rr0vthywaa50xwsq7yk5x9"
+                                  "erg8furras980hksatlslfaktks24sa9q"));
+}
+
 TEST(TWNervosAddress, AddressFromPublicKey) {
     auto privateKey =
         PrivateKey(parse_hex("8a2a726c44e46d1efaa0f9c2a8efed932f0e96d6050b914fde762ee285e61feb"));

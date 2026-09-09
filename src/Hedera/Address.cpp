@@ -8,6 +8,8 @@
 #include "algorithm/string.hpp"
 
 #include <charconv>
+#include <cstdint>
+#include <limits>
 #include <regex>
 
 namespace TW::Hedera::internal {
@@ -29,24 +31,48 @@ std::string Alias::string() const noexcept {
     return gHederaDerPrefixPublic + pubkeyBytes;
 }
 
+/// Parses one decimal component of an entity ID. Requires the whole component to be
+/// consumed and to fit the signed int64 wire field, so that isValid() and the string
+/// constructor accept exactly the same inputs.
+static std::optional<std::size_t> parseEntityIdPart(std::string_view part) {
+    // Canonical decimal only. The numeric regex already rejects leading zeroes; the
+    // alias branch must agree, or "00.0.<key>" would validate and then render as
+    // "0.0.<key>" instead of round-tripping.
+    if (part.size() > 1 && part.front() == '0') {
+        return std::nullopt;
+    }
+
+    std::size_t value = 0;
+    const auto result = std::from_chars(part.data(), part.data() + part.size(), value);
+    if (result.ec != std::errc{} || result.ptr != part.data() + part.size()) {
+        return std::nullopt;
+    }
+    // Hedera serialises shard, realm and num as signed int64, so a component above
+    // INT64_MAX would reach the wire as a negative id.
+    if (static_cast<std::uint64_t>(value) >
+        static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max())) {
+        return std::nullopt;
+    }
+    return value;
+}
+
 bool Address::isValid(const std::string& string) {
     using namespace internal;
     std::smatch match;
-    auto isValid = std::regex_match(string, match, gEntityIDRegex);
-    if (!isValid) {
-        auto parts = TW::ssplit(string, '.');
-        if (parts.size() != 3) {
-            return false;
-        }
-        auto isNumberFunctor = [](std::string_view input) {
-            return input.find_first_not_of("0123456789") == std::string::npos;
-        };
-        if (!isNumberFunctor(parts[0]) || !isNumberFunctor(parts[1])) {
-            return false;
-        }
-        isValid = hasDerPrefix(parts[2]);
+    if (std::regex_match(string, match, gEntityIDRegex)) {
+        return parseEntityIdPart(match[1].str()).has_value() &&
+               parseEntityIdPart(match[2].str()).has_value() &&
+               parseEntityIdPart(match[3].str()).has_value();
     }
-    return isValid;
+
+    auto parts = TW::ssplit(string, '.');
+    if (parts.size() != 3) {
+        return false;
+    }
+    if (!parseEntityIdPart(parts[0]).has_value() || !parseEntityIdPart(parts[1]).has_value()) {
+        return false;
+    }
+    return hasDerPrefix(parts[2]);
 }
 
 Address::Address(const std::string& string) {
@@ -54,19 +80,34 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    auto toInt = [](std::string_view s) -> std::optional<std::size_t> {
-        if (std::size_t value = 0; std::from_chars(s.data(), s.data() + s.size(), value).ec == std::errc{}) {
-            return value;
-        } else {
-            return std::nullopt;
+    // isValid() has already checked every component with the same parser, so the
+    // optionals below cannot be empty; the throw guards against the two drifting apart.
+    auto toInt = [](std::string_view part) -> std::size_t {
+        const auto value = parseEntityIdPart(part);
+        if (!value.has_value()) {
+            throw std::invalid_argument("Invalid entity ID");
         }
+        return *value;
     };
 
-    // When creating an Address by string - we assume to only sent to 0.0.1 format, alias is internal.
+    // Numeric `shard.realm.num` form (with optional checksum suffix). Full numeric
+    // consumption is required: partial parsing would silently misdirect alias entity
+    // IDs to a wrong account.
+    std::smatch match;
+    if (std::regex_match(string, match, internal::gEntityIDRegex)) {
+        mShard = toInt(match[1].str());
+        mRealm = toInt(match[2].str());
+        mNum = toInt(match[3].str());
+        return;
+    }
+
+    // Alias form also accepted by isValid(): `shard.realm.<DER-prefixed ed25519 public key hex>`.
     auto parts = TW::ssplit(string, '.');
-    mShard = *toInt(parts[0]);
-    mRealm = *toInt(parts[1]);
-    mNum = *toInt(parts[2]);
+    mShard = toInt(parts[0]);
+    mRealm = toInt(parts[1]);
+    // isValid() has established that the component starts with the DER prefix.
+    const auto keyOffset = std::string(gHederaDerPrefixPublic).size();
+    mAlias = Alias(PublicKey(parse_hex(parts[2].substr(keyOffset)), TWPublicKeyTypeED25519));
 }
 
 Address::Address(const PublicKey& publicKey)

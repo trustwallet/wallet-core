@@ -31,7 +31,7 @@ void PackedTransaction::serialize(Data& os) const noexcept {
     append(os, packedTrx);
 }
 
-json PackedTransaction::serialize() const noexcept {
+json PackedTransaction::serialize() const {
     // create a json array of signatures
     json sigs = json::array();
     for (const auto& sig : signatures) {
