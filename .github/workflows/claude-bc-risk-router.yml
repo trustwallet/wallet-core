@@ -10,11 +10,6 @@ on:
   issue_comment:
     types: [ created, edited, deleted ]
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
-
 env:
   BC_SIGNOFF_MIN_CHARS: 60
 
@@ -22,6 +17,10 @@ jobs:
   scan-and-flag:
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    permissions:
+      # scan-and-flag only reads the tree and posts an issue comment.
+      contents: read
+      issues: write
     outputs:
       flags: ${{ steps.scan.outputs.flags }}
     steps:
@@ -175,6 +174,12 @@ jobs:
   verify-bc-check-comment:
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      # verify-bc-check-comment only reads: pulls.get, issues.listComments,
+      # repos.getCommit. It reports via core.setFailed, not via the API.
+      contents: read
+      issues: read
+      pull-requests: read
     steps:
       - name: Verify sign-off token
         uses: actions/github-script@v7
