@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          # SonarCloud needs full history for blame data; a shallow clone drops SCM
+          # info and with it issue auto-assignment.
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
@@ -51,6 +55,23 @@ jobs:
         env:
           CC: /usr/bin/clang
           CXX: /usr/bin/clang++
+
+      - name: Compile JNI Java sources for SonarCloud
+        run: |
+          set -eux
+          mkdir -p build/sonar-java
+          # codegen above already wrote jni/java/wallet/core/jni; giving the Java
+          # analyser bytecode is what lifts it out of its less precise fallback mode.
+          curl -fsSL --proto '=https' --proto-redir '=https' \
+            "https://repo1.maven.org/maven2/com/google/protobuf/protobuf-javalite/${PROTOBUF_JAVALITE_VERSION}/protobuf-javalite-${PROTOBUF_JAVALITE_VERSION}.jar" \
+            -o build/protobuf-javalite.jar
+          echo "9d26bebd2607fd0553cedbfc3e4a3d3f06c6e7a207d2b74c87fa6181838ed1bf  build/protobuf-javalite.jar" | sha256sum -c -
+          find jni/java -name '*.java' > build/java-sources.txt
+          javac -nowarn -proc:none -d build/sonar-java \
+            -cp build/protobuf-javalite.jar -sourcepath jni/java @build/java-sources.txt
+        env:
+          # Keep in step with android/wallet-core-proto/build.gradle.
+          PROTOBUF_JAVALITE_VERSION: 3.22.3
 
       - name: CMake (coverage/clang-tidy/clang-asan)
         run: |
