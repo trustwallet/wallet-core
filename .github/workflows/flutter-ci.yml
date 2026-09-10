@@ -58,8 +58,7 @@ jobs:
     - name: Install Dart dependencies
       run: |
         cd flutter
-        dart pub get
-        dart pub upgrade
+        dart pub get --enforce-lockfile
     
     - name: Flutter build
       run: |

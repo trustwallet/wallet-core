@@ -38,11 +38,25 @@ ENV CXX=/usr/bin/clang++-14
 RUN ln -s /usr/bin/clang-14 /usr/bin/clang
 RUN ln -s /usr/bin/clang++-14 /usr/bin/clang++
 
-# Install rust
-RUN wget "https://sh.rustup.rs" -O rustup.sh \
-    && echo "7d0ea0f8eba7fa1ebfe998091cd7ec4501e33ec5ca6b884eb4d894d7da5170af  rustup.sh" | sha256sum -c - \
-    && sh rustup.sh -y \
-    && rm rustup.sh
+# Install rust. The installer is pinned to a released version: sh.rustup.rs serves a
+# rolling script whose digest changes on every rustup release, so pinning its checksum
+# breaks the build each time upstream publishes.
+ARG RUSTUP_VERSION=1.29.1
+RUN set -eux; \
+    case "$(dpkg --print-architecture)" in \
+        amd64) target=x86_64-unknown-linux-gnu; \
+               sha256=dda7234360b7f578ca8b0ddcb80145646fa61a67c1720a5abc7051b35c9fcb71 ;; \
+        arm64) target=aarch64-unknown-linux-gnu; \
+               sha256=15f6e4ce9f583b929c996c91562bad6d4454f3281de858b02cdfdef615fac433 ;; \
+        *) echo "unsupported architecture: $(dpkg --print-architecture)" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL --proto '=https' --proto-redir '=https' \
+        "https://static.rust-lang.org/rustup/archive/${RUSTUP_VERSION}/${target}/rustup-init" \
+        -o rustup-init; \
+    echo "${sha256}  rustup-init" | sha256sum -c -; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path; \
+    rm rustup-init
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default nightly-2025-12-11
 RUN cargo install --force cbindgen --locked \

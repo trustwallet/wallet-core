@@ -56,5 +56,5 @@ jobs:
 
     - name: Test
       run: |
-        npm install && npm run build-and-test
+        npm ci --ignore-scripts && npm run build-and-test
       working-directory: wasm
