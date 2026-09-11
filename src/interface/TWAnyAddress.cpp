@@ -112,6 +112,10 @@ enum TWCoinType TWAnyAddressCoin(struct TWAnyAddress* _Nonnull address) {
 }
 
 TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
-    auto data = address->impl->getData();
-    return TWDataCreateWithBytes(data.data(), data.size());
+    try {
+        auto data = address->impl->getData();
+        return TWDataCreateWithBytes(data.data(), data.size());
+    } catch (...) {
+        return TWDataCreateWithSize(0);
+    }
 }
