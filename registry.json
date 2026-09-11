@@ -5116,7 +5116,7 @@
     "id": "arc",
     "name": "Arc",
     "displayName": "Arc",
-    "nativeTokenName": "USD Coin",
+    "nativeTokenName": "USDC",
     "coinId": 10005042,
     "symbol": "USDC",
     "decimals": 18,

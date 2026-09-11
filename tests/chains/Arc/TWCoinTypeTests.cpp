@@ -19,7 +19,7 @@ TEST(TWArcCoinType, TWCoinType) {
 
     assertStringsEqual(id, "arc");
     assertStringsEqual(name, "Arc");
-    assertStringsEqual(nativeTokenName, "USD Coin");
+    assertStringsEqual(nativeTokenName, "USDC");
     assertStringsEqual(symbol, "USDC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 18);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainEthereum);
