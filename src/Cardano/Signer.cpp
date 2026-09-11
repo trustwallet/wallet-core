@@ -617,11 +617,13 @@ TransactionPlan Signer::doPlan() const {
 }
 
 
-Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature) {
+Proto::SigningOutput Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature) {
+    Proto::SigningOutput output;
     Transaction txAux;
     auto buildRet = buildTx(txAux, input);
     if (buildRet != Common::Proto::OK) {
-        throw Common::Proto::SigningError(buildRet);
+        output.set_error(buildRet);
+        return output;
     }
 
     std::vector<std::pair<Data, Data>> signatures;
@@ -653,7 +655,9 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
         auxData,
     });
 
-    return cbor.encoded();
+    const auto encoded = cbor.encoded();
+    output.set_encoded(encoded.data(), encoded.size());
+    return output;
 }
 
 Common::Proto::SigningError Signer::buildTx(Transaction& tx, const Proto::SigningInput& input) {

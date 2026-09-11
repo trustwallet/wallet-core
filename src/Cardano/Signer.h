@@ -41,7 +41,7 @@ public:
     }
     // Build encoded transaction
     static Common::Proto::SigningError encodeTransaction(Data& encoded, Data& txId, const Proto::SigningInput& input, const TransactionPlan& plan, bool sizeEstimationOnly = false);
-    static Data encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature);
+    static Proto::SigningOutput encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature);
     // Build aux transaction object, using input and plan
     static Common::Proto::SigningError buildTransactionAux(Transaction& tx, const Proto::SigningInput& input, const TransactionPlan& plan);
     static Common::Proto::SigningError buildTx(Transaction& tx, const Proto::SigningInput& input);
