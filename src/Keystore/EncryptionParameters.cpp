@@ -54,10 +54,8 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
 
     auto cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters::AESParametersFromJson(json[CodingKeys::cipherParams], cipher);
-    if (const auto error = cipherParams.validate(); error.has_value()) {
-        std::stringstream ss;
-        ss << "Invalid cipher params: " << toString(*error);
-        throw std::invalid_argument(ss.str());
+    if (const auto result = cipherParams.validate(); result.isFailure()) {
+        throw std::invalid_argument("Invalid cipher params: " + result.error());
     }
 
     auto kdf = json[CodingKeys::kdf].get<std::string>();
@@ -96,10 +94,8 @@ bool EncryptionParameters::shouldFix() const {
 }
 
 EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const AESParameters& cipherParams, const ScryptParameters& scryptParams) {
-    if (const auto error = cipherParams.validate(); error.has_value()) {
-        std::stringstream ss;
-        ss << "Invalid cipher params: " << toString(*error);
-        throw std::invalid_argument(ss.str());
+    if (const auto result = cipherParams.validate(); result.isFailure()) {
+        throw std::invalid_argument("Invalid cipher params: " + result.error());
     }
 
     auto derivedKey = Data(scryptParams.desiredKeyLength);
@@ -170,18 +166,19 @@ Data EncryptedPayload::decrypt(const Data& password) const {
                            pbkdf2Params->defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else {
-        throw DecryptionError::unsupportedKDF;
+        throw std::invalid_argument("Unsupported KDF");
     }
 
     if (!isEqualConstantTime(mac, _mac)) {
         memzero(derivedKey.data(), derivedKey.size());
-        throw DecryptionError::invalidPassword;
+        throw std::runtime_error("Invalid password: MAC verification failed");
     }
 
     // Even though the cipher params should have been validated in `EncryptedPayload` constructor,
     // double check them here.
-    if (params.cipherParams.validate().has_value()) {
-        throw DecryptionError::invalidCipher;
+    if (const auto result = params.cipherParams.validate(); result.isFailure()) {
+        memzero(derivedKey.data(), derivedKey.size());
+        throw std::invalid_argument("Invalid cipher during decryption: " + result.error());
     }
     assert(params.cipherParams.iv.size() == gBlockSize);
 
@@ -201,7 +198,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         memzero(derivedKey.data(), derivedKey.size());
     } else {
         memzero(derivedKey.data(), derivedKey.size());
-        throw DecryptionError::unsupportedCipher;
+        throw std::invalid_argument("Unsupported cipher: " + params.cipherParams.mCipher);
     }
 
     return decrypted;
@@ -226,7 +223,7 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
     {
         auto reDecryptedData = ZeroizingData(reEncryptedPayload.decrypt(password));
         if (!isEqualConstantTime(decryptedData.get(), reDecryptedData.get())) {
-            throw DecryptionError::invalidKeyFile;
+            throw std::runtime_error("Re-encryption verification failed: decrypted data mismatch");
         }
     }
 

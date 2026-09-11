@@ -11,15 +11,12 @@ public final class <%= entity.name %> {
 <%  end -%>
     private long nativeHandle;
 
-<%  unless entity.static_methods.detect{ |m| m.name == 'Create' && m.parameters.empty? } -%>
-    private <%= entity.name %>() {
-        nativeHandle = 0;
+    private <%= entity.name %>(long nativeHandle) {
+        this.nativeHandle = nativeHandle;
     }
 
-<%  end -%>
     static <%= entity.name %> createFromNative(long nativeHandle) {
-        <%= entity.name %> instance = new <%= entity.name %>();
-        instance.nativeHandle = nativeHandle;
+        <%= entity.name %> instance = new <%= entity.name %>(nativeHandle);
 <%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
         GenericPhantomReference.register(instance, nativeHandle, <%= entity.name %>::nativeDelete);
 <%  end -%>
