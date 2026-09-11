@@ -54,9 +54,7 @@ void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, c
     dataOut = txCompilerSingleTemplate<Proto::SigningInput, Proto::SigningOutput>(
         txInputData, signatures, publicKeys,
         [](const auto& input, auto& output, const auto& signature, const auto& publicKey) {
-            auto encoded = Signer::encodeTransactionWithSig(input, publicKey, signature);
-            output.set_encoded(encoded.data(), encoded.size());
-            return;
+            output = Signer::encodeTransactionWithSig(input, publicKey, signature);
         });
 }
 
