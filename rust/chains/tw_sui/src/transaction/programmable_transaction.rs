@@ -222,6 +222,10 @@ impl ProgrammableTransactionBuilder {
         if amounts.is_empty() {
             return Ok(());
         }
+        if amounts.len() > u16::MAX as usize {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("PaySui: too many recipients/amounts, exceeds u16 argument index limit");
+        }
 
         // collect recipients in the case where they are non-unique in order
         // to minimize the number of transfers that must be performed
@@ -240,7 +244,7 @@ impl ProgrammableTransactionBuilder {
             let rec_arg = self.pure(recipient).unwrap();
             let coins = split_secondaries
                 .into_iter()
-                .map(|j| Argument::NestedResult(split_primary, j as u16))
+                .map(|j| Argument::NestedResult(split_primary, j as u16)) // safe: j < amounts.len() <= u16::MAX
                 .collect();
             self.command(Command::TransferObjects(coins, rec_arg));
         }
