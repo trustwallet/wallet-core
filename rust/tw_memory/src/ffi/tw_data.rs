@@ -5,6 +5,7 @@
 use crate::ffi::c_byte_array_ref::CByteArrayRef;
 use crate::ffi::RawPtrTrait;
 use crate::Data;
+use zeroize::Zeroize;
 
 /// Defines a resizable block of data.
 ///
@@ -25,8 +26,9 @@ impl TWData {
     }
 
     /// Converts `TWData` into `Data` without additional allocation.
-    pub fn into_vec(self) -> Data {
-        self.0
+    pub fn into_vec(mut self) -> Data {
+        // Take the buffer without zeroing it: the caller takes ownership.
+        std::mem::take(&mut self.0)
     }
 
     /// Copies underlying data.
@@ -53,6 +55,14 @@ impl TWData {
 impl From<Data> for TWData {
     fn from(data: Data) -> Self {
         TWData(data)
+    }
+}
+
+impl Drop for TWData {
+    fn drop(&mut self) {
+        // Securely erase the contents before the buffer is deallocated, so
+        // sensitive data does not linger in allocator-managed memory.
+        self.0.zeroize();
     }
 }
 
