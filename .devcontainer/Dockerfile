@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04@sha256:81380e4c9c14e8a629ff39029639e4b7893e67400246fa7782a0fe7dc193a02a
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -85,5 +85,5 @@ RUN set -eux; \
     /tmp/rustup-init -y --no-modify-path; \
     rm /tmp/rustup-init
 ENV PATH="/home/vscode/.cargo/bin:${PATH}"
-RUN cargo install --force cbindgen \
+RUN cargo install --force cbindgen --locked --version 0.29.4 \
     && rustup target add wasm32-unknown-emscripten

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04@sha256:829f6df217bcbae2b371026e81711d1a787c61b2967ad09d015063663ebafbf7
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -59,7 +59,7 @@ RUN set -eux; \
     rm rustup-init
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN rustup default nightly-2025-12-11
-RUN cargo install --force cbindgen --locked \
+RUN cargo install --force cbindgen --locked --version 0.29.4 \
     && rustup target add wasm32-unknown-emscripten
 
 # ↑ Setup build environment

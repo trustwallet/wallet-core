@@ -10,6 +10,6 @@ echo "Check code formatting"
 cargo fmt --check
 
 echo "Check Clippy warnings"
-cargo clippy -- -D warnings
+cargo clippy --locked -- -D warnings
 
 popd

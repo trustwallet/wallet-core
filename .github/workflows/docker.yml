@@ -16,7 +16,12 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Lint Dockerfile
         run: |
-          curl -L --proto '=https' --proto-redir '=https' https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint && chmod +x hadolint
+          curl -fsSL --proto '=https' --proto-redir '=https' \
+            https://github.com/hadolint/hadolint/releases/download/v1.17.6/hadolint-Linux-x86_64 -o hadolint
+          # The linter runs as root in this job, so the binary is verified before
+          # it is made executable.
+          echo "70a79aa3f1c2462ffbf698bdc4ba7e2a0caef28881000f2c631f1c088dbd5d25  hadolint" | sha256sum -c -
+          chmod +x hadolint
           ./hadolint Dockerfile
       - name: Build Dockerfile
         uses: docker/build-push-action@92e71463491f2d026a477188b8ad3a0fdd9d672c # v1.1.0

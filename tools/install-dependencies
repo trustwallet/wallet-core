@@ -15,6 +15,7 @@ BASE_DIR=$(
     pwd
 )
 source ${BASE_DIR}/dependencies-version
+source ${BASE_DIR}/checksum
 
 # Setup up folders
 export PATH="$PREFIX/bin":$PATH
@@ -74,19 +75,23 @@ function build_protobuf() {
 }
 
 function build_swift_plugin() {
-    # Download Swift Protobuf sources
+    # Check out Swift Protobuf sources at the pinned commit. A git checkout is
+    # used rather than the /archive/ tarball because GitHub regenerates those,
+    # so their bytes cannot be pinned by checksum; a commit id can.
     SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
+    SWIFT_PROTOBUF_SRC="$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
-    if [ ! -f $SWIFT_PROTOBUF_VERSION.tar.gz ]; then
-        curl -fSsOL https://github.com/apple/swift-protobuf/archive/$SWIFT_PROTOBUF_VERSION.tar.gz
+    if [ ! -d "$SWIFT_PROTOBUF_SRC" ]; then
+        git clone --depth 1 --branch "$SWIFT_PROTOBUF_VERSION" \
+            https://github.com/apple/swift-protobuf.git "$SWIFT_PROTOBUF_SRC"
     fi
-    tar xzf $SWIFT_PROTOBUF_VERSION.tar.gz
+    verify_git_checkout "$SWIFT_PROTOBUF_SRC" "$SWIFT_PROTOBUF_COMMIT"
 
     # Build Swift Protobuf
-    cd swift-protobuf-$SWIFT_PROTOBUF_VERSION
+    cd "$SWIFT_PROTOBUF_SRC"
     swift build --static-swift-stdlib -c release
-    cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
+    cp -f "$SWIFT_PROTOBUF_SRC/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
     $PREFIX/bin/protoc-gen-swift --version
 }
 

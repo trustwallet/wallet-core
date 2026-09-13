@@ -1,7 +1,23 @@
 #!/bin/bash
 
+# Every dependency downloaded by tools/download-dependencies is pinned by version
+# *and* by the SHA256 of the exact archive that version serves, so a retagged or
+# swapped upstream artefact fails the build instead of silently entering it.
+
 export GTEST_VERSION=1.16.0
+export GTEST_SHA256=78c676fc63881529bf97bf9d45948d905a66833fbfa5318ea2cd7478cb98f399
+
 export CHECK_VERSION=0.15.2
+export CHECK_SHA256=a8de4e0bacfb4d76dd1c618ded263523b53b85d92a146d8835eb1a52932fa20a
+
 export JSON_VERSION=3.11.3
+export JSON_SHA256=a22461d13119ac5c78f205d3df1db13403e58ce1bb1794edc9313677313f4a9d
+
 export PROTOBUF_VERSION=3.20.3
+export PROTOBUF_SHA256=aa109c630d85a3ef625d69344a83e72bf3d58df034db8d099c95c51f01cde20e
+
+# swift-protobuf is checked out by commit rather than downloaded as an archive:
+# GitHub regenerates /archive/ tarballs, so their bytes are not a stable pin.
+# The commit below is what refs/tags/$SWIFT_PROTOBUF_VERSION points at.
 export SWIFT_PROTOBUF_VERSION=1.18.0
+export SWIFT_PROTOBUF_COMMIT=7e2c5f3cbbeea68e004915e3a8961e20bd11d824

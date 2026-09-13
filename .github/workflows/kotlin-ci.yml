@@ -47,6 +47,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The committed gradle-wrapper.jar files are binaries that run on every Gradle
+  # build, so they are checked against Gradle's published checksums. The action
+  # scans every wrapper in the repository, so one Linux job covers android/,
+  # kotlin/, samples/android/ and samples/kmp/ without billing macOS minutes.
+  validate-gradle-wrapper:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+    - uses: gradle/actions/wrapper-validation@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
   build:
     runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false

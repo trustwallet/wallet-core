@@ -30,7 +30,7 @@ cd rust
 
 if isTargetSpecified "native"; then
   echo "Generating Native target"
-  cargo build --release --lib
+  cargo build --locked --release --lib
 fi
 
 export RUSTFLAGS="-Zlocation-detail=none"
@@ -39,7 +39,7 @@ if isTargetSpecified "wasm"; then
   echo "Generating WASM target"
 
   source ../emsdk/emsdk_env.sh
-  cargo build -Z build-std=std,panic_abort --target wasm32-unknown-emscripten --release --lib
+  cargo build --locked -Z build-std=std,panic_abort --target wasm32-unknown-emscripten --release --lib
 fi
 
 if isTargetSpecified "android"; then
@@ -52,12 +52,12 @@ if isTargetSpecified "android"; then
   export CC_armv7_linux_androideabi="$NDK_BIN_PATH/armv7a-linux-androideabi$NDK_API_LEVEL-clang"
 
   echo "Generating Android targets"
-  cargo build -Z build-std=std,panic_abort --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release --lib
+  cargo build --locked -Z build-std=std,panic_abort --target aarch64-linux-android --target armv7-linux-androideabi --target x86_64-linux-android --target i686-linux-android --release --lib
 fi
 
 if isTargetSpecified "ios" && [[ $(uname -s) == "Darwin" ]]; then
   echo "Generating iOS targets"
-  cargo build -Z build-std=std,panic_abort --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release --lib &
+  cargo build --locked -Z build-std=std,panic_abort --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release --lib &
   wait
   lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME
   mkdir -p $BUILD_FOLDER/darwin_universal
@@ -73,7 +73,7 @@ cd -
 [[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
 
 echo "Generating C++ files..."
-pushd codegen-v2 && cargo run -- cpp && popd
+pushd codegen-v2 && cargo run --locked -- cpp && popd
 
 if isTargetSpecified "ios" && [[ $(uname -s) == "Darwin" ]]; then
 cd rust

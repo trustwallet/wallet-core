@@ -2,14 +2,26 @@
 
 set -e
 
-emsdk_version=4.0.22
+BASE_DIR=$(cd "$(dirname "$0")"; pwd)
+source "${BASE_DIR}/checksum"
 
-git clone https://github.com/emscripten-core/emsdk.git
+emsdk_version=4.0.22
+# refs/tags/$emsdk_version as of pinning. The tag selects the checkout, the
+# commit proves it: a moved tag fails here instead of changing the toolchain.
+emsdk_commit=15915cad554b707837024dc2758b6a1c5b94b036
+
+boost_version=1.83.0
+boost_sha256=66cc701002c558afb5baf7e1a163ca7f8c3d4c80e7ec4ffb7c66dfcb32ac9358
+
+git clone --depth 1 --branch "$emsdk_version" https://github.com/emscripten-core/emsdk.git
+verify_git_checkout emsdk "$emsdk_commit"
 
 cd emsdk
 
-
 ./emsdk install $emsdk_version && ./emsdk activate $emsdk_version
 
-curl -fSsOL https://github.com/emscripten-ports/boost/releases/download/boost-1.83.0/boost-headers-1.83.0.zip
-unzip boost-headers-1.83.0.zip -d upstream/emscripten/system/include
+fetch_verified \
+    "https://github.com/emscripten-ports/boost/releases/download/boost-$boost_version/boost-headers-$boost_version.zip" \
+    "boost-headers-$boost_version.zip" \
+    "$boost_sha256"
+unzip boost-headers-$boost_version.zip -d upstream/emscripten/system/include

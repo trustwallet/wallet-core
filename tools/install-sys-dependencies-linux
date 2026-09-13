@@ -14,6 +14,6 @@ sudo apt-get update && sudo apt-get install --fix-missing "${PACKAGES[@]}"
 # Install lcov 1.15-1 manually.
 LCOV_TEMP="$(mktemp -d)"
 LCOV_DEB="$LCOV_TEMP/lcov.deb"
-wget -O "$LCOV_DEB" http://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb
+wget -O "$LCOV_DEB" https://mirrors.kernel.org/ubuntu/pool/universe/l/lcov/lcov_1.15-1_all.deb
 sudo apt-get install "$LCOV_DEB"
 rm -rf $LCOV_TEMP

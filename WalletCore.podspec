@@ -25,7 +25,10 @@ Pod::Spec.new do |s|
       'swift/Sources/Types/*.swift',
       'swift/Sources/Generated/Enums/*.swift',
       'swift/Sources/Generated/Protobuf/*.swift'
-    ss.dependency 'SwiftProtobuf'
+    # The generated sources come out of protoc-gen-swift 1.18.0 (see
+    # tools/dependencies-version), whose runtime contract holds across the 1.x
+    # line. Unconstrained, this would resolve to any future major.
+    ss.dependency 'SwiftProtobuf', '~> 1.18'
   end
 
   s.subspec 'Core' do |ss|

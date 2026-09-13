@@ -3,21 +3,27 @@
 set -e
 
 source "$(dirname $0)/android-sdk"
+source "$(dirname $0)/checksum"
 
 ANDROID_CMDTOOLS=$(find_android_cmdline_tools)
 
 # Dokka stuff
 ROOT="$PWD"
-DOKKA_CLI_JAR=https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-cli/1.7.20/dokka-cli-1.7.20.jar
 
-declare -a DOKKA_DEPS=(
-https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-base/1.7.20/dokka-base-1.7.20.jar
-https://repo1.maven.org/maven2/org/jetbrains/dokka/dokka-analysis/1.7.20/dokka-analysis-1.7.20.jar
-https://repo1.maven.org/maven2/org/jetbrains/dokka/kotlin-analysis-intellij/1.7.20/kotlin-analysis-intellij-1.7.20.jar
-https://repo1.maven.org/maven2/org/jetbrains/dokka/kotlin-analysis-compiler/1.7.20/kotlin-analysis-compiler-1.7.20.jar
-https://repo1.maven.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.6.4/kotlinx-coroutines-core-1.6.4.jar
-https://repo1.maven.org/maven2/org/jetbrains/kotlinx/kotlinx-html-jvm/0.8.0/kotlinx-html-jvm-0.8.0.jar
-https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar
+# Each jar is pinned by version and by the SHA256 Maven Central publishes for it,
+# so a replaced artefact fails the download instead of ending up on the doc
+# classpath. Entries are "url|sha256"; bash 3.2 on macOS has no associative
+# arrays, hence the pair encoding.
+DOKKA_BASE_URL=https://repo1.maven.org/maven2
+declare -a DOKKA_JARS=(
+"$DOKKA_BASE_URL/org/jetbrains/dokka/dokka-cli/1.7.20/dokka-cli-1.7.20.jar|b1841317adbc9eeca3481c8c58c4e57c9e8d7addcf167f8fcb2704ada9793062"
+"$DOKKA_BASE_URL/org/jetbrains/dokka/dokka-base/1.7.20/dokka-base-1.7.20.jar|6c2ce22f28ba5412d0d57bd9f1ef7002974d81dc573fb6e46cfa9825b014e976"
+"$DOKKA_BASE_URL/org/jetbrains/dokka/dokka-analysis/1.7.20/dokka-analysis-1.7.20.jar|9248af5e2f5f6b155cbb239cf836079093917a327223671a4beb4c7ef467e06c"
+"$DOKKA_BASE_URL/org/jetbrains/dokka/kotlin-analysis-intellij/1.7.20/kotlin-analysis-intellij-1.7.20.jar|af43bfea220f553bb2992621796b7dba952c7b7cf9c67311719902aca78d3a92"
+"$DOKKA_BASE_URL/org/jetbrains/dokka/kotlin-analysis-compiler/1.7.20/kotlin-analysis-compiler-1.7.20.jar|2e80d9147646e3459dfc38889387929fd95e686ad46e5e03e517ea299168d79b"
+"$DOKKA_BASE_URL/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.6.4/kotlinx-coroutines-core-1.6.4.jar|778851e73851b502e8366434bc9ec58371431890fb12b89e7edbf1732962c030"
+"$DOKKA_BASE_URL/org/jetbrains/kotlinx/kotlinx-html-jvm/0.8.0/kotlinx-html-jvm-0.8.0.jar|712184b0733445f05d2bea8051330c73de3abd9b393be0af304b77b7cee12f14"
+"$DOKKA_BASE_URL/org/freemarker/freemarker/2.3.31/freemarker-2.3.31.jar|68ecb4c5aa4934b7b50c38b0e495d7589e52dfb9d28b964ac2008b72090bfaae"
 )
 
 $ANDROID_CMDTOOLS/sdkmanager --verbose "cmake;3.18.1" "ndk;23.1.7779620"
@@ -30,12 +36,8 @@ DOKKA_DIR="$ROOT/build/dokka"
 mkdir -p "$DOKKA_DIR"
 cd "$DOKKA_DIR"
 
-if [ ! -f dokka-cli-1.7.20.jar ]; then
-    curl -fSsOL $DOKKA_CLI_JAR
-fi
-
-for dep in "${DOKKA_DEPS[@]}" ; do
-    if [ ! -f ${dep##*/} ]; then
-        curl -fSsOL $dep
-    fi
+for entry in "${DOKKA_JARS[@]}" ; do
+    url="${entry%%|*}"
+    sha="${entry##*|}"
+    fetch_verified "$url" "${url##*/}" "$sha"
 done

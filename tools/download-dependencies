@@ -8,15 +8,17 @@ PREFIX="${PREFIX:-$ROOT/build/local}"
 # Load dependencies version
 BASE_DIR=$(cd `dirname $0`; pwd)
 source ${BASE_DIR}/dependencies-version
+source ${BASE_DIR}/checksum
 
 function download_gtest() {
     echo "Downloading gtest..."
     GTEST_DIR="$ROOT/build/local/src/gtest"
     mkdir -p "$GTEST_DIR"
     cd "$GTEST_DIR"
-    if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
-        curl -fSsOL https://github.com/google/googletest/releases/download/v$GTEST_VERSION/googletest-$GTEST_VERSION.tar.gz
-    fi
+    fetch_verified \
+        "https://github.com/google/googletest/releases/download/v$GTEST_VERSION/googletest-$GTEST_VERSION.tar.gz" \
+        "googletest-$GTEST_VERSION.tar.gz" \
+        "$GTEST_SHA256"
     tar xzf googletest-$GTEST_VERSION.tar.gz
 }
 
@@ -25,9 +27,10 @@ function download_libcheck() {
     CHECK_DIR="$ROOT/build/local/src/check"
     mkdir -p "$CHECK_DIR"
     cd "$CHECK_DIR"
-    if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
-        curl -fSsOL https://github.com/libcheck/check/releases/download/$CHECK_VERSION/check-$CHECK_VERSION.tar.gz
-    fi
+    fetch_verified \
+        "https://github.com/libcheck/check/releases/download/$CHECK_VERSION/check-$CHECK_VERSION.tar.gz" \
+        "check-$CHECK_VERSION.tar.gz" \
+        "$CHECK_SHA256"
     tar xzf check-$CHECK_VERSION.tar.gz
 }
 
@@ -36,9 +39,10 @@ function download_nolhmann_json() {
     JSON_DIR="$ROOT/build/local/json"
     mkdir -p "$JSON_DIR"
     cd "$JSON_DIR"
-    if [ ! -f include.zip ]; then
-        curl -fSsOL https://github.com/nlohmann/json/releases/download/v$JSON_VERSION/include.zip
-    fi
+    fetch_verified \
+        "https://github.com/nlohmann/json/releases/download/v$JSON_VERSION/include.zip" \
+        "include.zip" \
+        "$JSON_SHA256"
     unzip -qq -d "$PREFIX" -o include.zip
 }
 
@@ -47,9 +51,10 @@ function download_protobuf() {
     PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
     mkdir -p "$PROTOBUF_DIR"
     cd "$PROTOBUF_DIR"
-    if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
-        curl -fSsOL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-java-$PROTOBUF_VERSION.tar.gz
-    fi
+    fetch_verified \
+        "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-java-$PROTOBUF_VERSION.tar.gz" \
+        "protobuf-java-$PROTOBUF_VERSION.tar.gz" \
+        "$PROTOBUF_SHA256"
     tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
 }
 

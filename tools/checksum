@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Shared SHA256 verification for the archives the build downloads.
+# Sourced, not executed: `source "$(dirname $0)/checksum"`.
+#
+# macOS ships `shasum` and no `sha256sum`, Linux the other way round, so the
+# digest is taken through whichever is present rather than assuming either.
+
+function sha256_of() {
+    local file="$1"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | cut -d' ' -f1
+    else
+        shasum -a 256 "$file" | cut -d' ' -f1
+    fi
+}
+
+# verify_sha256 <file> <expected-sha256>
+function verify_sha256() {
+    local file="$1"
+    local expected="$2"
+    local actual
+    actual=$(sha256_of "$file")
+    if [ "$actual" != "$expected" ]; then
+        echo "Checksum mismatch for $file" >&2
+        echo "  expected: $expected" >&2
+        echo "  actual:   $actual" >&2
+        echo "Refusing to use it. If the bump is intentional, update the pinned checksum." >&2
+        # A file that failed verification must not be left behind: the download
+        # helpers treat an existing file as a valid cache hit.
+        rm -f "$file"
+        return 1
+    fi
+    echo "Verified $file ($expected)"
+}
+
+# fetch_verified <url> <file> <expected-sha256>
+# Downloads only when the file is absent, then verifies it either way, so a
+# corrupted or tampered cache entry is caught as well as a bad download.
+function fetch_verified() {
+    local url="$1"
+    local file="$2"
+    local expected="$3"
+    if [ ! -f "$file" ]; then
+        curl -fSsL --proto '=https' --proto-redir '=https' -o "$file" "$url"
+    fi
+    verify_sha256 "$file" "$expected"
+}
+
+# verify_git_checkout <dir> <expected-commit>
+# Tags move; commits do not. Used where a pinned tag is cloned.
+function verify_git_checkout() {
+    local dir="$1"
+    local expected="$2"
+    local actual
+    actual=$(git -C "$dir" rev-parse HEAD)
+    if [ "$actual" != "$expected" ]; then
+        echo "Unexpected commit in $dir" >&2
+        echo "  expected: $expected" >&2
+        echo "  actual:   $actual" >&2
+        echo "The pinned tag has moved. Refusing to build from it." >&2
+        return 1
+    fi
+    echo "Verified $dir at $expected"
+}
