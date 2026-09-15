@@ -6,7 +6,7 @@ import "mocha";
 import { assert } from "chai";
 import { Buffer } from "buffer";
 import { TW } from "../../dist";
-import * as Long from "long";
+import Long = require("long");
 
 describe("InternetComputer", () => {
 
