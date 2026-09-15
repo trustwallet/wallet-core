@@ -58,6 +58,7 @@ TEST(ZcashCompiler, CompileWithSignatures) {
     plan.amount = amount;
     plan.fee = fee;
     plan.change = 0;
+    plan.branchId = Data(Zcash::BlossomBranchID.begin(), Zcash::BlossomBranchID.end());
 
     auto& protoPlan = *input.mutable_plan();
     protoPlan = plan.proto();
