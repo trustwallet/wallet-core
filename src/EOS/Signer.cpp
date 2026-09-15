@@ -100,6 +100,9 @@ int Signer::isCanonical([[maybe_unused]] uint8_t by, uint8_t sig[64]) {
 Transaction Signer::buildTx(const Proto::SigningInput& input) const {
     // create an asset object
     auto assetData = input.asset();
+    if (assetData.decimals() > 18) {
+        throw std::invalid_argument("EOS asset decimals must be in range 0..=18");
+    }
     auto asset =
         Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()), assetData.symbol());
 
