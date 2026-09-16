@@ -83,3 +83,37 @@ fn test_solana_message_signer_pre_image_hashes() {
     let actual_message = String::from_utf8(output.data.to_vec()).unwrap();
     assert_eq!(actual_message, message);
 }
+
+/// `TWMessageSignerPreImageHashes` never read the private key for a raw message — the bytes to
+/// sign are the message — so a caller that passes none, which is the external-signing flow, or
+/// a malformed one, which is a caller bug that used to go unnoticed here, still gets them.
+#[test]
+fn test_solana_message_signer_pre_image_hashes_ignores_the_private_key() {
+    let message = "Hello world";
+
+    for (name, private_key) in [
+        ("no private key", vec![]),
+        ("a malformed private key", vec![0x11; 16]),
+    ] {
+        let input = Solana::Proto::MessageSigningInput {
+            private_key: private_key.into(),
+            message_payload: SigningPayload::message(message.into()),
+            ..Default::default()
+        };
+
+        let input_data = TWDataHelper::create(serialize(&input).unwrap());
+        let output = TWDataHelper::wrap(unsafe {
+            tw_message_signer_pre_image_hashes(CoinType::Solana as u32, input_data.ptr())
+        })
+        .to_vec()
+        .expect("!tw_message_signer_pre_image_hashes returned nullptr");
+
+        let output: TxCompiler::Proto::PreSigningOutput = deserialize(&output).unwrap();
+        assert_eq!(output.error, SigningErrorType::OK, "{name}");
+        assert_eq!(
+            String::from_utf8(output.data.to_vec()).unwrap(),
+            message,
+            "{name}"
+        );
+    }
+}

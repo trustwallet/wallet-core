@@ -59,7 +59,14 @@ impl SolanaMessageSigner {
         _coin: &dyn CoinContext,
         input: Proto::MessageSigningInput,
     ) -> SigningResult<CompilerProto::PreSigningOutput<'static>> {
-        let signer = Self::preimage_signer(&input)?;
+        // Only the type that states a signer inside the signed bytes reads a key here. Raw
+        // signs the body and nothing else, and never read one before the off-chain types
+        // existed, so a caller that passes none — or a malformed one — still gets its bytes.
+        let signer = match input.message_type {
+            Proto::MessageType::MessageType_raw => None,
+            Proto::MessageType::MessageType_offchain_v0 => Self::preimage_signer(&input)?,
+        };
+
         let to_sign = Envelope::signing(&input, signer)
             .signed_bytes(Self::signing_body(&input.message_payload)?)?;
 
