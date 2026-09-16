@@ -1,0 +1,73 @@
+name: Gradle Lock Harvest
+
+on:
+  push:
+    branches: [ dev, master ]
+    paths:
+      - 'android/**'
+      - 'kotlin/**'
+      - 'samples/android/**'
+      - 'samples/kmp/**'
+      - '.github/workflows/gradle-lock-harvest.yml'
+  pull_request:
+    branches: [ dev, master ]
+    paths:
+      - 'android/**'
+      - 'kotlin/**'
+      - 'samples/android/**'
+      - 'samples/kmp/**'
+      - '.github/workflows/gradle-lock-harvest.yml'
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  harvest:
+    runs-on: ubuntu-24.04
+    if: github.event_name != 'pull_request' || (github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository)
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        with:
+          gradle-version: 8.10.2
+
+      - name: Harvest dependency locks
+        run: |
+          for project in android kotlin samples/android samples/kmp; do
+            (
+              cd "$project"
+              ./gradlew dependencies --write-locks --no-daemon
+            )
+          done
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit harvested locks
+        run: |
+          git add -- ':(glob)**/gradle.lockfile'
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore(deps): harvest Gradle lockfiles'
+          git push origin "HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}"
