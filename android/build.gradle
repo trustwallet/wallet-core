@@ -10,6 +10,12 @@ buildscript {
     }
     configurations.classpath {
         resolutionStrategy.activateDependencyLocking()
+        resolutionStrategy.eachDependency { details ->
+            if ((details.requested.group == 'com.google.protobuf') &&
+                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+                details.useVersion '3.25.5'
+            }
+        }
     }
 }
 
@@ -17,6 +23,14 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+    configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if ((details.requested.group == 'com.google.protobuf') &&
+                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+                details.useVersion '3.25.5'
+            }
+        }
     }
     dependencyLocking {
         lockAllConfigurations()

@@ -22,6 +22,12 @@ buildscript {
     }
     configurations.classpath {
         resolutionStrategy.activateDependencyLocking()
+        resolutionStrategy.eachDependency { details ->
+            if ((details.requested.group == 'com.google.protobuf') &&
+                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+                details.useVersion '3.25.5'
+            }
+        }
     }
 }
 
@@ -34,6 +40,14 @@ allprojects {
             credentials {
                 username = properties.getProperty("gpr.user") as String?: System.getenv("GITHUB_USER")
                 password = properties.getProperty("gpr.key") as String?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if ((details.requested.group == 'com.google.protobuf') &&
+                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+                details.useVersion '3.25.5'
             }
         }
     }

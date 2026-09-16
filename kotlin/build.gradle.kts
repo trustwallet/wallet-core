@@ -12,6 +12,14 @@ plugins {
 }
 
 allprojects {
+    configurations.configureEach {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "com.google.protobuf" &&
+                (requested.name == "protobuf-java" || requested.name == "protobuf-java-util")) {
+                useVersion("3.25.5")
+            }
+        }
+    }
     tasks.withType<KotlinCompile> {
         compilerOptions {
             allWarningsAsErrors.set(true)
