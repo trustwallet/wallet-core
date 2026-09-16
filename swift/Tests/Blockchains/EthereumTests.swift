@@ -240,7 +240,7 @@ class EthereumTests: XCTestCase {
     func testGetPublicKeyFromXpub() throws {
         let wallet = HDWallet(mnemonic: "broom ramp luggage this language sketch door allow elbow wife moon impulse", passphrase: "")!
         let path = "m/44'/60'/0'/0/1"
-        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)!
 
         XCTAssertEqual(xpub, "xpub6C7LtZJgtz1BKXG9mExKUxYvX7HSF38UMMmGbpqNQw3DfYwAw8E6sH7VSVxFipvEEm2afSqTjoRgcLmycXX4zfxCWJ4HY73a9KdgvfHEQGB")
 
@@ -260,14 +260,14 @@ class EthereumTests: XCTestCase {
         XCTAssertNil(HDWallet(mnemonic: mnemonic, passphrase: ""))
 
         let wallet = HDWallet(mnemonic: mnemonic, passphrase: "", check: false)!
-        let btcXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoin, version: .xpub)
-        let ethXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)
+        let btcXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoin, version: .xpub)!
+        let ethXpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ethereum, version: .xpub)!
 
         XCTAssertEqual(btcXpub, "xpub6Cq43Vqyvb2DwXzjzNeMpPuxXRCN1WnmRCmYLPaaSv2XZXM2yCwUHpWEyB3zQ3FGCQsvY21gecMaQR7b2zhhgiHnjzDYpKCE2LACueaSMuR")
         XCTAssertEqual(ethXpub, "xpub6Bgma7boPVudhExmB97iySvatGfnXkfBxYZYNTFYJvVzigUPk1X2iE8VhJPPxVuzjH8wBuTqRBMKCbwMYQNLrFCwYzMugYw4RM5VGNeVDpp")
 
-        let ethAddress = wallet.getAddressForCoin(coin: .ethereum)
-        let btcAddress = wallet.getAddressForCoin(coin: .bitcoin)
+        let ethAddress = wallet.getAddressForCoin(coin: .ethereum)!
+        let btcAddress = wallet.getAddressForCoin(coin: .bitcoin)!
 
         XCTAssertEqual(ethAddress, "0xa4531dE99E22B2166d340E7221669DF565c52024")
         XCTAssertEqual(btcAddress, "bc1q97jc0jdgsyvvhxydxxd6np8sa920c39l3qpscf")

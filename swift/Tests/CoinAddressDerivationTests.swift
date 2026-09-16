@@ -12,7 +12,7 @@ class CoinAddressDerivationTests: XCTestCase {
 
         for _ in 0..<4 {
             for coin in CoinType.allCases {
-                let privateKey = wallet.getKeyForCoin(coin: coin)
+                let privateKey = wallet.getKeyForCoin(coin: coin)!
                 let derivedAddress = coin.deriveAddress(privateKey: privateKey)
                 let address = coin.address(string: derivedAddress)
 
@@ -126,7 +126,8 @@ class CoinAddressDerivationTests: XCTestCase {
                      .megaETH,
                      .seiEVM,
                      .hyperEVM,
-                     .robinhoodChain:
+                     .robinhoodChain,
+                     .arc:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:

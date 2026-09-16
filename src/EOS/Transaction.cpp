@@ -32,7 +32,7 @@ void Signature::serialize(Data& os) const noexcept {
     os.insert(os.end(), data.begin(), data.end());
 }
 
-std::string Signature::string() const noexcept {
+std::string Signature::string() const {
     const auto& prefix = sigPrefixForType(type);
     const auto& subPrefix = type == Type::ModernR1 ? Modern::R1::prefix : Modern::K1::prefix;
 

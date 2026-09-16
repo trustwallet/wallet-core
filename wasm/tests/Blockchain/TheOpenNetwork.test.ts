@@ -6,7 +6,6 @@ import "mocha";
 import { assert } from "chai";
 import { Buffer } from "buffer";
 import { TW } from "../../dist";
-import * as Long from "long";
 
 describe("TheOpenNetwork", () => {
   it("test address from private key TheOpenNetwork", () => {

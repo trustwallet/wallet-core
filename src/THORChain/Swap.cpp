@@ -40,7 +40,7 @@ namespace TW::THORChainSwap {
 /// would otherwise be misparsed as octal 320) that doesn't exceed uint256_t's max (which would
 /// otherwise silently wrap around).
 static bool isValidUInt(const std::string& value) {
-    if (value.empty() || !std::all_of(value.begin(), value.end(), [](unsigned char c) {
+    if (value.empty() || !std::ranges::all_of(value, [](unsigned char c) {
             return std::isdigit(c) != 0;
         })) {
         return false;

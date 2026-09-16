@@ -26,7 +26,7 @@ public:
     Signature(const Data& sig, Type type);
     virtual ~Signature() { }
     void serialize(Data& os) const noexcept;
-    std::string string() const noexcept;
+    std::string string() const;
 };
 
 class Extension {

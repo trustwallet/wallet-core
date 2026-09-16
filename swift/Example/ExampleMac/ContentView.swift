@@ -8,7 +8,7 @@ import WalletCore
 struct ContentView: View {
     let wallet = HDWallet(strength: 256, passphrase: "")!
     var body: some View {
-        Text("Ethereum address: \(wallet.getAddressForCoin(coin: .ethereum))")
+        Text("Ethereum address: \(wallet.getAddressForCoin(coin: .ethereum)!)")
             .padding()
     }
 }

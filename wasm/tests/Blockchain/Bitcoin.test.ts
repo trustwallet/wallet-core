@@ -5,7 +5,7 @@
 import "mocha";
 import { assert } from "chai";
 import { TW } from "../../dist";
-import * as Long from "long";
+import Long = require("long");
 
 describe("Bitcoin", () => {
   it("test Bitcoin SigningInput / SigningOutput", () => {

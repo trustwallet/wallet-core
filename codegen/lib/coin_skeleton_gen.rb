@@ -34,7 +34,7 @@ def self.generate_file(templateFile, folder, fileName, coin)
     @coin = coin
     name = format_name(coin)
     path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
-    template = ERB.new(File.read(path), nil, '-')
+    template = ERB.new(File.read(path), trim_mode: '-')
     result = template.result(binding)
 
     FileUtils.mkdir_p folder

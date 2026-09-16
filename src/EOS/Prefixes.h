@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <string>
 
 namespace TW::EOS {
@@ -46,6 +47,7 @@ inline std::string pubPrefixForType(Type t) {
     case Type::ModernR1:
         return Modern::R1::fullPubPrefix;
     }
+    throw std::invalid_argument("Unknown EOS key type");
 }
 
 inline std::string sigPrefixForType(Type t) {
@@ -59,5 +61,6 @@ inline std::string sigPrefixForType(Type t) {
     case Type::ModernR1:
         return Modern::R1::fullSigPrefix;
     }
+    throw std::invalid_argument("Unknown EOS key type");
 }
 } // namespace TW::EOS

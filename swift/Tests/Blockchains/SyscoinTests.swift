@@ -38,21 +38,21 @@ class SyscoinTests: XCTestCase {
         let wallet = HDWallet.test
 
         // .bip44
-        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .syscoin, version: .xprv)
-        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .syscoin, version: .xpub)
+        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .syscoin, version: .xprv)!
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .syscoin, version: .xpub)!
 
         XCTAssertEqual(xprv, "xprv9yFNgN7z81uG6QtwFt7gvbmLeDGeGfS2ar3DunwEkZcC7uLBXyy4eaaV3ir769zMLe3eHuTaGUtWVXwp6dkunLsfmA7bf3XqEFpTjHxSijx")
         XCTAssertEqual(xpub, "xpub6CEj5sesxPTZJtyQMuehHji5CF78g89sx4xpiBLrJu9AzhfL5XHKCNtxtzPzyGxqb6jMbZfmbHeSGZZArL4hLttmdC6KEMuiWy7VocTYjzR")
 
         // .bip49
-        let yprv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .syscoin, version: .yprv)
-        let ypub = wallet.getExtendedPublicKey(purpose: .bip49, coin: .syscoin, version: .ypub)
+        let yprv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .syscoin, version: .yprv)!
+        let ypub = wallet.getExtendedPublicKey(purpose: .bip49, coin: .syscoin, version: .ypub)!
         XCTAssertEqual(yprv, "yprvAJAofBFEEQ1DLJJVMkPr4pufHLUKZ2VSbtHqPpphEgwgfvG8exgadM8vtW8AW52N7tqU4qM8JHk5xZkq3icnzoph5QA5kRVHBnhXuRMGw2b")
         XCTAssertEqual(ypub, "ypub6XAA4gn84mZWYnNxTmvrRxrPqNJoxVDHy7DSCDEJo2UfYibHCVzqB9TQjmL2TKSEZVFmTNcmdJXunEu6oV2AFQNeiszjzcnX4nbG27s4SgS")
 
         // .bip84
-        let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .syscoin, version: .zprv)
-        let zpub = wallet.getExtendedPublicKey(purpose: .bip84, coin: .syscoin, version: .zpub)
+        let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .syscoin, version: .zprv)!
+        let zpub = wallet.getExtendedPublicKey(purpose: .bip84, coin: .syscoin, version: .zpub)!
         XCTAssertEqual(zprv, "zprvAcdCiLx9ooAFnC1hXh7stnobLnnu7u25rqfLeJ9v632xdCXJrc8KvgNk2eZeQQbPQHvcUpsfJzgyDkRdfnkT6vjpYqkxFv1LsPxQ7uFwLGy")
         XCTAssertEqual(zpub, "zpub6qcZ7rV3eAiYzg6AdietFvkKtpdPXMjwE4awSgZXeNZwVzrTQ9SaUUhDswmdA4A5riyimx322es7niQvJ1Fbi3mJNSVz3d3f9GBsYBb8Wky")
     }

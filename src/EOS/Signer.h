@@ -39,8 +39,8 @@ class Signer {
     static int isCanonical(uint8_t by, uint8_t sig[64]);
     
     Transaction buildTx(const Proto::SigningInput& input) const;
-    Data buildUnsignedTx(const Proto::SigningInput& input) noexcept;
-    std::string buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept;
+    Data buildUnsignedTx(const Proto::SigningInput& input);
+    std::string buildSignedTx(const Proto::SigningInput& input, const Data& signature);
 };
 
 } // namespace TW::EOS
