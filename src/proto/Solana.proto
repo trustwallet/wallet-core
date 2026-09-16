@@ -151,7 +151,7 @@ message TokenTransferToFeePayer {
     // Mint address of the fee token
     string fee_token_mint_address = 1;
 
-    // Token account address of the fee recipient. 
+    // Token account address of the fee recipient.
     // Note that it could be different from the token account of the feepayer.
     string fee_recipient_token_address = 2;
 
@@ -348,12 +348,75 @@ message PreSigningOutput {
     string error_message = 4;
 }
 
+// How the bytes that actually get signed are produced from the message.
+enum MessageType {
+    // Sign the UTF-8 message bytes as they are, with no domain separator and no envelope.
+    // This is what this coin has always done (the Solana cookbook "sign message" recipe).
+    // Nothing in the bytes tells a wallet or a verifier that they are not some other payload,
+    // which is the reason the off-chain standard below exists.
+    MessageType_raw = 0;
+
+    // Solana Off-Chain Message Signing, header version 0: the b"\xffsolana offchain" signing
+    // domain (0xff can never start a transaction), the application domain, the message format,
+    // the signer, and the length-prefixed body.
+    //
+    // The header version is part of the name on purpose. Only version 0 is specified; the later
+    // proposal that removes the application domain would be a `MessageType_offchain_v1`, never
+    // an edit to this one, because it would change every signature.
+    MessageType_offchain_v0 = 1;
+}
+
+// One "<label>: <value>" line of a `StructuredMessage`.
+message StructuredField {
+    // Rendered before ": ". Must not be empty, and must carry no control character.
+    string label = 1;
+
+    // Rendered after ": ". Must not be empty, and must carry no control character: a value
+    // containing a newline would forge further labeled lines in the message a user is about to
+    // approve. Pass a placeholder such as "-" for a field that is legitimately absent.
+    string value = 2;
+}
+
+// A message laid out as labeled lines, rendered by this library so that every platform
+// produces the same bytes from the same fields.
+//
+// This layout is NOT a Solana standard. The off-chain message standard constrains the encoding
+// and the length and treats the body as opaque application bytes; this is one way to fill it,
+// written in the SIWE/SIWS idiom but deliberately not a conformant SIWS message.
+message StructuredMessage {
+    // Optional first line, rendered bare with no label — an application name and version, say.
+    string header = 1;
+
+    // Rendered as "<label>: <value>", one line each, in exactly this order. Order is part of
+    // the signed bytes, so it is the caller's to fix and this library never sorts it.
+    repeated StructuredField fields = 2;
+
+    // Optional closing sentence, rendered bare after one blank line. It is the line a person
+    // actually reads before approving, so it comes last and ends the message.
+    string statement = 3;
+}
+
 message MessageSigningInput {
     // The secret private key used for signing (32 bytes).
     bytes private_key = 1;
 
-    // A UTF-8 regular message to sign.
-    string message = 2;
+    // How the signed bytes are produced. Defaults to `MessageType_raw`, which is what this coin
+    // did before the other types existed.
+    MessageType message_type = 3;
+
+    // The 32-byte application domain of the off-chain message header: the caller's own domain
+    // separator, which is what stops a signature over its messages from verifying against
+    // another application's. Required for `MessageType_offchain_v0`, ignored otherwise.
+    bytes application_domain = 4;
+
+    // The message to sign, in one of the forms below.
+    oneof message_payload {
+        // A UTF-8 regular message to sign.
+        string message = 2;
+
+        // Labeled lines that this library renders into the message body.
+        StructuredMessage structured_message = 5;
+    }
 }
 
 message MessageSigningOutput {
@@ -368,12 +431,26 @@ message MessageSigningOutput {
 }
 
 message MessageVerifyingInput {
-    // The message signed.
-    string message = 1;
-
     // Public key that will verify and recover the message from the signature.
     bytes public_key = 2;
 
     // The signature, Base58-encoded.
     string signature = 3;
+
+    // How the signed bytes were produced. Must match what the signer used, since it decides
+    // which bytes the signature is checked against.
+    MessageType message_type = 4;
+
+    // The 32-byte application domain of the off-chain message header. Required for
+    // `MessageType_offchain_v0`, ignored otherwise.
+    bytes application_domain = 5;
+
+    // The message signed, in one of the forms below.
+    oneof message_payload {
+        // The message signed.
+        string message = 6;
+
+        // Labeled lines that this library renders into the message body.
+        StructuredMessage structured_message = 7;
+    }
 }
