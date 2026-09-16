@@ -448,7 +448,7 @@ message MessageVerifyingInput {
     // The message signed, in one of the forms below.
     oneof message_payload {
         // The message signed.
-        string message = 6;
+        string message = 1;
 
         // Labeled lines that this library renders into the message body.
         StructuredMessage structured_message = 7;
