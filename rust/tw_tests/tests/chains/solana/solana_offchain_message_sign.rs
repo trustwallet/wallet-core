@@ -206,6 +206,7 @@ fn signing_input(fixture: &Fixture) -> SolanaProto::MessageSigningInput<'static>
         message_type: SolanaProto::MessageType::MessageType_offchain_v0,
         application_domain: application_domain().into(),
         message_payload: SigningPayload::structured_message(structured_message(fixture)),
+        ..Default::default()
     }
 }
 
@@ -260,6 +261,7 @@ fn verifying_input(
         message_type: SolanaProto::MessageType::MessageType_offchain_v0,
         application_domain: application_domain().into(),
         message_payload: VerifyingPayload::structured_message(structured_message(fixture)),
+        ..Default::default()
     }
 }
 
@@ -558,6 +560,7 @@ fn test_solana_raw_is_the_default() {
         message_type: SolanaProto::MessageType::MessageType_raw,
         application_domain: Default::default(),
         message_payload: SigningPayload::message("Hello world".into()),
+        ..Default::default()
     };
     let defaulted = SolanaProto::MessageSigningInput {
         private_key: private_key(fixture).into(),
@@ -577,5 +580,232 @@ fn test_solana_message_requires_a_payload() {
     input.message_payload = SigningPayload::None;
 
     let (error, _) = sign(&input);
+    assert_eq!(error, SigningErrorType::Error_invalid_params);
+}
+
+/// An external signer holds no private key — that is the whole reason to ask for a pre-image —
+/// so a public key has to be enough to build one. The envelope states the signer, so the bytes
+/// must come out identical to the ones the holder of that key would sign.
+#[test]
+fn test_solana_offchain_pre_image_without_a_private_key() {
+    let fixture = &fixtures()[0];
+
+    let (with_secret_error, with_secret) = pre_image(&signing_input(fixture));
+    assert_eq!(with_secret_error, SigningErrorType::OK);
+
+    let mut input = signing_input(fixture);
+    input.private_key = Default::default();
+    input.public_key = base58::decode(&fixture.signer, Alphabet::Bitcoin)
+        .unwrap()
+        .into();
+
+    let (error, with_public_key) = pre_image(&input);
+    assert_eq!(error, SigningErrorType::OK);
+    assert_eq!(
+        with_public_key, with_secret,
+        "the pre-image is the same bytes whichever key names the signer"
+    );
+}
+
+/// Raw signs the body and nothing else, so its pre-image needs no key at all.
+#[test]
+fn test_solana_raw_pre_image_without_any_key() {
+    let fixture = &fixtures()[0];
+
+    let mut input = signing_input(fixture);
+    input.message_type = SolanaProto::MessageType::MessageType_raw;
+    input.application_domain = Default::default();
+    input.private_key = Default::default();
+
+    let (error, raw_bytes) = pre_image(&input);
+    assert_eq!(error, SigningErrorType::OK);
+    assert_eq!(String::from_utf8(raw_bytes).unwrap(), fixture.body);
+}
+
+/// The off-chain envelope, on the other hand, cannot be built without knowing the signer: it is
+/// inside the signed bytes. Neither key is a caller error, and the error says which to set.
+#[test]
+fn test_solana_offchain_pre_image_requires_a_signer() {
+    let mut input = signing_input(&fixtures()[0]);
+    input.private_key = Default::default();
+
+    let (error, _) = pre_image(&input);
+    assert_eq!(error, SigningErrorType::Error_invalid_params);
+}
+
+/// `MessageType_raw` is the proto3 default, so an input that sets a domain separator and leaves
+/// the type unset would otherwise be signed raw, dropping the domain: a signature that looks
+/// fine and fails at whatever rebuilds the envelope. It is refused instead, on both paths.
+#[test]
+fn test_solana_raw_refuses_an_application_domain() {
+    let fixture = &fixtures()[0];
+
+    let mut input = signing_input(fixture);
+    input.message_type = SolanaProto::MessageType::MessageType_raw;
+
+    let (error, signature) = sign(&input);
+    assert_eq!(error, SigningErrorType::Error_invalid_params);
+    assert!(signature.is_empty());
+
+    let (error, _) = pre_image(&input);
+    assert_eq!(error, SigningErrorType::Error_invalid_params);
+
+    // The same on the verifying side, where ignoring the domain would have reported a signature
+    // over other bytes as valid.
+    let (_, signature) = sign(&signing_input(fixture));
+    let mut input = verifying_input(fixture, &signature);
+    input.message_type = SolanaProto::MessageType::MessageType_raw;
+
+    assert!(!verify(&input));
+}
+
+/// An off-chain input over a plain body. The Identity layout is not needed to exercise the
+/// header fields, and restricted ASCII cannot carry it anyway.
+fn offchain_signing_input(
+    fixture: &Fixture,
+    body: &str,
+) -> SolanaProto::MessageSigningInput<'static> {
+    SolanaProto::MessageSigningInput {
+        private_key: private_key(fixture).into(),
+        message_type: SolanaProto::MessageType::MessageType_offchain_v0,
+        application_domain: application_domain().into(),
+        message_payload: SigningPayload::message(body.to_string().into()),
+        ..Default::default()
+    }
+}
+
+fn offchain_verifying_input(
+    fixture: &Fixture,
+    body: &str,
+    signature: &str,
+) -> SolanaProto::MessageVerifyingInput<'static> {
+    SolanaProto::MessageVerifyingInput {
+        public_key: base58::decode(&fixture.signer, Alphabet::Bitcoin)
+            .unwrap()
+            .into(),
+        signature: signature.to_string().into(),
+        message_type: SolanaProto::MessageType::MessageType_offchain_v0,
+        application_domain: application_domain().into(),
+        message_payload: VerifyingPayload::message(body.to_string().into()),
+        ..Default::default()
+    }
+}
+
+/// Restricted ASCII is the only format a hardware wallet renders rather than blind-signs, so it
+/// has to be reachable: the header states the standard's format byte 0, the body is unchanged,
+/// and a verifier naming the same format accepts the signature.
+#[test]
+fn test_solana_offchain_restricted_ascii() {
+    let fixture = &fixtures()[0];
+    let body = "Trust Wallet Identity v1 - approve session 7f3a2b";
+
+    let mut input = offchain_signing_input(fixture, body);
+    input.message_format = SolanaProto::MessageFormat::MessageFormat_restricted_ascii;
+
+    let (error, envelope) = pre_image(&input);
+    assert_eq!(error, SigningErrorType::OK);
+    assert_eq!(envelope[49], 0, "message format 0, restricted ASCII");
+    assert_eq!(
+        String::from_utf8(envelope[PREAMBLE_SIZE..].to_vec()).unwrap(),
+        body,
+        "the format byte describes the body, it does not change it"
+    );
+
+    let (error, signature) = sign(&input);
+    assert_eq!(error, SigningErrorType::OK);
+
+    let mut verifying = offchain_verifying_input(fixture, body, &signature);
+    verifying.message_format = SolanaProto::MessageFormat::MessageFormat_restricted_ascii;
+    assert!(verify(&verifying));
+}
+
+/// UTF-8 stays the default, so an input that names no format signs what it signed before the
+/// field existed — the same bytes, over the same body.
+#[test]
+fn test_solana_offchain_utf8_is_the_default() {
+    let fixture = &fixtures()[0];
+    let body = "Trust Wallet Identity v1 - approve session 7f3a2b";
+
+    let defaulted = offchain_signing_input(fixture, body);
+    let mut explicit = offchain_signing_input(fixture, body);
+    explicit.message_format = SolanaProto::MessageFormat::MessageFormat_utf8;
+
+    let (error, envelope) = pre_image(&defaulted);
+    assert_eq!(error, SigningErrorType::OK);
+    assert_eq!(envelope[49], 1, "message format 1, UTF-8");
+    assert_eq!(pre_image(&explicit).1, envelope);
+}
+
+/// The format byte is inside the signed bytes, so claiming a different one is a different
+/// message. The body here is valid in both formats: what fails is the byte, not the content.
+#[test]
+fn test_solana_offchain_format_is_signed() {
+    let fixture = &fixtures()[0];
+    let body = "Trust Wallet Identity v1 - approve session 7f3a2b";
+
+    let (error, signature) = sign(&offchain_signing_input(fixture, body));
+    assert_eq!(error, SigningErrorType::OK);
+
+    let mut verifying = offchain_verifying_input(fixture, body, &signature);
+    verifying.message_format = SolanaProto::MessageFormat::MessageFormat_restricted_ascii;
+    assert!(
+        !verify(&verifying),
+        "a UTF-8 signature must not verify as restricted ASCII"
+    );
+}
+
+/// A format byte is a claim about the body, so a body that would make it a lie is refused rather
+/// than signed and mislabeled — a hardware wallet trusting the byte would render something else.
+#[test]
+fn test_solana_offchain_restricted_ascii_refuses_what_it_cannot_carry() {
+    let fixture = &fixtures()[0];
+
+    let cases = [
+        (
+            "a newline",
+            SigningPayload::message("line one\nline two".into()),
+        ),
+        ("a tab", SigningPayload::message("label:\tvalue".into())),
+        (
+            "a non-ASCII character",
+            SigningPayload::message("héllo".into()),
+        ),
+        (
+            "a labeled body, which is one field per line",
+            SigningPayload::structured_message(structured_message(fixture)),
+        ),
+    ];
+
+    for (name, payload) in cases {
+        let mut input = offchain_signing_input(fixture, "");
+        input.message_format = SolanaProto::MessageFormat::MessageFormat_restricted_ascii;
+        input.message_payload = payload;
+
+        let (error, signature) = sign(&input);
+        assert_eq!(
+            error,
+            SigningErrorType::Error_invalid_params,
+            "{name} must be refused"
+        );
+        assert!(signature.is_empty(), "{name} must not be signed");
+    }
+}
+
+/// Raw has no header to state a format in, so naming one there is a caller error for the same
+/// reason an application domain is: the field would be silently dropped from the signed bytes.
+#[test]
+fn test_solana_raw_refuses_a_message_format() {
+    let fixture = &fixtures()[0];
+
+    let mut input = offchain_signing_input(fixture, "Hello world");
+    input.message_type = SolanaProto::MessageType::MessageType_raw;
+    input.application_domain = Default::default();
+    input.message_format = SolanaProto::MessageFormat::MessageFormat_restricted_ascii;
+
+    let (error, signature) = sign(&input);
+    assert_eq!(error, SigningErrorType::Error_invalid_params);
+    assert!(signature.is_empty());
+
+    let (error, _) = pre_image(&input);
     assert_eq!(error, SigningErrorType::Error_invalid_params);
 }

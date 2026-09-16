@@ -19,14 +19,51 @@ pub const SIGNING_DOMAIN: &[u8; 16] = b"\xffsolana offchain";
 /// new `MessageType`, never an edit here.
 pub const HEADER_VERSION: u8 = 0;
 
-/// Message format 1: UTF-8.
+/// What the body's bytes are, as the header states it.
 ///
-/// Forced, not chosen. Restricted ASCII — format 0 — is defined as the characters for which
-/// `isprint(3)` is true, `0x20..=0x7e`, which **excludes the newline**, and a labeled body is
-/// one field per line. Format 0 is also the only format a hardware wallet can *display* (1 is
-/// blind-sign only), so this is a cost of the layout rather than a preference. Pinning it also
-/// means two implementations of the same body can never disagree on the format byte.
-pub const MESSAGE_FORMAT_UTF8: u8 = 1;
+/// Chosen by the caller and never derived from the body. `solana_sdk` derives it, which means
+/// editing "hello" to "héllo" silently moves the format byte — and that byte is inside the
+/// signed bytes, so the same-looking message signs differently. A caller that asks for a format
+/// its body cannot satisfy gets an error instead.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MessageFormat {
+    /// Format 0: the characters `isprint(3)` is true for, `0x20..=0x7e`. **Excludes the newline
+    /// and the tab**, so a body of labeled lines cannot use it. It is the only format a hardware
+    /// wallet renders on screen; format 1 is blind-sign only.
+    RestrictedAscii,
+    /// Format 1: UTF-8. What a body of labeled lines needs, at the cost of the display above.
+    Utf8,
+}
+
+impl MessageFormat {
+    /// The byte the header states. The standard's numbering, which is not this enum's order.
+    pub fn header_byte(self) -> u8 {
+        match self {
+            MessageFormat::RestrictedAscii => 0,
+            MessageFormat::Utf8 => 1,
+        }
+    }
+
+    /// Refuses a body the format cannot carry.
+    ///
+    /// The byte is a claim about these bytes, so it is checked against them here rather than
+    /// left to whoever reads the message: a verifier that enforces the format would reject it,
+    /// and a hardware wallet that trusts the byte would render whatever the body really holds.
+    fn check(self, body: &str) -> SigningResult<()> {
+        match self {
+            MessageFormat::Utf8 => Ok(()),
+            // `' '..='~'` is `0x20..=0x7e`, and a `char` outside ASCII never falls in it.
+            MessageFormat::RestrictedAscii => match body.chars().find(|c| !matches!(c, ' '..='~')) {
+                None => Ok(()),
+                Some(found) => SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    format!(
+                        "Message format 'restricted ascii' carries only printable ASCII, 0x20..=0x7e, and this body holds {found:?}. A body of labeled lines is one field per line, so it needs 'MessageFormat_utf8'"
+                    ),
+                ),
+            },
+        }
+    }
+}
 
 /// Exactly one key signs one of these messages.
 pub const SIGNER_COUNT: u8 = 1;
@@ -42,14 +79,26 @@ pub const MAX_MESSAGE_SIZE: usize = 1232;
 
 /// The fixed header this scheme emits: the signing domain, the header version, the application
 /// domain, the message format, the signer count, one signer, and the message length. It is a
-/// constant because [`SIGNER_COUNT`] is.
+/// constant because [`SIGNER_COUNT`] is, and it is 85 bytes rather than `solana_sdk`'s 20 —
+/// see [`OffchainMessage`].
 pub const PREAMBLE_SIZE: usize =
     SIGNING_DOMAIN.len() + 1 + APPLICATION_DOMAIN_SIZE + 1 + 1 + H256::LEN + 2;
 
 /// What is left for the body once the preamble is paid for: 1147 bytes.
 pub const MAX_BODY_SIZE: usize = MAX_MESSAGE_SIZE - PREAMBLE_SIZE;
 
-/// A Solana off-chain message, header version 0.
+/// A Solana off-chain message, header version 0, as the off-chain message signing *proposal*
+/// lays it out: signing domain, header version, application domain, message format, signer
+/// count, signers, length-prefixed body.
+///
+/// Not the same bytes as `solana_sdk::offchain_message::v0`, which implements a reduced form of
+/// the same proposal — a 20-byte preamble of signing domain, version, format and length, with no
+/// application domain and no signer list, and a derived rather than pinned format byte. Its
+/// 1212-byte ledger cap is that 1232 - 20. So these signatures do not verify with
+/// `solana verify-offchain-signature`, and `solana sign-offchain-message` cannot produce them;
+/// what they do interoperate with is a service that rebuilds this layout. The application domain
+/// is the reason to pay the extra 65 bytes: without it there is no domain separator in the
+/// signed bytes at all.
 ///
 /// The parts are public because reproducing a message on another platform, re-verifying a stored
 /// signature and debugging a byte mismatch all need them, not just the concatenation.
@@ -58,6 +107,8 @@ pub struct OffchainMessage {
     /// analogue of an EIP-712 domain: it stops a signature over one application's messages from
     /// verifying against another's.
     pub application_domain: H256,
+    /// What the header says the body is. Not derived from the body — see [`MessageFormat`].
+    pub format: MessageFormat,
     /// The key the header binds the message to. ed25519 has no key recovery, so the signer is
     /// stated in the signed bytes and then proven by the signature — which is not weaker than
     /// recovering it: bytes signed for one address cannot be presented as a proof of another.
@@ -70,9 +121,12 @@ pub struct OffchainMessage {
 impl OffchainMessage {
     pub fn new(
         application_domain: &[u8],
+        format: MessageFormat,
         signer: SolanaAddress,
         body: String,
     ) -> SigningResult<OffchainMessage> {
+        format.check(&body)?;
+
         let domain_len = application_domain.len();
         let application_domain = H256::try_from(application_domain)
             .tw_err(SigningErrorType::Error_invalid_params)
@@ -84,6 +138,7 @@ impl OffchainMessage {
 
         Ok(OffchainMessage {
             application_domain,
+            format,
             signer,
             body,
         })
@@ -109,7 +164,7 @@ impl OffchainMessage {
         encoded.extend_from_slice(SIGNING_DOMAIN);
         encoded.push(HEADER_VERSION);
         encoded.extend_from_slice(self.application_domain.as_slice());
-        encoded.push(MESSAGE_FORMAT_UTF8);
+        encoded.push(self.format.header_byte());
         encoded.push(SIGNER_COUNT);
         encoded.extend_from_slice(self.signer.bytes().as_slice());
         encoded.extend_from_slice(&(self.body.len() as u16).to_le_bytes());
