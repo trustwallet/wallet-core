@@ -14,11 +14,14 @@ buildscript {
     ext.kotlin_version = '1.3.50'
     repositories {
         google()
-        mavenCentral()        
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+    configurations.classpath {
+        resolutionStrategy.activateDependencyLocking()
     }
 }
 
@@ -33,6 +36,9 @@ allprojects {
                 password = properties.getProperty("gpr.key") as String?: System.getenv("GITHUB_TOKEN")
             }
         }
+    }
+    dependencyLocking {
+        lockAllConfigurations()
     }
 }
 

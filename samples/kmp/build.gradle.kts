@@ -6,6 +6,12 @@ plugins {
     kotlin("multiplatform").version("2.1.0").apply(false)
 }
 
+allprojects {
+    dependencyLocking {
+        lockAllConfigurations()
+    }
+}
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }

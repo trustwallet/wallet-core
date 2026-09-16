@@ -16,4 +16,7 @@ allprojects {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 }

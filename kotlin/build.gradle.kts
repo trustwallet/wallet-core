@@ -19,4 +19,7 @@ allprojects {
             freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 }
