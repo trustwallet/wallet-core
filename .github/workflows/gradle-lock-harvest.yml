@@ -32,7 +32,12 @@ permissions:
 jobs:
   harvest:
     runs-on: ubuntu-24.04
-    if: github.event_name != 'pull_request' || (github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository)
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      (github.event_name != 'pull_request' ||
+      (github.event.pull_request.draft == false &&
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository))
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
@@ -69,7 +74,7 @@ jobs:
 
       - name: Commit harvested locks
         run: |
-          git add -- ':(glob)**/gradle.lockfile'
+          git add -- ':(glob)**/*gradle.lockfile'
           if git diff --cached --quiet; then
             exit 0
           fi
