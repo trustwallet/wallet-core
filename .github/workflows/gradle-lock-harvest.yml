@@ -49,6 +49,12 @@ jobs:
         with:
           gradle-version: 8.10.2
 
+      - name: Install Android NDK
+        run: |
+          SDKMANAGER="$(source tools/android-sdk && find_android_cmdline_tools)/sdkmanager"
+          yes | "$SDKMANAGER" --licenses
+          "$SDKMANAGER" "ndk;28.0.12674087"
+
       - name: Harvest dependency locks
         run: |
           for project in android kotlin samples/android samples/kmp; do
