@@ -12,6 +12,9 @@ concurrency:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      packages: read
     # Skip drafts; push events (dev/master) always run. Re-enabled after the
     # analysis moved to the trustwallet-1 SonarCloud organization.
     if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
@@ -96,9 +99,18 @@ jobs:
         run: |
           tools/coverage sonar
 
+      - name: Install Android NDK for dependency analysis
+        run: |
+          SDKMANAGER="$(source tools/android-sdk && find_android_cmdline_tools)/sdkmanager"
+          yes | "$SDKMANAGER" --licenses
+          "$SDKMANAGER" "ndk;28.0.12674087"
+
       - name: SonarCloud Scan
         run: |
+          # The scanner bundles Java 21, but the sample Gradle daemon needs Java 17.
+          export GRADLE_OPTS="-Dorg.gradle.java.home=$JAVA_HOME_17_X64"
           ./tools/sonarcloud-analysis
         env:
+          GITHUB_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

@@ -38,6 +38,15 @@ The full list is [here](docs/registry.md).
 
 For build instructions, see [developer.trustwallet.com/wallet-core/building](https://developer.trustwallet.com/wallet-core/building).
 
+## Gradle lockfiles
+
+The Gradle Lock Harvest workflow checks lockfiles on relevant pushes and pull
+requests, weekly, and on manual dispatch. When regeneration changes the locks,
+it uploads a `gradle-lockfiles` artifact and fails the check. Extract the artifact
+into the repository root, review the changes, and commit them normally so CI runs
+on the updated locks. The workflow does not push commits or require a bot token.
+Draft, fork, and Dependabot PRs are skipped; marking an eligible draft ready
+triggers the check. Samples require GitHub Packages read access.
 
 # Using from your project
 
