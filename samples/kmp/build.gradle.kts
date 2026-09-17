@@ -18,6 +18,10 @@ allprojects {
                 useVersion("2.14.0")
             } else if (requested.group == "io.netty") {
                 useVersion("4.1.138.Final")
+            } else if (requested.group == "com.google.guava" && requested.name == "guava") {
+                useVersion("32.0.1-jre")
+            } else if (requested.group == "com.squareup.wire") {
+                useVersion("6.4.5")
             }
         }
     }
