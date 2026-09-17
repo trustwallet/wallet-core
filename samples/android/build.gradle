@@ -11,7 +11,7 @@ if (localProps.exists()) {
 }
 
 buildscript {
-    ext.kotlin_version = '1.3.50'
+    ext.kotlin_version = '1.6.0'
     repositories {
         google()
         mavenCentral()
@@ -23,9 +23,16 @@ buildscript {
     configurations.classpath {
         resolutionStrategy.activateDependencyLocking()
         resolutionStrategy.eachDependency { details ->
-            if ((details.requested.group == 'com.google.protobuf') &&
-                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+            if (details.requested.group == 'com.google.protobuf' &&
+                    ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
                 details.useVersion '3.25.5'
+            } else if (details.requested.group == 'commons-io') {
+                details.useVersion '2.14.0'
+            } else if (details.requested.group == 'io.netty') {
+                details.useVersion '4.1.138.Final'
+            } else if (details.requested.group == 'org.jetbrains.kotlin' &&
+                    details.requested.name.startsWith('kotlin-')) {
+                details.useVersion '1.6.0'
             }
         }
     }
@@ -45,9 +52,18 @@ allprojects {
     }
     configurations.configureEach {
         resolutionStrategy.eachDependency { details ->
-            if ((details.requested.group == 'com.google.protobuf') &&
-                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+            if (details.requested.group == 'com.google.protobuf' &&
+                    ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
                 details.useVersion '3.25.5'
+            } else if (details.requested.group == 'com.squareup.okio') {
+                details.useVersion '3.4.0'
+            } else if (details.requested.group == 'commons-io') {
+                details.useVersion '2.14.0'
+            } else if (details.requested.group == 'io.netty') {
+                details.useVersion '4.1.138.Final'
+            } else if (details.requested.group == 'org.jetbrains.kotlin' &&
+                    details.requested.name.startsWith('kotlin-')) {
+                details.useVersion '1.6.0'
             }
         }
     }

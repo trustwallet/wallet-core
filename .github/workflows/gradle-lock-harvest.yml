@@ -63,12 +63,24 @@ jobs:
 
       - name: Harvest dependency locks
         run: |
-          for project in android kotlin samples/android samples/kmp; do
-            (
-              cd "$project"
-              ./gradlew dependencies --write-locks --no-daemon
-            )
-          done
+          (
+            cd android
+            ./gradlew dependencies :app:dependencies :wallet-core:dependencies :wallet-core-proto:dependencies --write-locks --no-daemon
+          )
+          (
+            cd kotlin
+            ./gradlew dependencies :wallet-core-kotlin:dependencies --write-locks --no-daemon
+            cd build-logic
+            ../gradlew dependencies --write-locks --no-daemon
+          )
+          (
+            cd samples/android
+            ./gradlew dependencies :app:dependencies --write-locks --no-daemon
+          )
+          (
+            cd samples/kmp
+            ./gradlew dependencies :shared:dependencies :androidApp:dependencies --write-locks --no-daemon
+          )
         env:
           GITHUB_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

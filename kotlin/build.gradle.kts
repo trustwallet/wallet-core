@@ -17,6 +17,12 @@ allprojects {
             if (requested.group == "com.google.protobuf" &&
                 (requested.name == "protobuf-java" || requested.name == "protobuf-java-util")) {
                 useVersion("3.25.5")
+            } else if (requested.group == "com.squareup.okio") {
+                useVersion("3.4.0")
+            } else if (requested.group == "commons-io") {
+                useVersion("2.14.0")
+            } else if (requested.group == "io.netty") {
+                useVersion("4.1.138.Final")
             }
         }
     }

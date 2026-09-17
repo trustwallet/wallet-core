@@ -11,9 +11,15 @@ buildscript {
     configurations.classpath {
         resolutionStrategy.activateDependencyLocking()
         resolutionStrategy.eachDependency { details ->
-            if ((details.requested.group == 'com.google.protobuf') &&
-                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+            if (details.requested.group == 'com.google.protobuf' &&
+                    ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
                 details.useVersion '3.25.5'
+            } else if (details.requested.group == 'commons-io') {
+                details.useVersion '2.14.0'
+            } else if (details.requested.group == 'io.netty') {
+                details.useVersion '4.1.138.Final'
+            } else if (details.requested.group == 'junit' && details.requested.name == 'junit') {
+                details.useVersion '4.13.2'
             }
         }
     }
@@ -26,9 +32,15 @@ allprojects {
     }
     configurations.configureEach {
         resolutionStrategy.eachDependency { details ->
-            if ((details.requested.group == 'com.google.protobuf') &&
-                ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
+            if (details.requested.group == 'com.google.protobuf' &&
+                    ('protobuf-java'.equals(details.requested.name) || 'protobuf-java-util'.equals(details.requested.name))) {
                 details.useVersion '3.25.5'
+            } else if (details.requested.group == 'commons-io') {
+                details.useVersion '2.14.0'
+            } else if (details.requested.group == 'io.netty') {
+                details.useVersion '4.1.138.Final'
+            } else if (details.requested.group == 'junit' && details.requested.name == 'junit') {
+                details.useVersion '4.13.2'
             }
         }
     }
