@@ -19,6 +19,9 @@ public final class KeyStore {
     /// List of wallets.
     public private(set) var wallets = [Wallet]()
 
+    /// Key files present in the directory that could not be loaded.
+    public private(set) var invalidKeys = [InvalidKey]()
+
     /// List of accounts being watched
     public var watches = [Watch]()
 
@@ -46,12 +49,43 @@ public final class KeyStore {
                 continue
             }
             guard let key = StoredKey.load(path: url.path) else {
-                // Ignore invalid keys
+                invalidKeys.append(makeInvalidKey(at: url))
                 continue
             }
             let wallet = Wallet(keyURL: url, key: key)
             wallets.append(wallet)
         }
+    }
+
+    private func makeInvalidKey(at url: URL) -> InvalidKey {
+        let data: Data
+        let loadError: String
+        do {
+            data = try Data(contentsOf: url)
+            let result = StoredKey.validateJson(json: data)
+            loadError = result.getErr ?? "Unknown load error"
+        } catch {
+            data = Data()
+            loadError = error.localizedDescription
+        }
+
+        var isThirdPartyKeystore = false
+        var firstAccountAddress: String?
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            isThirdPartyKeystore = json["address"] != nil
+            if let accounts = json["activeAccounts"] as? [[String: Any]],
+               let first = accounts.first,
+               let address = first["address"] as? String {
+                firstAccountAddress = address
+            }
+        }
+
+        return InvalidKey(
+            fileURL: url,
+            loadError: loadError,
+            isThirdPartyKeystore: isThirdPartyKeystore,
+            firstAccountAddress: firstAccountAddress
+        )
     }
 
     /// Watches a list of accounts.
@@ -377,6 +411,7 @@ public final class KeyStore {
     /// Removes all wallets.
     public func destroy() throws {
         wallets.removeAll(keepingCapacity: false)
+        invalidKeys.removeAll(keepingCapacity: false)
 
         let fileManager = FileManager.default
         let accountURLs = try fileManager.contentsOfDirectory(at: keyDirectory, includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
