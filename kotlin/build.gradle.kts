@@ -26,7 +26,7 @@ allprojects {
             } else if (requested.group == "com.google.guava" && requested.name == "guava") {
                 useVersion("32.0.1-jre")
             } else if (requested.group == "com.squareup.wire") {
-                useVersion("5.3.3")
+                useVersion("6.4.5")
             }
         }
     }

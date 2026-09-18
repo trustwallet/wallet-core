@@ -1,9 +1,9 @@
 plugins {
     id("com.android.application").version("8.8.0").apply(false)
     id("com.android.library").version("8.8.0").apply(false)
-    kotlin("android").version("2.1.0").apply(false)
-    kotlin("plugin.compose").version("2.1.0").apply(false)
-    kotlin("multiplatform").version("2.1.0").apply(false)
+    kotlin("android").version("2.2.21").apply(false)
+    kotlin("plugin.compose").version("2.2.21").apply(false)
+    kotlin("multiplatform").version("2.2.21").apply(false)
 }
 
 allprojects {
@@ -21,7 +21,7 @@ allprojects {
             } else if (requested.group == "com.google.guava" && requested.name == "guava") {
                 useVersion("32.0.1-jre")
             } else if (requested.group == "com.squareup.wire") {
-                useVersion("5.3.3")
+                useVersion("6.4.5")
             }
         }
     }
