@@ -456,6 +456,10 @@ message MessageSigningInput {
     // The message to sign, in one of the forms below.
     oneof message_payload {
         // A UTF-8 regular message to sign.
+        //
+        // Keep it a `string`. `MessageType_raw` signs the body as it stands, and its being
+        // UTF-8 is what keeps those bytes from ever forming a Solana transaction message —
+        // see the note on the raw arm in `message_signer.rs` before making it `bytes`.
         string message = 2;
 
         // Labeled lines that this library renders into the message body.

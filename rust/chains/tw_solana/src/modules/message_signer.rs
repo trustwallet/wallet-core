@@ -199,6 +199,11 @@ impl<'a> Envelope<'a> {
                     );
                 }
 
+                // These bytes carry nothing that marks them as not-a-transaction, the way the
+                // envelope's 0xff prefix does. Being UTF-8 stands in for it: a transaction
+                // message would need the signer's pubkey and a blockhash as raw bytes inside
+                // the text, and a versioned one a leading 0x80. A `bytes` payload would lose
+                // that and need the check — `signing_body` stops compiling on one.
                 Ok(body.into_bytes())
             },
             Proto::MessageType::MessageType_offchain_v0 => {
