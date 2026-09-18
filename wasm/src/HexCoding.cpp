@@ -15,7 +15,8 @@ namespace TW::Wasm {
 class HexCoding {
   public:
     static auto parseHex(const std::string& string) {
-        return DataToVal(TW::parse_hex(string, true));
+        auto data = TW::parse_hex(string, true);
+        return DataToVal(std::move(data));
     }
 
     static auto hexEncoded(const std::string& string) {
