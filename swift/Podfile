@@ -9,7 +9,7 @@ project 'TrustWalletCore.xcodeproj'
 target 'WalletCore' do
   use_frameworks!
 
-  # Repo-local podspec: the published pod does not declare watchOS yet.
+  # Build against the repo podspec, the WalletCoreSwiftProtobuf version tools/ios-release depends on.
   pod 'WalletCoreSwiftProtobuf', :podspec => '../WalletCoreSwiftProtobuf.podspec'
 
   target 'WalletCoreTests'
