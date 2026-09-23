@@ -250,6 +250,8 @@ targets:
       testTargets: []
     settings:
       PRODUCT_NAME: WalletCore
+      # The Rust watchOS simulator slice is arm64-only.
+      EXCLUDED_ARCHS[sdk=watchsimulator*]: x86_64
       SKIP_INSTALL: false
       DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
       BUILD_LIBRARY_FOR_DISTRIBUTION: true
