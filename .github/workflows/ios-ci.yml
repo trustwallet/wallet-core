@@ -51,6 +51,17 @@ jobs:
         tools/generate-files ios
         tools/ios-test
 
+    - name: Build watchOS framework
+      run: |
+        set -o pipefail
+        cd swift
+        for destination in 'generic/platform=watchOS' 'generic/platform=watchOS Simulator'; do
+          xcodebuild -workspace TrustWalletCore.xcworkspace \
+            -scheme WalletCore-watchOS \
+            -destination "$destination" \
+            build | xcbeautify
+        done
+
     - name: Build sample app
       run: |
         tools/samples-build ios
