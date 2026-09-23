@@ -2,12 +2,13 @@
 # https://github.com/apple/swift-protobuf/blob/main/SwiftProtobuf.podspec
 Pod::Spec.new do |s|
     s.name = 'WalletCoreSwiftProtobuf'
-    s.version = '1.29.0'
+    s.version = '1.29.1'
     s.license = { :type => 'Apache 2.0', :file => 'LICENSE.txt' }
     s.summary = 'Swift Protobuf Runtime Library'
     s.homepage = 'https://github.com/apple/swift-protobuf'
     s.author = 'Apple Inc.'
-    s.source = { :git => 'https://github.com/apple/swift-protobuf.git', :tag => s.version }
+    # 1.29.0 is already on trunk without watchOS; this republishes the same upstream sources.
+    s.source = { :git => 'https://github.com/apple/swift-protobuf.git', :tag => '1.29.0' }
 
     s.requires_arc = true
     s.ios.deployment_target = '11.0'
