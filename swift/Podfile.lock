@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :podspec: "../WalletCoreSwiftProtobuf.podspec"
 
 SPEC CHECKSUMS:
-  WalletCoreSwiftProtobuf: a2bdba44f654fa404a25e2906a24dd2c8f1b7c5f
+  WalletCoreSwiftProtobuf: 3556c6b8fdd5a55b4ba5e3afaf27c2f13fbef79d
 
-PODFILE CHECKSUM: 14262b7ee64ddf1436fd633d34f7c66342986d19
+PODFILE CHECKSUM: 46109ca45b0e3e4a250294a659f24bc975b4205f
 
 COCOAPODS: 1.16.2

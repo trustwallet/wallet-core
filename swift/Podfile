@@ -23,6 +23,15 @@ target 'WalletCore-watchOS' do
 end
 
 post_install do |installer|
+  # Using the pod on two platforms makes CocoaPods suffix its targets with the
+  # platform. Drop the iOS suffix so the WalletCoreSwiftProtobuf scheme that
+  # fastlane builds keeps its name; watchOS keeps its -watchOS suffix.
+  installer.pods_project.targets.each do |target|
+    target.name = target.name.sub(/\AWalletCoreSwiftProtobuf-iOS/, 'WalletCoreSwiftProtobuf')
+  end
+  # Schemes are generated before this hook runs, so regenerate them from the renamed targets.
+  installer.pods_project.recreate_user_schemes(false)
+
   installer.pods_project.build_configurations.each do |config|
     config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
     config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
