@@ -1,5 +1,5 @@
 PODS:
-  - WalletCoreSwiftProtobuf (1.29.0)
+  - WalletCoreSwiftProtobuf (1.29.1)
 
 DEPENDENCIES:
   - WalletCoreSwiftProtobuf (from `../WalletCoreSwiftProtobuf.podspec`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :podspec: "../WalletCoreSwiftProtobuf.podspec"
 
 SPEC CHECKSUMS:
-  WalletCoreSwiftProtobuf: 3556c6b8fdd5a55b4ba5e3afaf27c2f13fbef79d
+  WalletCoreSwiftProtobuf: ad2dfc05fe02ea34a68b40dc6f899f9f8026d93f
 
-PODFILE CHECKSUM: 46109ca45b0e3e4a250294a659f24bc975b4205f
+PODFILE CHECKSUM: ac425017f57b17b9ce1618dfac49f55fd61b670c
 
 COCOAPODS: 1.16.2
