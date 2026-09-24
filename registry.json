@@ -5100,7 +5100,7 @@
     "chainId": "4663",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://robinhoodchain.blockscout.com",
+      "url": "https://robin.etherscan.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
