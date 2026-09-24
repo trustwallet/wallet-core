@@ -67,8 +67,9 @@ impl<'a> UtxoPsbt<'a> {
 
         let script = Script::from(prev_out.script_pubkey.to_bytes());
         let builder = self.prepare_builder(prev_out.value)?;
+        let expect_witness_utxo = false;
 
-        self.build_utxo_with_script(builder, &script)
+        self.build_utxo_with_script(builder, &script, expect_witness_utxo)
     }
 
     pub fn build_witness_utxo(
@@ -77,21 +78,41 @@ impl<'a> UtxoPsbt<'a> {
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         let script = Script::from(witness_utxo.script_pubkey.to_bytes());
         let builder = self.prepare_builder(witness_utxo.value)?;
-        self.build_utxo_with_script(builder, &script)
+        let expect_witness_utxo = true;
+
+        self.build_utxo_with_script(builder, &script, expect_witness_utxo)
     }
 
     fn build_utxo_with_script(
         &self,
         builder: UtxoBuilder,
         script: &Script,
+        expect_witness_utxo: bool,
     ) -> SigningResult<(TransactionInput, UtxoToSign)> {
         match StandardScriptParser.parse(script)? {
-            StandardScript::P2PK(pubkey) => builder.p2pk(&pubkey),
+            StandardScript::P2PK(pubkey) => {
+                if expect_witness_utxo {
+                    return SigningError::err(SigningErrorType::Error_invalid_utxo)
+                        .context("P2PK scriptPubkey is not valid for witness UTXO");
+                }
+
+                builder.p2pk(&pubkey)
+            },
             StandardScript::P2PKH(pubkey_hash) => {
+                if expect_witness_utxo {
+                    return SigningError::err(SigningErrorType::Error_invalid_utxo)
+                        .context("P2PKH scriptPubkey is not valid for witness UTXO");
+                }
+
                 let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
                 builder.p2pkh(&pubkey)
             },
             StandardScript::P2WPKH(pubkey_hash) => {
+                if !expect_witness_utxo {
+                    return SigningError::err(SigningErrorType::Error_invalid_utxo)
+                        .context("P2WPKH scriptPubkey is not valid for non-witness UTXO");
+                }
+
                 let pubkey = self.public_keys.get_ecdsa_public_key(&pubkey_hash)?;
                 builder.p2wpkh(&pubkey)
             },
