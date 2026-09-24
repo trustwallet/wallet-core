@@ -1,4 +1,4 @@
-<img src="docs/banner.png" align="center" title="Trust logo">
+my name rio<img src="docs/banner.png" align="center" title="Trust logo">
 
 Trust Wallet Core is an open-source, cross-platform, mobile-focused library
 implementing low-level cryptographic wallet functionality for a high number of blockchains.
