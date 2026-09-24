@@ -61,7 +61,7 @@ fallback, or (e) move validation earlier? If none → "No persistence risk", sto
 For each tightened rule:
 
 - Could a prior version have *produced* data that violates the new rule? `git log -p`
-  / `git blame` going back ≥2 years. Cite SHAs.
+  / `git blame` going back to the **very first commit** (`git log --follow --all`). Cite SHAs.
 - Was there a partial migration ("regenerate on next user action")? Assume a
   non-trivial fraction of users **never triggered it**.
 - Does the format ever leave the device? Backup / export / sync.

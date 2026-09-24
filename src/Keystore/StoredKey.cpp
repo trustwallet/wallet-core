@@ -445,7 +445,7 @@ void StoredKey::loadJson(const nlohmann::json& json) {
         // Workaround for myEtherWallet files
         payload = EncryptedPayload(json[UppercaseCodingKeys::crypto]);
     } else {
-        throw DecryptionError::invalidKeyFile;
+        throw std::invalid_argument("Missing 'crypto' field in stored key JSON");
     }
 
     if (json.count(CodingKeys::SK::encodedCrypto) != 0) {
