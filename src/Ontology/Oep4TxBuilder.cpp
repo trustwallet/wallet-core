@@ -24,8 +24,8 @@ Data Oep4TxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
 
 Data Oep4TxBuilder::transfer(const Ontology::Proto::SigningInput& input) {
     Oep4 oep4(parse_hex(input.contract()));
-    auto payerSigner = Signer(PrivateKey(input.payer_private_key()));
-    auto fromSigner = Signer(PrivateKey(input.owner_private_key()));
+    auto payerSigner = Signer(PrivateKey(input.payer_private_key(), TWCurveNIST256p1));
+    auto fromSigner = Signer(PrivateKey(input.owner_private_key(), TWCurveNIST256p1));
     auto toAddress = Address(input.to_address());
     auto tranferTx = oep4.transfer(fromSigner, toAddress, input.amount(), payerSigner,
                                    input.gas_price(), input.gas_limit(), input.nonce());

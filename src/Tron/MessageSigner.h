@@ -24,7 +24,7 @@ public:
     /// \param signature signature to verify the message against
     /// \return true if the message match the signature, false otherwise
     static bool verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept;
-    static constexpr auto MessagePrefix = "TRON Signed Message:\n32";
+    static constexpr auto MessagePrefix = "TRON Signed Message:\n";
     static constexpr std::uint8_t TronPrefix{0x19};
 };
 

@@ -1,0 +1,70 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ dev, master ]
+  pull_request:
+    branches: [ dev, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    if: github.event.pull_request.draft == false
+    steps:
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+    - name: Install system dependencies
+      run: |
+        tools/install-sys-dependencies-linux
+        tools/install-rust-dependencies
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+      with:
+        path: build/local
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/install-sys-dependencies-linux') }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
+
+    - name: Cache Rust
+      uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
+      with:
+        workspaces: |
+          rust
+
+    - name: Code generation
+      run: |
+        tools/generate-files native
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+
+    - name: Setup Dart
+      uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+      with:
+        sdk: '3.8.1'
+        cache: true
+        cache-key: dart-3.8.1
+        cache-path: ${{ github.workspace }}/.pub-cache
+
+    - name: Install Dart dependencies
+      run: |
+        cd flutter
+        dart pub get
+        dart pub upgrade
+    
+    - name: Flutter build
+      run: |
+        tools/flutter-build
+      env:
+        CC: /usr/bin/clang
+        CXX: /usr/bin/clang++
+

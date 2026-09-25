@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::{SigningError, SigningErrorType};
+use tw_coin_entry::error::prelude::*;
 
 pub mod contract;
 pub mod decode;
@@ -23,25 +23,50 @@ macro_rules! abi_output_error {
         let err = $error;
 
         let mut output = <$output>::default();
-        output.error = err.0;
-        output.error_message = std::borrow::Cow::from(format!("{err:?}"));
+        output.error = *TWError::error_type(&err);
+        output.error_message = std::borrow::Cow::from(err.to_string());
 
         output
     }};
 }
 
-pub type AbiResult<T> = Result<T, AbiError>;
 pub type AbiErrorKind = tw_proto::EthereumAbi::Proto::AbiError;
+pub type AbiError = TWError<AbiErrorKind>;
+pub type AbiResult<T> = Result<T, AbiError>;
 
-#[derive(Debug)]
-pub struct AbiError(pub AbiErrorKind);
+pub fn abi_to_signing_error(abi: AbiError) -> SigningError {
+    abi.map_err(|abi_kind| match abi_kind {
+        AbiErrorKind::OK => SigningErrorType::OK,
+        AbiErrorKind::Error_internal => SigningErrorType::Error_internal,
+        _ => SigningErrorType::Error_invalid_params,
+    })
+}
 
-impl From<AbiError> for SigningError {
-    fn from(err: AbiError) -> Self {
-        match err.0 {
-            AbiErrorKind::OK => SigningError(SigningErrorType::OK),
-            AbiErrorKind::Error_internal => SigningError(SigningErrorType::Error_internal),
-            _ => SigningError(SigningErrorType::Error_invalid_params),
-        }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_abi_to_signing_error() {
+        // Test OK case
+        let abi_ok = AbiError::new(AbiErrorKind::OK);
+        let signing_ok = abi_to_signing_error(abi_ok);
+        assert_eq!(*signing_ok.error_type(), SigningErrorType::OK);
+
+        // Test internal error case
+        let abi_internal = AbiError::new(AbiErrorKind::Error_internal);
+        let signing_internal = abi_to_signing_error(abi_internal);
+        assert_eq!(
+            *signing_internal.error_type(),
+            SigningErrorType::Error_internal
+        );
+
+        // Test other error cases map to invalid params
+        let abi_other = AbiError::new(AbiErrorKind::Error_invalid_abi);
+        let signing_other = abi_to_signing_error(abi_other);
+        assert_eq!(
+            *signing_other.error_type(),
+            SigningErrorType::Error_invalid_params
+        );
     }
 }

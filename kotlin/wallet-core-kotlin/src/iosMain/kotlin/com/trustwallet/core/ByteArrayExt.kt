@@ -8,9 +8,11 @@ import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.toCValues
 
+// Build ByteArray from TWData, and then delete TWData
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 internal fun COpaquePointer?.readTwBytes(): ByteArray? =
-    TWDataBytes(this)?.readBytes(TWDataSize(this).toInt())
-
-@OptIn(ExperimentalUnsignedTypes::class)
-internal fun ByteArray?.toTwData(): COpaquePointer? =
-    TWDataCreateWithBytes(this?.toUByteArray()?.toCValues(), this?.size?.toULong() ?: 0u)
+    this?.let {
+        val result = TWDataBytes(it)?.readBytes(TWDataSize(it).toInt())
+        TWDataDelete(it)
+        result
+    }

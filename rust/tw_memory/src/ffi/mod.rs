@@ -54,3 +54,8 @@ pub trait RawPtrTrait: Sized {
         Some(Box::from_raw(raw))
     }
 }
+
+pub type Nullable<T> = *const T;
+pub type Nonnull<T> = *const T;
+pub type NullableMut<T> = *mut T;
+pub type NonnullMut<T> = *mut T;

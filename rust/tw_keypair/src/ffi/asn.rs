@@ -32,9 +32,7 @@ pub unsafe extern "C" fn ecdsa_signature_from_asn_der(
     encoded_len: usize,
 ) -> CByteArrayResult {
     let encoded_ref = CByteArrayRef::new(encoded, encoded_len);
-    let Some(encoded) = encoded_ref.to_vec() else {
-        return CByteArrayResult::error(CKeyPairError::InvalidSignature);
-    };
+    let encoded = encoded_ref.to_vec();
 
     der::Signature::from_bytes(encoded.as_slice())
         .map(|sign| CByteArray::from(sign.to_vec()))

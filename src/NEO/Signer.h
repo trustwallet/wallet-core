@@ -25,7 +25,7 @@ public:
     Address getAddress() const;
 
     static Proto::TransactionPlan plan(const Proto::SigningInput& input);
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     void sign(Transaction& tx) const;
     Data sign(const Data& data) const;
 

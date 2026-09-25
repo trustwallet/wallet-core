@@ -8,7 +8,7 @@ use crate::proto::cosmos;
 use crate::transaction::message::{message_to_json, CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 const DEFAULT_JSON_SEND_TYPE: &str = "cosmos-sdk/MsgSend";
@@ -26,8 +26,8 @@ pub struct SendMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for SendMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmos::bank::v1beta1::MsgSend {
-            from_address: self.from_address.to_string(),
-            to_address: self.to_address.to_string(),
+            from_address: self.from_address.to_string().into(),
+            to_address: self.to_address.to_string().into(),
             amount: self.amount.iter().map(build_coin).collect(),
         };
         Ok(to_any(&proto_msg))

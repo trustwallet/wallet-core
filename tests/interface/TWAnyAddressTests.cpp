@@ -180,7 +180,7 @@ TEST(TWAnyAddress, createFromPubKey) {
     assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "bc1qcj2vfjec3c3luf9fx9vddnglhh9gawmncmgxhz");
 }
 
-TEST(TWAnyAddress, createFromPubKeyDerivation) {
+TEST(TWAnyAddress, createFromPubKeyDerivationBitcoin) {
     constexpr auto pubkey = "02753f5c275e1847ba4d2fd3df36ad00af2e165650b35fe3991e9c9c46f68b12bc";
     const auto pubkey_twstring = STRING(pubkey);
     const auto pubkey_data = WRAPD(TWDataCreateWithHexString(pubkey_twstring.get()));
@@ -197,6 +197,26 @@ TEST(TWAnyAddress, createFromPubKeyDerivation) {
     {
         const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypeBitcoin, TWDerivationBitcoinTestnet));
         assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tb1qcj2vfjec3c3luf9fx9vddnglhh9gawmnjan4v3");
+    }
+}
+
+TEST(TWAnyAddress, createFromPubKeyDerivationPactus) {
+    constexpr auto pubkey = "95794161374b22c696dabb98e93f6ca9300b22f3b904921fbf560bb72145f4fa";
+    const auto pubkey_twstring = STRING(pubkey);
+    const auto pubkey_data = WRAPD(TWDataCreateWithHexString(pubkey_twstring.get()));
+    const auto pubkey_obj = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pubkey_data.get(), TWPublicKeyTypeED25519));
+
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationDefault));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr");
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationPactusMainnet));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "pc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymcxy3lr");
+    }
+    {
+        const auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKeyDerivation(pubkey_obj.get(), TWCoinTypePactus, TWDerivationPactusTestnet));
+        assertStringsEqual(WRAPS(TWAnyAddressDescription(addr.get())), "tpc1rwzvr8rstdqypr80ag3t6hqrtnss9nwymzqkcrg");
     }
 }
 

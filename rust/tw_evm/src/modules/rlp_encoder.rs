@@ -9,7 +9,7 @@ use crate::rlp::RlpEncode;
 use std::borrow::Cow;
 use std::marker::PhantomData;
 use std::str::FromStr;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_memory::Data;
 use tw_number::U256;
@@ -23,9 +23,9 @@ pub struct RlpEncoder<Context: EvmContext> {
 }
 
 impl<Context: EvmContext> RlpEncoder<Context> {
-    pub fn encode<T>(val: T) -> Data
+    pub fn encode<T>(val: &T) -> Data
     where
-        T: RlpEncode,
+        T: RlpEncode + ?Sized,
     {
         let mut buf = RlpBuffer::new();
         val.rlp_append(&mut buf);
@@ -41,7 +41,8 @@ impl<Context: EvmContext> RlpEncoder<Context> {
         input: Proto::EncodingInput<'_>,
     ) -> SigningResult<Proto::EncodingOutput<'static>> {
         let Some(rlp_item) = input.item else {
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No RLP item provided");
         };
 
         let initial_depth = 0;
@@ -56,19 +57,23 @@ impl<Context: EvmContext> RlpEncoder<Context> {
         use Proto::mod_RlpItem::OneOfitem as Item;
 
         if depth >= RECURSION_LIMIT {
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params).with_context(|| {
+                format!("Allowed complex types with the {RECURSION_LIMIT} maximum depth")
+            });
         }
 
         let encoded_item = match rlp_item.item {
             Item::string_item(str) => RlpEncoder::<Context>::encode(str.as_ref()),
-            Item::number_u64(num) => RlpEncoder::<Context>::encode(U256::from(num)),
+            Item::number_u64(num) => RlpEncoder::<Context>::encode(&U256::from(num)),
             Item::number_u256(num_be) => {
-                let num = U256::from_big_endian_slice(num_be.as_ref())?;
-                RlpEncoder::<Context>::encode(num)
+                let num = U256::from_big_endian_slice(num_be.as_ref())
+                    .into_tw()
+                    .context("Invalid U256 number")?;
+                RlpEncoder::<Context>::encode(&num)
             },
             Item::address(addr_s) => {
                 let addr = Context::Address::from_str(addr_s.as_ref())?;
-                RlpEncoder::<Context>::encode(addr.into())
+                RlpEncoder::<Context>::encode(&addr.into())
             },
             Item::data(data) => RlpEncoder::<Context>::encode(data.as_ref()),
             Item::list(proto_nested_list) => {
@@ -83,7 +88,10 @@ impl<Context: EvmContext> RlpEncoder<Context> {
             },
             // Pass the `raw_encoded` item as it is.
             Item::raw_encoded(encoded) => encoded.to_vec(),
-            Item::None => return Err(SigningError(SigningErrorType::Error_invalid_params)),
+            Item::None => {
+                return SigningError::err(SigningErrorType::Error_invalid_params)
+                    .context("No RLP item specified")
+            },
         };
         Ok(encoded_item)
     }

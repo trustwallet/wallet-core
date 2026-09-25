@@ -25,8 +25,8 @@ TEST(TWRavencoinCoinType, TWCoinType) {
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRavencoin));
     assertStringsEqual(symbol, "RVN");
-    assertStringsEqual(txUrl, "https://ravencoin.network/tx/t123");
-    assertStringsEqual(accUrl, "https://ravencoin.network/address/a12");
+    assertStringsEqual(txUrl, "https://blockbook.ravencoin.org/tx/t123");
+    assertStringsEqual(accUrl, "https://blockbook.ravencoin.org/address/a12");
     assertStringsEqual(id, "ravencoin");
     assertStringsEqual(name, "Ravencoin");
 }

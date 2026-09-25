@@ -66,9 +66,9 @@ size_t nano_get_address(
 
     uint8_t checksum[NANO_CHECKSUM_LEN];
     blake2b_state hash;
-    blake2b_Init(&hash, NANO_CHECKSUM_LEN);
-    blake2b_Update(&hash, public_key, sizeof(ed25519_public_key));
-    blake2b_Final(&hash, checksum, NANO_CHECKSUM_LEN);
+    tc_blake2b_Init(&hash, NANO_CHECKSUM_LEN);
+    tc_blake2b_Update(&hash, public_key, sizeof(ed25519_public_key));
+    tc_blake2b_Final(&hash, checksum, NANO_CHECKSUM_LEN);
 
     for (int i = 0; i < NANO_CHECKSUM_LEN; i++) {
         raw.data.checksum[NANO_CHECKSUM_LEN - (i + 1)] = checksum[i];
@@ -132,9 +132,9 @@ bool nano_validate_address(
     // Validate the checksum
     uint8_t checksum[NANO_CHECKSUM_LEN];
     blake2b_state hash;
-    blake2b_Init(&hash, NANO_CHECKSUM_LEN);
-    blake2b_Update(&hash, raw.data.public_key, sizeof(ed25519_public_key));
-    blake2b_Final(&hash, checksum, NANO_CHECKSUM_LEN);
+    tc_blake2b_Init(&hash, NANO_CHECKSUM_LEN);
+    tc_blake2b_Update(&hash, raw.data.public_key, sizeof(ed25519_public_key));
+    tc_blake2b_Final(&hash, checksum, NANO_CHECKSUM_LEN);
 
     for (int i = 0; i < NANO_CHECKSUM_LEN; i++) {
         if (raw.data.checksum[NANO_CHECKSUM_LEN - (i + 1)] != checksum[i]) {

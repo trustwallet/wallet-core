@@ -21,10 +21,10 @@ wc_release_url() {
 }
 
 wc_upload_asset() {
-    release_url="$1"
+    tag="$1"
     filename="$2"
 
-    upload_url="${release_url}/assets?name=${filename}"
-    download_url=$(curl --progress-bar --retry 3 -u ${GITHUB_USER}:${GITHUB_TOKEN} -X POST -H "Content-Type: application/octet-stream" --data-binary @${filename} ${upload_url} | jq ".browser_download_url")
-    echo ${download_url}
+    gh release upload $tag $filename --clobber
+    download_url=$(gh release view $tag --json assets --jq '.assets.[] | select(.name == "'"${filename}"'") | .url')
+    echo "\"${download_url}\""
 }

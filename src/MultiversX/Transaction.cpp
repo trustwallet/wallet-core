@@ -7,11 +7,15 @@
 namespace TW::MultiversX {
 
 Transaction::Transaction()
-    : nonce(0), sender(""), senderUsername(""), receiver(""), receiverUsername(""), guardian(""), value("0"), data(""), gasPrice(0), gasLimit(0), chainID(""), version(0), options(TransactionOptions::Default) {
+    : nonce(0), sender(""), senderUsername(""), receiver(""), receiverUsername(""), guardian(""), relayer(""), value("0"), data(""), gasPrice(0), gasLimit(0), chainID(""), version(0), options(TransactionOptions::Default) {
 }
 
 bool Transaction::hasGuardian() const {
     return !guardian.empty();
+}
+
+bool Transaction::hasRelayer() const {
+    return !relayer.empty();
 }
 
 } // namespace TW::MultiversX

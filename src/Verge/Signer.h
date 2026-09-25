@@ -25,13 +25,13 @@ public:
     Signer() = delete;
 
     /// Returns a transaction plan (utxo selection, fee estimation)
-    static TransactionPlan plan(const SigningInput& input) noexcept;
+    static TransactionPlan plan(const SigningInput& input);
 
     /// Signs a SigningInput transaction
-    static SigningOutput sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
+    static SigningOutput sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {});
 
     /// Collect pre-image hashes to be signed
-    static PreSigningOutput preImageHashes(const SigningInput& input) noexcept;
+    static PreSigningOutput preImageHashes(const SigningInput& input);
 };
 
 } // namespace TW::Verge

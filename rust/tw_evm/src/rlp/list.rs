@@ -26,9 +26,9 @@ impl RlpList {
     }
 
     /// Appends an item.
-    pub fn append<T>(&mut self, item: T) -> &mut Self
+    pub fn append<T>(&mut self, item: &T) -> &mut Self
     where
-        T: RlpEncode,
+        T: RlpEncode + ?Sized,
     {
         item.rlp_append(&mut self.buf);
         self

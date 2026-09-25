@@ -45,7 +45,7 @@ message Balance {
         // destination address
         string to_address = 1;
 
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 2;
 
         // max 32 chars
@@ -105,7 +105,7 @@ message Staking {
         // controller ID (optional)
         string controller = 1;
 
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 2;
 
         // destination for rewards
@@ -120,7 +120,7 @@ message Staking {
         // controller ID (optional)
         string controller = 1;
 
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 2;
 
         // destination for rewards
@@ -131,11 +131,35 @@ message Staking {
 
         // call indices
         CallIndices call_indices = 5;
+
+        // Staking.Bond call indices
+        CallIndices bond_call_indices = 6;
+
+        // Staking.Nominate call indices
+        CallIndices nominate_call_indices = 7;
+    }
+
+    // Bond extra, with nominators
+    message BondExtraAndNominate {
+        // amount (uint256, serialized big endian)
+        bytes value = 1;
+
+        // list of nominators
+        repeated string nominators = 2;
+
+        // Batch call indices
+        CallIndices call_indices = 3;
+
+        // Staking.BondExtra call indices
+        CallIndices bond_extra_call_indices = 4;
+
+        // Staking.Nominate call indices
+        CallIndices nominate_call_indices = 5;
     }
 
     // Bond extra amount
     message BondExtra {
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 1;
 
         // call indices
@@ -144,7 +168,7 @@ message Staking {
 
     // Unbond
     message Unbond {
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 1;
 
         // call indices
@@ -153,7 +177,7 @@ message Staking {
 
     // Rebond
     message Rebond {
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 1;
 
         // call indices
@@ -179,11 +203,17 @@ message Staking {
 
     // Chill and unbound
     message ChillAndUnbond {
-        // amount (uint256, serialized little endian)
+        // amount (uint256, serialized big endian)
         bytes value = 1;
 
         // call indices
         CallIndices call_indices = 2;
+
+        // Staking.Chill call indices
+        CallIndices chill_call_indices = 3;
+
+        // Staking.Unbond call indices
+        CallIndices unbond_call_indices = 4;
     }
 
     // Chill
@@ -203,60 +233,7 @@ message Staking {
         Chill chill = 7;
         ChillAndUnbond chill_and_unbond = 8;
         Rebond rebond = 9;
-    }
-}
-
-// Identity module
-message Identity {
-    // Identity::join_identity_as_key call
-    message JoinIdentityAsKey {
-        // call indices
-        CallIndices call_indices = 1;
-
-        // auth id
-        uint64 auth_id = 2;
-    }
-
-    // Identity::add_authorization call
-    message AddAuthorization {
-        message Data {
-            bytes data = 1;
-        }
-
-        message AuthData {
-            // authorization data, empty means all permissions, null means no permissions
-            Data asset = 1;
-
-            // authorization data, empty means all permissions, null means no permissions
-            Data extrinsic = 2;
-
-            // authorization data, empty means all permissions, null means no permissions
-            Data portfolio = 3;
-        }
-
-        // call indices
-        CallIndices call_indices = 1;
-
-        // address that will be added to the Identity
-        string target = 2;
-
-        // authorization data, null means all permissions
-        AuthData data = 3;
-
-        // expire time, unix seconds
-        uint64 expiry = 4;
-    }
-
-    oneof message_oneof {
-        JoinIdentityAsKey join_identity_as_key = 1;
-        AddAuthorization add_authorization = 2;
-    }
-}
-
-// Polymesh call
-message PolymeshCall {
-    oneof message_oneof {
-        Identity identity_call = 2;
+        BondExtraAndNominate bond_extra_and_nominate = 10;
     }
 }
 
@@ -292,11 +269,14 @@ message SigningInput {
     // Whether enable MultiAddress
     bool multi_address = 10;
 
+    // Whether to use `ChargeAssetTxPayment` extrinsic extension instead of `ChargeTransactionPayment`
+    // when paying transaction tip in native chain token.
+    bool charge_native_as_asset_tx_payment = 13;
+
     // Payload message
     oneof message_oneof {
         Balance balance_call = 11;
         Staking staking_call = 12;
-        PolymeshCall polymesh_call = 13;
     }
 }
 

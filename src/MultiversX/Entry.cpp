@@ -30,7 +30,7 @@ Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& a
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Proto::SigningInput, Proto::SigningOutput>(dataIn, dataOut);
 }
 
 string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {

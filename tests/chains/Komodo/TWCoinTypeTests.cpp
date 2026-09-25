@@ -26,7 +26,7 @@ TEST(TWKomodoCoinType, TWCoinType) {
     assertStringsEqual(name, "Komodo");
     assertStringsEqual(symbol, "KMD");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 8);
-    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainZcash);
+    ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainKomodo);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x55);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
     assertStringsEqual(txUrl, "https://kmdexplorer.io//tx/f53bd1a5c0f5dc4b60ba9a1882742ea96faa996e1b870795812a29604dd7829e");

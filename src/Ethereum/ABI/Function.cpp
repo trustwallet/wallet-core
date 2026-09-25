@@ -159,7 +159,7 @@ std::string Function::getType() const {
     *input.mutable_inputs() = inputs.params();
 
     Rust::TWDataWrapper inputData(data(input.SerializeAsString()));
-    Rust::TWStringWrapper outputPtr = Rust::tw_ethereum_abi_function_get_signature(TWCoinTypeEthereum, inputData.get());
+    Rust::TWStringWrapper outputPtr = Rust::tw_ethereum_abi_function_get_type(TWCoinTypeEthereum, inputData.get());
 
     return outputPtr.toStringOrDefault();
 }

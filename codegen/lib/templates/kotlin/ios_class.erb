@@ -2,24 +2,29 @@
 
 import cnames.structs.TW<%= entity.name %>
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.toCValues
 
 <% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
 <% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
 <% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual class <%= entity.name %> constructor(
     val pointer: CPointer<TW<%= entity.name %>>,
 ) {
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+    @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
+    private val cleaner = kotlin.native.ref.createCleaner(pointer) { ptr ->
+        TW<%= entity.name %>Delete(ptr)
+    }
+<%  end -%>
 <%# Constructors -%>
 <%- constructors.each do |constructor| -%>
 
 <%  if constructor.return_type.is_nullable -%>
     @Throws(IllegalArgumentException::class)
-    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
-        TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>) ?: throw IllegalArgumentException()
-<%  else -%>
-    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
-        TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>)!!
 <%  end -%>
+    actual constructor(<%= KotlinHelper.parameters(constructor.parameters) %>) : this(
+        wrapperTW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.arguments(constructor.parameters) %>)
     )
 <%  end -%>
 <%# Property declarations -%>
@@ -31,12 +36,38 @@ actual class <%= entity.name %> constructor(
 <%# Method declarations -%>
 <%  methods.each do |method| -%>
 
-    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
-        <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(pointer#{', ' if not method.parameters.one?}#{KotlinHelper.calling_parameters_ios(method.parameters.drop(1))})") %>
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> {
+<%=   render('kotlin/ios_parameter_access.erb', { method: method }) -%>
+        val result = <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(pointer#{', ' if not method.parameters.one?}#{KotlinHelper.calling_parameters_ios(method.parameters.drop(1))})") %>
+<%=   render('kotlin/ios_parameter_release.erb', { method: method }) -%>
+        return result
+    }
 <%  end -%>
-<%  if entity.static_properties.any? || static_methods.any? -%>
+<%  if entity.static_properties.any? || static_methods.any? || constructors.any? -%>
 
-    actual companion object {
+    <%= if entity.static_properties.any? || static_methods.any? then "actual" else "private" end %> companion object {
+<%# Constructor wrappers -%>
+<%  if constructors.any? -%>
+<%  constructors.each do |constructor| -%>
+
+<%  if constructor.return_type.is_nullable -%>
+        @Throws(IllegalArgumentException::class)
+<%  end -%>
+        private fun wrapperTW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.parameters(constructor.parameters) %>): CPointer<TW<%= entity.name %>> {
+<%=   render('kotlin/ios_parameter_access.erb', { method: constructor, more_index: 4 }) -%>
+            val result = TW<%= entity.name %><%= constructor.name %>(<%= KotlinHelper.calling_parameters_ios(constructor.parameters) %>)
+<%=   render('kotlin/ios_parameter_release.erb', { method: constructor, more_index: 4 }) -%>
+<%  if constructor.return_type.is_nullable -%>
+            if (result == null) {
+                throw IllegalArgumentException()
+            }
+            return result
+<%  else -%>
+            return result!!
+<%  end -%>
+        }
+<%  end -%>
+<%  end -%>
 <%# Static property declarations -%>
 <%  entity.static_properties.each do |property| -%>
 
@@ -46,8 +77,12 @@ actual class <%= entity.name %> constructor(
 <%# Static method declarations -%>
 <%  static_methods.each do |method| -%>
 
-        actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> =
-            <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
+        actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> {
+<%=   render('kotlin/ios_parameter_access.erb', { method: method, more_index: 4 }) -%>
+            val result = <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
+<%=   render('kotlin/ios_parameter_release.erb', { method: method, more_index: 4 }) -%>
+            return result
+        }
 <%  end -%>
     }
 <%  end -%>

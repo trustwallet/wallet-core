@@ -86,7 +86,7 @@ TWData *_Nonnull TWHashBlake2bPersonal(TWData *_Nonnull data, TWData * _Nonnull 
     auto dataBytes = TWDataBytes(data);
     auto personalBytes = TWDataBytes(personal);
     auto personalSize = TWDataSize(personal);
-    blake2b_Personal(dataBytes, static_cast<uint32_t>(TWDataSize(data)), personalBytes, personalSize, resultBytes.data(), outlen);
+    tc_blake2b_Personal(dataBytes, static_cast<uint32_t>(TWDataSize(data)), personalBytes, personalSize, resultBytes.data(), outlen);
     auto result = TWDataCreateWithBytes(resultBytes.data(), outlen);
     return result;
 }

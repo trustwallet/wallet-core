@@ -15,11 +15,6 @@
 
 namespace TW::Waves {
 
-template <typename T>
-Data Address::secureHash(const T &data) {
-    return Hash::keccak256(Hash::blake2b(data, 32));
-}
-
 bool Address::isValid(const Data& decoded) {
     if (decoded.size() != Address::size) {
         return false;

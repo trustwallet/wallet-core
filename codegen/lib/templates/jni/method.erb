@@ -1,5 +1,5 @@
 <%  method = locals[:method] -%>
-<%= render('jni/method_prototype.erb', { method: method }) %> {
+<%= render('jni/method_prototype.erb', { method: method, maybe_unused: true }) %> {
 <%  if !method.static -%>
 <%=   render('jni/instance_access.erb', { entity: entity }) %>
 <%  end -%>

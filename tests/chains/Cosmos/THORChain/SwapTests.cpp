@@ -90,7 +90,7 @@ TEST(THORChainSwap, SwapBtcEth) {
 
     // set few fields before signing
     tx.set_byte_fee(20);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *tx.add_utxo();
     Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");
@@ -350,7 +350,7 @@ TEST(THORChainSwap, SwapBtcBnb) {
 
     // set few fields before signing
     tx.set_byte_fee(80);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *tx.add_utxo();
     Data utxoHash = parse_hex("8eae5c3a4c75058d4e3facd5d72f18a40672bcd3d1f35ebf3094bd6c78da48eb");
@@ -801,7 +801,7 @@ TEST(THORChainSwap, SwapBnbEth) {
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set private key and few other fields
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb)), Address1Bnb);
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb, TWCoinTypeCurve(TWCoinTypeBinance))), Address1Bnb);
     tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
     tx.set_chain_id("Binance-Chain-Tigris");
     tx.set_account_number(1902570);
@@ -849,7 +849,7 @@ TEST(THORChainSwap, SwapBnbRune) {
     EXPECT_EQ(hex(TW::data(tx.private_key())), "");
 
     // set private key and few other fields
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb)), Address1Bnb);
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, PrivateKey(TestKey1Bnb, TWCoinTypeCurve(TWCoinTypeBinance))), Address1Bnb);
     tx.set_private_key(TestKey1Bnb.data(), TestKey1Bnb.size());
     tx.set_chain_id("Binance-Chain-Tigris");
     tx.set_account_number(1902570);
@@ -901,7 +901,7 @@ TEST(THORChainSwap, SwapBusdTokenBnb) {
 
     // set private key and few other fields
     const Data privateKey = parse_hex("412c379cccf9d792238f0a8bd923604e00c2be11ea1de715945f6a849796362a");
-    EXPECT_EQ(Binance::Address(PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "bnb1gddl87crh47wzynjx3c6pmcclzk7txlkm74x28");
+    EXPECT_EQ(Binance::Address(PrivateKey(privateKey, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "bnb1gddl87crh47wzynjx3c6pmcclzk7txlkm74x28");
     tx.set_private_key(privateKey.data(), privateKey.size());
     tx.set_chain_id("Binance-Chain-Tigris");
     tx.set_account_number(7320332);
@@ -951,7 +951,7 @@ TEST(THORChainSwap, SwapBnbBnbToken) {
 
     // set private key and few other fields
     const Data privateKey = parse_hex("bcf8b072560dda05122c99390def2c385ec400e1a93df0657a85cf6b57a715da");
-    EXPECT_EQ(Binance::Address(PrivateKey(privateKey).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx");
+    EXPECT_EQ(Binance::Address(PrivateKey(privateKey, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1)).string(), "bnb1us47wdhfx08ch97zdueh3x3u5murfrx30jecrx");
     tx.set_private_key(privateKey.data(), privateKey.size());
     tx.set_chain_id("Binance-Chain-Tigris");
     tx.set_account_number(1902570);
@@ -1004,7 +1004,7 @@ TEST(THORChainSwap, SwapBtcEthWithAffFee) {
 
     // set few fields before signing
     tx.set_byte_fee(20);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *tx.add_utxo();
     Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");
@@ -1122,7 +1122,7 @@ TEST(THORChainSwap, SwapBtcNegativeMemoTooLong) {
 
     // set few fields before signing
     tx.set_byte_fee(20);
-    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
+    EXPECT_EQ(Bitcoin::SegwitAddress(PrivateKey(TestKey1Btc, TWCurveSECP256k1).getPublicKey(TWPublicKeyTypeSECP256k1), "bc").string(), Address1Btc);
     tx.add_private_key(TestKey1Btc.data(), TestKey1Btc.size());
     auto& utxo = *tx.add_utxo();
     Data utxoHash = parse_hex("1234000000000000000000000000000000000000000000000000000000005678");

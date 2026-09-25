@@ -12,27 +12,20 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event.pull_request.draft == false
     steps:
-    # Work around https://github.com/actions/runner-images/issues/8659
-    - name: Remove GCC 13 from runner image
-      shell: bash
-      run: |
-          sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list
-          sudo apt-get update
-          sudo apt-get install -y --allow-downgrades libc6=2.35-0ubuntu3.6 libc6-dev=2.35-0ubuntu3.6 libstdc++6=12.3.0-1ubuntu1~22.04 libgcc-s1=12.3.0-1ubuntu1~22.04
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
     - name: Install system dependencies
       run: |
         tools/install-sys-dependencies-linux
         tools/install-rust-dependencies
     - name: Cache internal dependencies
       id: internal_cache
-      uses: actions/cache@v3
+      uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
       with:
         path: build/local
-        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/install-sys-dependencies-linux') }}-internal-${{ hashFiles('tools/install-dependencies') }}-${{ hashFiles('tools/dependencies-version') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
@@ -68,13 +61,6 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-    - name: Build, run, and test devconsole.ts
-      run: |
-        cd samples/typescript/devconsole.ts
-        npm install
-        npm run build
-        echo -e "help() \n .exit" | npm run start
-        npm run test
     - name: Install Go
       env:
         GO_VERSION: 1.19

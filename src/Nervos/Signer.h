@@ -15,10 +15,10 @@ public:
     Signer() = delete;
 
     /// Returns a transaction plan (utxo selection, fee estimation)
-    static Proto::TransactionPlan plan(const Proto::SigningInput& signingInputProto) noexcept;
+    static Proto::TransactionPlan plan(const Proto::SigningInput& signingInputProto);
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& signingInputProto) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& signingInputProto);
 };
 
 } // namespace TW::Nervos

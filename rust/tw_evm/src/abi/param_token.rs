@@ -34,7 +34,6 @@ impl NamedToken {
         }
     }
 
-    #[cfg(test)]
     pub fn with_token(value: Token) -> NamedToken {
         NamedToken {
             name: None,

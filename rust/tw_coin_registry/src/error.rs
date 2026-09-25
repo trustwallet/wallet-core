@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::{SigningError, SigningErrorType};
+use tw_coin_entry::error::prelude::*;
 
 pub type RegistryResult<T> = Result<T, RegistryError>;
 
@@ -16,8 +16,12 @@ impl From<RegistryError> for SigningError {
     #[inline]
     fn from(e: RegistryError) -> Self {
         match e {
-            RegistryError::UnknownCoinType => SigningError(SigningErrorType::Error_invalid_params),
-            RegistryError::Unsupported => SigningError(SigningErrorType::Error_internal),
+            RegistryError::UnknownCoinType => {
+                SigningError::new(SigningErrorType::Error_invalid_params)
+                    .context("Unknown coin type")
+            },
+            RegistryError::Unsupported => SigningError::new(SigningErrorType::Error_internal)
+                .context("Requested coin type is not supported in Rust yet"),
         }
     }
 }

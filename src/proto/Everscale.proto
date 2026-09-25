@@ -7,6 +7,7 @@ syntax = "proto3";
 package TW.Everscale.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
 
 // Message option
 enum MessageBehavior {
@@ -55,4 +56,10 @@ message SigningInput {
 // Result containing the signed and encoded transaction.
 message SigningOutput {
     string encoded = 1;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 2;
+
+    // error description
+    string error_message = 3;
 }

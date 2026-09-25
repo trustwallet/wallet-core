@@ -15,7 +15,7 @@ class WebAuthnTests: XCTestCase {
 
     func testGetRSValues() {
         let signature = Data(hexString: "0x30440220766589b461a838748708cdf88444b21b1fa52b57d70671b4f9bf60ad14b372ec022020cc439c9c20661bfa39bbea24a900ec1484b2395eb065ead8ef4e273144a57d")!
-        let result = WebAuthn.getRSValues(signature: signature)
+        let result = WebAuthn.getRSValues(signature: signature)!
         XCTAssertEqual(result.hexString, "766589b461a838748708cdf88444b21b1fa52b57d70671b4f9bf60ad14b372ec20cc439c9c20661bfa39bbea24a900ec1484b2395eb065ead8ef4e273144a57d")
     }
 

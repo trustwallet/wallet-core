@@ -13,7 +13,8 @@ import "Aptos.proto";
 
 // Enum for supported coins for liquid staking
 enum Coin {
-  MATIC = 0;
+  // Previously, MATIC.
+  POL = 0;
   ATOM = 1;
   BNB = 2;
   APT = 3;

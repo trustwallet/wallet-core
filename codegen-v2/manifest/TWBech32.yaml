@@ -1,0 +1,78 @@
+name: TWBech32
+structs:
+- name: TWBech32
+  is_public: true
+  is_class: false
+functions:
+- name: TWBech32Encode
+  is_public: true
+  is_static: true
+  params:
+  - name: hrp
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  - name: data
+    type:
+      variant: data
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBech32Decode
+  is_public: true
+  is_static: true
+  params:
+  - name: string
+    type:
+      variant: string
+      is_constant: true
+      is_nullable: false
+      is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true
+- name: TWBech32EncodeM
+  is_public: true
+  is_static: true
+  params:
+    - name: hrp
+      type:
+        variant: string
+        is_constant: true
+        is_nullable: false
+        is_pointer: true
+    - name: data
+      type:
+        variant: data
+        is_constant: true
+        is_nullable: false
+        is_pointer: true
+  return_type:
+    variant: string
+    is_constant: true
+    is_nullable: false
+    is_pointer: true
+- name: TWBech32DecodeM
+  is_public: true
+  is_static: true
+  params:
+    - name: string
+      type:
+        variant: string
+        is_constant: true
+        is_nullable: false
+        is_pointer: true
+  return_type:
+    variant: data
+    is_constant: true
+    is_nullable: true
+    is_pointer: true

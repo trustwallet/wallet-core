@@ -45,6 +45,16 @@ pub trait OptionalEmpty: Sized {
     fn empty_or_some(self) -> Option<Self>;
 }
 
+impl<T> OptionalEmpty for Vec<T> {
+    fn empty_or_some(self) -> Option<Self> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(self)
+        }
+    }
+}
+
 impl OptionalEmpty for String {
     fn empty_or_some(self) -> Option<Self> {
         if self.is_empty() {
@@ -54,3 +64,25 @@ impl OptionalEmpty for String {
         }
     }
 }
+
+pub trait OptionalInt: Sized {
+    fn zero_or_some(self) -> Option<Self>;
+}
+
+macro_rules! impl_optional_int {
+    ($($int:ty,)+) => {
+        $(
+            impl OptionalInt for $int {
+                fn zero_or_some(self) -> Option<Self> {
+                    if self == 0 {
+                        None
+                    } else {
+                        Some(self)
+                    }
+                }
+            }
+        )+
+    };
+}
+
+impl_optional_int!(i8, u8, i16, u16, i32, u32, i64, u64, i128, u128,);

@@ -9,12 +9,14 @@ use tw_encoding::ffi::{decode_base32, encode_base32};
 /// equals to `expected`.
 #[track_caller]
 fn test_base32_encode_helper(input: &[u8], expected: &str, alphabet: Option<&str>, padding: bool) {
-    let alphabet = alphabet
-        .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
-        .unwrap_or_else(std::ptr::null_mut);
+    let alphabet_cstring = alphabet.map(|alphabet| CString::new(alphabet).unwrap());
+    let alphabet_ptr = alphabet_cstring
+        .as_ref()
+        .map(|s| s.as_ptr())
+        .unwrap_or_else(std::ptr::null);
 
     let result_ptr =
-        unsafe { encode_base32(input.as_ptr(), input.len(), alphabet, padding) }.unwrap();
+        unsafe { encode_base32(input.as_ptr(), input.len(), alphabet_ptr, padding) }.unwrap();
     let result = unsafe { CString::from_raw(result_ptr) };
     assert_eq!(result.to_str().unwrap(), expected);
 }
@@ -24,12 +26,14 @@ fn test_base32_encode_helper(input: &[u8], expected: &str, alphabet: Option<&str
 #[track_caller]
 fn test_base32_decode_helper(input: &str, expected: &[u8], alphabet: Option<&str>, padding: bool) {
     let input = CString::new(input).unwrap();
-    let alphabet = alphabet
-        .map(|alphabet| CString::new(alphabet).unwrap().into_raw())
-        .unwrap_or_else(std::ptr::null_mut);
+    let alphabet_cstring = alphabet.map(|alphabet| CString::new(alphabet).unwrap());
+    let alphabet_ptr = alphabet_cstring
+        .as_ref()
+        .map(|s| s.as_ptr())
+        .unwrap_or_else(std::ptr::null);
 
     let decoded = unsafe {
-        decode_base32(input.as_ptr(), alphabet, padding)
+        decode_base32(input.as_ptr(), alphabet_ptr, padding)
             .unwrap()
             .into_vec()
     };

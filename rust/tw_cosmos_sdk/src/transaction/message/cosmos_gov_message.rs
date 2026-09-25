@@ -5,7 +5,7 @@
 use crate::address::CosmosAddress;
 use crate::proto::cosmos;
 use crate::transaction::message::{CosmosMessage, ProtobufMessage};
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 pub enum VoteOption {
@@ -36,7 +36,7 @@ impl<Address: CosmosAddress> CosmosMessage for VoteMessage<Address> {
 
         let proto_msg = cosmos::gov::v1beta1::MsgVote {
             proposal_id: self.proposal_id,
-            voter: self.voter.to_string(),
+            voter: self.voter.to_string().into(),
             option,
         };
         Ok(to_any(&proto_msg))

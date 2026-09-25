@@ -1,14 +1,18 @@
 [versions]
-android-sdk-tools = "33.0.2"
+android-sdk-tools = "35.0.0"
 android-sdk-min = "24"
-android-sdk-compile = "33"
+android-sdk-compile = "35"
 android-cmake = "3.22.1"
-android-ndk = "25.2.9519653"
+android-ndk = "28.0.12674087"
 
-kotlin = "1.8.21"
-agp = "8.0.0"
+kotlin = "2.1.0"
+agp = "8.8.0"
 wire = "4.5.6"
+
+androidx-test-runner = "1.5.2"
 
 [libraries]
 wire-runtime = { module = "com.squareup.wire:wire-runtime", version.ref = "wire" }
 wire-compiler = { module = "com.squareup.wire:wire-compiler", version.ref = "wire" }
+
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }

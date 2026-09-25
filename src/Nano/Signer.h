@@ -14,7 +14,7 @@ namespace TW::Nano {
 class Signer {
 public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     /// Signs a json Proto::SigningInput with private key
     static std::string signJSON(const std::string& json, const Data& key);
 
@@ -29,7 +29,7 @@ public:
     explicit Signer(const Proto::SigningInput& input);
 
     /// Signs the blockHash, returns signature bytes
-    std::array<byte, 64> sign() const noexcept;
+    std::array<byte, 64> sign() const;
 
     /// Builds signed transaction, incl. signature, and json format
     Proto::SigningOutput build() const;

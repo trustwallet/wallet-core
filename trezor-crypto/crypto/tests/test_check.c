@@ -4837,21 +4837,21 @@ START_TEST(test_blake2b) {
   uint8_t digest[BLAKE2B_DIGEST_LENGTH];
   for (size_t i = 0; i < (sizeof(tests) / sizeof(*tests)); i++) {
     size_t msg_len = strlen(tests[i].msg) / 2;
-    blake2b_Key(fromhex(tests[i].msg), msg_len, key, sizeof(key), digest,
+    tc_blake2b_Key(fromhex(tests[i].msg), msg_len, key, sizeof(key), digest,
                 sizeof(digest));
     ck_assert_mem_eq(digest, fromhex(tests[i].hash), sizeof(digest));
 
     // Test progressive hashing.
     size_t part_len = msg_len / 2;
     BLAKE2B_CTX ctx;
-    ck_assert_int_eq(blake2b_InitKey(&ctx, sizeof(digest), key, sizeof(key)),
+    ck_assert_int_eq(tc_blake2b_InitKey(&ctx, sizeof(digest), key, sizeof(key)),
                      0);
-    ck_assert_int_eq(blake2b_Update(&ctx, fromhex(tests[i].msg), part_len), 0);
-    ck_assert_int_eq(blake2b_Update(&ctx, NULL, 0), 0);
-    ck_assert_int_eq(blake2b_Update(&ctx, fromhex(tests[i].msg) + part_len,
+    ck_assert_int_eq(tc_blake2b_Update(&ctx, fromhex(tests[i].msg), part_len), 0);
+    ck_assert_int_eq(tc_blake2b_Update(&ctx, NULL, 0), 0);
+    ck_assert_int_eq(tc_blake2b_Update(&ctx, fromhex(tests[i].msg) + part_len,
                                     msg_len - part_len),
                      0);
-    ck_assert_int_eq(blake2b_Final(&ctx, digest, sizeof(digest)), 0);
+    ck_assert_int_eq(tc_blake2b_Final(&ctx, digest, sizeof(digest)), 0);
     ck_assert_mem_eq(digest, fromhex(tests[i].hash), BLAKE2B_DIGEST_LENGTH);
   }
 }
@@ -4897,15 +4897,15 @@ START_TEST(test_blake2bp) {
     size_t part_len = msg_len / 2;
     BLAKE2B_CTX ctx;
     ck_assert_int_eq(
-        blake2b_InitPersonal(&ctx, sizeof(digest), tests[i].personal,
+        tc_blake2b_InitPersonal(&ctx, sizeof(digest), tests[i].personal,
                              strlen(tests[i].personal)),
         0);
-    ck_assert_int_eq(blake2b_Update(&ctx, fromhex(tests[i].msg), part_len), 0);
-    ck_assert_int_eq(blake2b_Update(&ctx, NULL, 0), 0);
-    ck_assert_int_eq(blake2b_Update(&ctx, fromhex(tests[i].msg) + part_len,
+    ck_assert_int_eq(tc_blake2b_Update(&ctx, fromhex(tests[i].msg), part_len), 0);
+    ck_assert_int_eq(tc_blake2b_Update(&ctx, NULL, 0), 0);
+    ck_assert_int_eq(tc_blake2b_Update(&ctx, fromhex(tests[i].msg) + part_len,
                                     msg_len - part_len),
                      0);
-    ck_assert_int_eq(blake2b_Final(&ctx, digest, sizeof(digest)), 0);
+    ck_assert_int_eq(tc_blake2b_Final(&ctx, digest, sizeof(digest)), 0);
     ck_assert_mem_eq(digest, fromhex(tests[i].hash), sizeof(digest));
   }
 }

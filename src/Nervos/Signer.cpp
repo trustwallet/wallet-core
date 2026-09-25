@@ -8,13 +8,13 @@
 
 namespace TW::Nervos {
 
-Proto::TransactionPlan Signer::plan(const Proto::SigningInput& signingInput) noexcept {
+Proto::TransactionPlan Signer::plan(const Proto::SigningInput& signingInput) {
     TransactionPlan txPlan;
     txPlan.plan(signingInput);
     return txPlan.proto();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) {
     Proto::SigningOutput output;
 
     TransactionPlan txPlan;
@@ -34,7 +34,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& signingInput) noexc
     std::vector<PrivateKey> privateKeys;
     privateKeys.reserve(signingInput.private_key_size());
     for (auto&& privateKey : signingInput.private_key()) {
-        privateKeys.emplace_back(privateKey);
+        privateKeys.emplace_back(PrivateKey(privateKey, TWCurveSECP256k1));
     }
     auto error = tx.sign(privateKeys);
     if (error != Common::Proto::OK) {

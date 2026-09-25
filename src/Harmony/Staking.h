@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <boost/algorithm/string.hpp>
 #include <cstdint>
 #include <math.h>
 #include <stdint.h>

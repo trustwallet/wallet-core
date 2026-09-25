@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export NDK_API_LEVEL=21
+export NDK_API_LEVEL=28
 
 find_android_ndk() {
     if [[ "$ANDROID_NDK_HOME" != "" ]]; then

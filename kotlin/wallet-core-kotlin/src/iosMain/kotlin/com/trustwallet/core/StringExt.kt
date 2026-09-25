@@ -4,12 +4,14 @@
 
 package com.trustwallet.core
 
-import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.toKString
 
-internal fun String?.toTwString(): COpaquePointer? =
-    this?.let { TWStringCreateWithUTF8Bytes(it) }
-
+// Build String from TWString, and then delete TWString
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 internal fun CValuesRef<*>?.fromTwString(): String? =
-    this?.let { TWStringUTF8Bytes(it)?.toKString() }
+    this?.let {
+        val result = TWStringUTF8Bytes(it)?.toKString()
+        TWStringDelete(it)
+        result
+    }

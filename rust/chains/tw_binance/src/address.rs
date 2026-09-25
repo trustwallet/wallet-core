@@ -9,7 +9,7 @@ use tw_bech32_address::bech32_prefix::Bech32Prefix;
 use tw_bech32_address::Bech32Address;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::{AddressError, AddressResult};
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::address::CosmosAddress;
 use tw_keypair::tw::PublicKey;
 use tw_memory::Data;

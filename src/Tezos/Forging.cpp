@@ -179,6 +179,7 @@ Data forgeOperation(const Proto::Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         append(forged, forgedPublicKey);
+        forged.push_back(0x00); // presence_of_proof = false (no proof for non-tz4)
         return forged;
     }
 

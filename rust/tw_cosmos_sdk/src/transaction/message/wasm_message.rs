@@ -9,7 +9,7 @@ use crate::transaction::message::{CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
 use serde_json::{json, Value as Json};
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_number::U256;
 use tw_proto::to_any;
@@ -38,7 +38,8 @@ impl ExecuteMsg {
 
     pub fn json<Payload: Serialize>(payload: Payload) -> SigningResult<ExecuteMsg> {
         let payload = serde_json::to_value(payload)
-            .map_err(|_| SigningError(SigningErrorType::Error_internal))?;
+            .tw_err(SigningErrorType::Error_internal)
+            .context("Error serializing message payload to JSON")?;
         Ok(ExecuteMsg::Json(payload))
     }
 
@@ -62,9 +63,9 @@ pub struct WasmExecuteContractMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for WasmExecuteContractMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = cosmwasm::wasm::v1::MsgExecuteContract {
-            sender: self.sender.to_string(),
-            contract: self.contract.to_string(),
-            msg: self.msg.to_bytes(),
+            sender: self.sender.to_string().into(),
+            contract: self.contract.to_string().into(),
+            msg: self.msg.to_bytes().into(),
             funds: self.coins.iter().map(build_coin).collect(),
         };
         Ok(to_any(&proto_msg))

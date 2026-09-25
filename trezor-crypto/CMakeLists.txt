@@ -23,6 +23,8 @@ set(TW_WARNING_FLAGS
     -Wno-missing-braces
 )
 
+set(CMAKE_C_STANDARD 11)
+
 add_library(TrezorCrypto
     crypto/bignum.c crypto/ecdsa.c crypto/curves.c crypto/secp256k1.c crypto/rand.c crypto/hmac.c crypto/bip32.c crypto/bip39.c crypto/slip39.c crypto/pbkdf2.c crypto/base58.c crypto/base32.c
     crypto/address.c
@@ -63,7 +65,7 @@ if (EMSCRIPTEN)
     message(STATUS "Skip building trezor-crypto/tests")
     set(TW_WARNING_FLAGS ${TW_WARNING_FLAGS} -Wno-bitwise-instead-of-logical)
 else ()
-    if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_JAVA)
+    if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_JAVA AND NOT FLUTTER)
         add_subdirectory(crypto/tests)
     endif()
 endif()

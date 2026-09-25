@@ -6,7 +6,7 @@ use crate::address::GreenfieldAddress;
 use crate::transaction::message::type_msg_amount::TypeMsgAmount;
 use crate::transaction::message::GreenfieldMessage;
 use serde::Serialize;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_cosmos_sdk::modules::serializer::protobuf_serializer::build_coin;
 use tw_cosmos_sdk::proto::greenfield as GreenfieldProto;
 use tw_cosmos_sdk::transaction::message::{
@@ -65,8 +65,8 @@ pub struct GreenfieldTransferOut {
 impl CosmosMessage for GreenfieldTransferOut {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let msg = GreenfieldProto::bridge::MsgTransferOut {
-            from: self.from.to_string(),
-            to: self.to.to_string(),
+            from: self.from.to_string().into(),
+            to: self.to.to_string().into(),
             amount: Some(build_coin(&self.amount)),
         };
         Ok(to_any(&msg))

@@ -34,7 +34,10 @@ using SS58Prefix = uint32_t;
 /// Declare a dummy prefix to notify the entry to derive a delegated address.
 struct DelegatedPrefix {};
 
-using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, DelegatedPrefix, std::monostate>;
+/// Declare a dummy prefix to notify the entry to derive a firo exchange address.
+struct ExchangePrefix {};
+
+using PrefixVariant = std::variant<Base58Prefix, Bech32Prefix, SS58Prefix, DelegatedPrefix, ExchangePrefix, std::monostate>;
 
 /// Interface for coin-specific entry, used to dispatch calls to coins
 /// Implement this for all coins.
@@ -65,26 +68,42 @@ public:
     virtual Data preImageHashes([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const Data& txInputData) const { return {}; }
     // Optional method for compiling a transaction with externally-supplied signatures & pubkeys.
     virtual void compile([[maybe_unused]] TWCoinType coin, [[maybe_unused]] const Data& txInputData, [[maybe_unused]] const std::vector<Data>& signatures, [[maybe_unused]] const std::vector<PublicKey>& publicKeys, [[maybe_unused]] Data& dataOut) const {}
+    // Optional method for decoding a private key. Could throw an exception if the encoded private key is invalid.
+    virtual PrivateKey decodePrivateKey([[maybe_unused]] TWCoinType coin, const std::string& privateKey) const;
 };
 
 // In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:
-// static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+// static Proto::SigningOutput sign(const Proto::SigningInput& input);
 // Note: use output parameter to avoid unneeded copies
-template <typename Signer, typename Input>
+template <typename Signer, typename Input, typename Output>
 void signTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::sign(input).SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    try {
+        const auto serializedOut = Signer::sign(input).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    } catch (...) {
+        Output output;
+        output.set_error(Common::Proto::Error_invalid_params);
+        const auto serializedOut = output.SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }
 
 // Note: use output parameter to avoid unneeded copies
-template <typename Planner, typename Input>
+template <typename Planner, typename Input, typename Output>
 void planTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Planner::plan(input).SerializeAsString();
-    dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    try {
+        auto serializedOut = Planner::plan(input).SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    } catch (...) {
+        Output output;
+        output.set_error(Common::Proto::Error_invalid_params);
+        auto serializedOut = output.SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+    }
 }
 
 // This template will be used for preImageHashes and compile in each coin's Entry.cpp.

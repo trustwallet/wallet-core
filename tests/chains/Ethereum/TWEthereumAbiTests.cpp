@@ -345,4 +345,13 @@ TEST(TWEthereumAbi, encodeTyped) {
     );
 }
 
+TEST(TWEthereumAbi, GetFunctionSignature) {
+    const auto abiJson = R"|({"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"})|";
+    const auto abiJsonStr = WRAPS(TWStringCreateWithUTF8Bytes(abiJson));
+
+    const auto result = WRAPS(TWEthereumAbiGetFunctionSignature(abiJsonStr.get()));
+    const auto expected = WRAPS(TWStringCreateWithUTF8Bytes("transfer(address,uint256)"));
+    EXPECT_TRUE(TWStringEqual(result.get(), expected.get()));
+}
+
 } // namespace TW::Ethereum

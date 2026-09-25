@@ -14,7 +14,7 @@ namespace TW::IoTeX {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     /// Build the compile output
     static Proto::SigningOutput compile(const Proto::SigningInput& input, const Data& signature, const TW::PublicKey& pubKey) noexcept;
   public:

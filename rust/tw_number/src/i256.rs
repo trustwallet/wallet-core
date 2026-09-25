@@ -40,7 +40,6 @@ impl I256 {
     /// - `0` is [`U256::zero()`]
     /// - `-1` is [`U256::MAX`]
     /// - `-2` is [`U256::MAX - 1`]
-    /// ...
     #[inline]
     pub fn to_u256_repr(&self) -> U256 {
         U256::from(self.0)
@@ -52,7 +51,6 @@ impl I256 {
     /// - [`U256::zero()`] is `0`
     /// - [`U256::MAX`] is `-1`
     /// - [`U256::MAX - 1`] is `-2`
-    /// ...
     #[inline]
     pub fn from_u256_repr(unsigned: U256) -> I256 {
         I256(unsigned.0)

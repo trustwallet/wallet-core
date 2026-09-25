@@ -5,10 +5,7 @@
 #include "Signer.h"
 #include "Account.h"
 #include "../BinaryCoding.h"
-#include "../Hash.h"
-#include "../PrivateKey.h"
 #include <google/protobuf/util/json_util.h>
-#include <iostream>
 #include <nlohmann/json.hpp>
 #include <sstream>
 
@@ -98,7 +95,7 @@ std::string Signer::encodeTransaction(const Proto::Transaction& t) noexcept {
     return se.AsString();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto t = input.transaction_template();
 
     if (t.actions_size() == 0) {

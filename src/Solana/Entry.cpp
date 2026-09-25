@@ -3,58 +3,42 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Entry.h"
-
-#include "Address.h"
-#include "Signer.h"
+#include "Base58.h"
+#include "Coin.h"
+#include "HexCoding.h"
+#include "proto/Solana.pb.h"
 
 using namespace TW;
 using namespace std;
 
 namespace TW::Solana {
 
-bool Entry::validateAddress([[maybe_unused]] TWCoinType coin, const std::string& address, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return Address::isValid(address);
+string Entry::signJSON(TWCoinType coin, const std::string& json, const Data& key) const {
+    return signJSONHelper<Proto::SigningInput, Proto::SigningOutput>(
+        coin,
+        json,
+        key,
+        [](const Proto::SigningOutput& output) { return output.encoded(); }
+    );
 }
 
-std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return Address(publicKey).string();
-}
-
-Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {
-    return Address(address).vector();
-}
-
-void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
-}
-
-string Entry::signJSON([[maybe_unused]] TWCoinType coin, const std::string& json, const Data& key) const {
-    return Signer::signJSON(json, key);
-}
-
-TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const TW::Data& txInputData) const {
-    return txCompilerTemplate<Proto::SigningInput, Proto::PreSigningOutput>(
-        txInputData, [](const auto& input, auto& output) {
-            auto signer = Signer(input);
-            auto preimageHash = signer.preImageHash();
-            // for Solana, there is no need to hash data.
-            output.set_data(preimageHash.data(), preimageHash.size());
-            auto signers = signer.signers();
-            auto nSigners = output.mutable_signers();
-            for (auto i = 0ul; i < signers.size();i++) {
-                auto newSigner = nSigners->Add();
-                *newSigner = signers[i];
-            }
-        });
-}
-
-void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
-                    const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
-    dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(
-        txInputData, [&](const auto& input, auto& output) {
-            auto signer = Signer(input);
-            output = signer.compile(signatures, publicKeys);
-        });
+PrivateKey Entry::decodePrivateKey(TWCoinType coin, const std::string& privateKey) const {
+    auto data = Base58::decode(privateKey);
+    if (data.size() == 64) {
+        const auto privateKeyData = subData(data, 0, 32);
+        const auto publicKeyData = subData(data, 32, 32);
+        auto privKey = PrivateKey(privateKeyData, TW::curve(coin));
+        auto publicKey = privKey.getPublicKey(TWPublicKeyType::TWPublicKeyTypeED25519);
+        if (publicKey.bytes != publicKeyData) {
+            throw std::invalid_argument("Invalid private key");
+        }
+        return privKey;
+    } else if (data.size() == 32) {
+        return PrivateKey(data, TW::curve(coin));
+    } else {
+        auto hexData = parse_hex(privateKey);
+        return PrivateKey(hexData, TW::curve(coin));
+    }
 }
 
 } // namespace TW::Solana

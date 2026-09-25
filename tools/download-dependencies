@@ -15,9 +15,9 @@ function download_gtest() {
     mkdir -p "$GTEST_DIR"
     cd "$GTEST_DIR"
     if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
-        curl -fSsOL https://github.com/google/googletest/archive/release-$GTEST_VERSION.tar.gz
+        curl -fSsOL https://github.com/google/googletest/releases/download/v$GTEST_VERSION/googletest-$GTEST_VERSION.tar.gz
     fi
-    tar xzf release-$GTEST_VERSION.tar.gz
+    tar xzf googletest-$GTEST_VERSION.tar.gz
 }
 
 function download_libcheck() {

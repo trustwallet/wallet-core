@@ -6,6 +6,7 @@ import com.trustwallet.core.<%= "TW#{entity.name}" %>.*
 
 <%  end -%>
 <%  type = ": TW#{entity.name}" -%>
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual enum class <%= entity.name %>(
 <%  if has_string -%>
     val nativeValue<%= type %>,
@@ -41,8 +42,12 @@ actual enum class <%= entity.name %>(
 <%- entity.methods.each do |method| -%>
 <%-   next if method.name.start_with?('Delete') -%>
 
-    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> =
-        TW<%= entity.name %><%= method.name %>(value<%= ', ' if not method.parameters.one? %><%= KotlinHelper.calling_parameters_ios(method.parameters.drop(1)) %>)<%= KotlinHelper.convert_calling_return_type_ios(method.return_type) %>
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %> {
+<%=   render('kotlin/ios_parameter_access.erb', { method: method }) -%>
+            val result = TW<%= entity.name %><%= method.name %>(value<%= ', ' if not method.parameters.one? %><%= KotlinHelper.calling_parameters_ios(method.parameters.drop(1)) %>)<%= KotlinHelper.convert_calling_return_type_ios(method.return_type) %>
+<%=   render('kotlin/ios_parameter_release.erb', { method: method }) -%>
+            return result
+    }
 <%- end -%>
 <%# Value -%>
 <%  if entity.cases.any? { |e| !e.value.nil? } -%>

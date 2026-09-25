@@ -3,17 +3,19 @@ syntax = "proto3";
 package TW.Zilliqa.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Generic transaction
 message Transaction {
     // Transfer transaction
     message Transfer {
-        // Amount to send (uint256, serialized little endian)
+        // Amount to send (uint256, serialized big endian)
         bytes amount           = 1;
     }
 
     // Generic contract call
     message Raw {
-        // Amount to send (uint256, serialized little endian)
+        // Amount to send (uint256, serialized big endian)
         bytes amount           = 1;
 
         // Smart contract code
@@ -60,4 +62,10 @@ message SigningOutput {
 
     // JSON transaction with signature
     string json = 2;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 3;
+
+    // error description
+    string error_message = 4;
 }

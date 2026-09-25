@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::codegen::rust::tw_any_coin_directory;
+use crate::codegen::rust::tw_tests_directory;
 use crate::codegen::template_generator::TemplateGenerator;
 use crate::coin_id::CoinId;
 use crate::registry::CoinItem;
@@ -20,7 +20,7 @@ const MOD_ADDRESS_TESTS_TEMPLATE: &str = include_str!("templates/integration_tes
 const SIGN_TESTS_TEMPLATE: &str = include_str!("templates/integration_tests/sign_tests.rs");
 
 pub fn chains_integration_tests_directory() -> PathBuf {
-    tw_any_coin_directory().join("tests").join("chains")
+    tw_tests_directory().join("tests").join("chains")
 }
 
 pub fn coin_integration_tests_directory(id: &CoinId) -> PathBuf {
@@ -28,7 +28,7 @@ pub fn coin_integration_tests_directory(id: &CoinId) -> PathBuf {
 }
 
 pub fn coin_address_derivation_test_path() -> PathBuf {
-    tw_any_coin_directory()
+    tw_tests_directory()
         .join("tests")
         .join("coin_address_derivation_test.rs")
 }

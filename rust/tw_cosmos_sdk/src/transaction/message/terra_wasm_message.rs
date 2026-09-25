@@ -10,7 +10,7 @@ use crate::transaction::message::{CosmosMessage, JsonMessage, ProtobufMessage};
 use crate::transaction::Coin;
 use serde::Serialize;
 use serde_json::json;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 const DEFAULT_JSON_MSG_TYPE: &str = "wasm/MsgExecuteContract";
@@ -28,9 +28,9 @@ pub struct TerraExecuteContractMessage<Address: CosmosAddress> {
 impl<Address: CosmosAddress> CosmosMessage for TerraExecuteContractMessage<Address> {
     fn to_proto(&self) -> SigningResult<ProtobufMessage> {
         let proto_msg = terra::wasm::v1beta1::MsgExecuteContract {
-            sender: self.sender.to_string(),
-            contract: self.contract.to_string(),
-            execute_msg: self.execute_msg.to_bytes(),
+            sender: self.sender.to_string().into(),
+            contract: self.contract.to_string().into(),
+            execute_msg: self.execute_msg.to_bytes().into(),
             coins: self.coins.iter().map(build_coin).collect(),
         };
         Ok(to_any(&proto_msg))

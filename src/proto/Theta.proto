@@ -13,16 +13,16 @@ message SigningInput {
     /// Recipient address
     string to_address = 2;
 
-    /// Theta token amount to send in wei (uint256, serialized little endian)
+    /// Theta token amount to send in wei (uint256, serialized big endian)
     bytes theta_amount = 3;
 
-    /// TFuel token amount to send in wei (uint256, serialized little endian)
+    /// TFuel token amount to send in wei (uint256, serialized big endian)
     bytes tfuel_amount = 4;
 
     /// Sequence number of the transaction for the sender address
     uint64 sequence = 5;
 
-    /// Fee amount in TFuel wei for the transaction (uint256, serialized little endian)
+    /// Fee amount in TFuel wei for the transaction (uint256, serialized big endian)
     bytes fee = 6;
 
     /// The secret private key used for signing (32 bytes).

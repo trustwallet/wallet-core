@@ -22,7 +22,7 @@ TEST(AeternitySigner, Sign) {
     uint64_t nonce = 49;
 
     auto transaction = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
-    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCurveED25519);
 
     auto result = Signer::sign(privateKey, transaction);
     EXPECT_EQ(result.signature(), "sg_VW42qDPP3MMNFAStYaumjZz7mC7BZYpbNa15E57ejqUe7JdQFWCiX65eLNUpGMpt8tSpfgCfkYzcaFppqx7W75CrcWdC8");
@@ -39,7 +39,7 @@ TEST(AeternitySigner, SignTxWithZeroTtl) {
     uint64_t nonce = 49;
 
     auto transaction = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
-    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCurveED25519);
 
     auto result = Signer::sign(privateKey, transaction);
     EXPECT_EQ(result.signature(), "sg_7qJK868bqEZ5ciC2P3WCKYfhayvKTHvPsz3bdPgpfF3Ky7yNg9f8k22A3gxjjSm9afa6JmP8TJpF4GJkFh2k7gGaog9KS");
@@ -56,7 +56,7 @@ TEST(AeternitySigner, SignTxWithZeroAmount) {
     uint64_t nonce = 7;
 
     auto transaction = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
-    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCurveED25519);
 
     auto result = Signer::sign(privateKey, transaction);
     EXPECT_EQ(result.signature(), "sg_ShWvujPnyKBT1Ng2X5k6XSchVK8Bq7LYEisPMH11DUoPkXZcooBzqw81j9j5JewoFFpT9xEhUptj1azcLA21ogURYh4Lz");
@@ -73,7 +73,7 @@ TEST(AeternitySigner, SignTxWithZeroNonce) {
     uint64_t nonce = 0;
 
     auto transaction = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
-    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"), TWCurveED25519);
 
     auto result = Signer::sign(privateKey, transaction);
     EXPECT_EQ(result.signature(), "sg_MaJc4ptSUhq5kH6mArszDAvu4f7PejyuhmgM6U8GEr8bRUTaSFbdFPx4C6FEYA5v5Lgwu9EToaWnHgR2xkqZ9JjHnaBpA");

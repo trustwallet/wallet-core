@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::base58;
 use tw_solana::modules::utils::SolanaTransaction;
 use tw_solana::SOLANA_ALPHABET;
@@ -15,7 +15,7 @@ fn test_update_recent_blockhash_and_sign() {
     let new_blockhash = "CyPYVsYWrsJNfVpi8aazu7WsrswNFuDd385z6GNoBGUg";
     let private_key = base58::decode(
         "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr",
-        &SOLANA_ALPHABET,
+        SOLANA_ALPHABET,
     )
     .unwrap();
 

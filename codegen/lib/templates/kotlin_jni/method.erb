@@ -1,5 +1,5 @@
 <%  method = locals[:method] -%>
-<%= render('kotlin_jni/method_prototype.erb', { method: method }) %> {
+<%= render('kotlin_jni/method_prototype.erb', { method: method, maybe_unused: false }) %> {
 <%  if !method.static -%>
 <%=   render('kotlin_jni/instance_access.erb', { entity: entity }) %>
 <%  end -%>

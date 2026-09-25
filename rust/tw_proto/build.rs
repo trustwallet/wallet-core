@@ -13,8 +13,9 @@ fn main() {
     let proto_ext = Some(Path::new("proto").as_os_str());
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap()).join("proto");
+    let cargo_manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
 
-    let proto_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+    let proto_dir = cargo_manifest_dir
         .join("..")
         .join("..")
         .join("src")
@@ -46,9 +47,21 @@ fn main() {
         .create(&out_dir)
         .expect("Error creating out directory");
 
-    let out_protos = ConfigBuilder::new(&protos, None, Some(&out_dir), &[proto_dir])
-        .expect("Error configuring pb-rs builder")
-        .build();
+    // `tw_proto/common_proto` contains google.protobuf proto files that are used in Cosmos protocol.
+    let common_proto_dir = cargo_manifest_dir
+        .join("src")
+        .join("common")
+        .canonicalize()
+        .expect("Cannot find common proto directory");
+
+    let out_protos = ConfigBuilder::new(
+        &protos,
+        None,
+        Some(&out_dir),
+        &[common_proto_dir, proto_dir],
+    )
+    .expect("Error configuring pb-rs builder")
+    .build();
     FileDescriptor::run(&out_protos).expect("Error generating proto files");
 
     #[cfg(feature = "fuzz")]
@@ -57,7 +70,7 @@ fn main() {
 }
 
 /// Unfortunately, `pb-rs` does not provide a proper support of custom derives.
-/// [`ConfigBuilder::custom_struct_derive`] adds the derive macroses for structs only,
+/// [`ConfigBuilder::custom_struct_derive`] adds the derive macros for structs only,
 /// however they should be added for enums too.
 /// Issues: https://github.com/tafia/quick-protobuf/issues/195, https://github.com/tafia/quick-protobuf/issues/212
 #[cfg(feature = "fuzz")]

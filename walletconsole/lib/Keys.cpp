@@ -52,7 +52,7 @@ bool Keys::pubPri(const string& coinid, const string& p, string& res) {
     Data privDat;
     try {
         privDat = parse_hex(p);
-        auto priv = PrivateKey(privDat);
+        auto priv = PrivateKey(privDat, TWCoinTypeCurve(TWCoinType(coin.c)));
         auto pub = priv.getPublicKey((TWPublicKeyType)coin.pubKeyType);
         res = hex(pub.bytes);
         _out << "Public key created, type " << (int)coin.pubKeyType << ", length " << pub.bytes.size() << endl;

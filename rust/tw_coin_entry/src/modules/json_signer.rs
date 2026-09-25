@@ -3,7 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::coin_context::CoinContext;
-use crate::error::SigningResult;
+use crate::error::prelude::*;
 use tw_keypair::tw::PrivateKey;
 
 pub trait JsonSigner {

@@ -85,7 +85,8 @@ TEST(FIOCompiler, CompileWithSignatures) {
 
         TW::FIO::Proto::SigningOutput output;
         ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
-        EXPECT_EQ(ExpectedTx, output.json());    
+        EXPECT_EQ(ExpectedTx, output.json());
+        EXPECT_EQ(output.action_name(), "trnsfiopubky");
     }
     { // Double check: check if simple signature process gives the same result. Note that private
       // keys were not used anywhere up to this point.

@@ -33,13 +33,13 @@ enum SigningMode {
 class Signer {
   public:
     /// Returns a transaction plan (utxo selection, fee estimation)
-    static Bitcoin::Proto::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) noexcept;
+    static Bitcoin::Proto::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input);
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Bitcoin::Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {}) noexcept;
+    static Proto::SigningOutput sign(const Bitcoin::Proto::SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs = {});
   
     /// Collect pre-image hashes to be signed
-    static Bitcoin::Proto::PreSigningOutput preImageHashes(const Bitcoin::Proto::SigningInput& input) noexcept;
+    static Bitcoin::Proto::PreSigningOutput preImageHashes(const Bitcoin::Proto::SigningInput& input);
 
   private:
     /// Private key and redeem script provider for signing.

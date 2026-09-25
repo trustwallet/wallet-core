@@ -4,22 +4,26 @@
 
 //! Transactions can be:
 //! - Non-typed (legacy, pre-EIP2718) transactions:
-//!  -- simple ETH transfer
-//!  -- others with payload, function call, e.g. ERC20 transfer
+//!   - simple ETH transfer
+//!   - others with payload, function call, e.g. ERC20 transfer
 //! - Typed transactions (enveloped, EIP2718), with specific type and transaction payload
 //! - User operations (EIP4337)
 
 use crate::transaction::signature::EthSignature;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_hash::{sha3::keccak256, H256};
 use tw_keypair::ecdsa::secp256k1;
 use tw_memory::Data;
 use tw_number::U256;
 
+pub mod access_list;
+pub mod authorization_list;
 pub mod signature;
 pub mod transaction_eip1559;
+pub mod transaction_eip7702;
 pub mod transaction_non_typed;
 pub mod user_operation;
+pub mod user_operation_v0_7;
 
 pub trait TransactionCommon {
     fn payload(&self) -> Data;

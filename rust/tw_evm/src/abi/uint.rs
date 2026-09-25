@@ -4,6 +4,7 @@
 
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
 use std::fmt;
+use tw_coin_entry::error::prelude::*;
 use tw_number::U256;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -46,8 +47,9 @@ impl From<UintBits> for usize {
 
 // https://docs.soliditylang.org/en/latest/abi-spec.html#types
 pub fn check_uint_bits(bits: usize) -> AbiResult<()> {
-    if bits % 8 != 0 || bits == 0 || bits > 256 {
-        return Err(AbiError(AbiErrorKind::Error_invalid_uint_value));
+    if !bits.is_multiple_of(8) || bits == 0 || bits > 256 {
+        return AbiError::err(AbiErrorKind::Error_invalid_uint_value)
+            .with_context(|| format!("Unexpected Uint bits: {bits}"));
     }
     Ok(())
 }

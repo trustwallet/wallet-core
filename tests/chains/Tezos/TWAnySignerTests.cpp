@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "HexCoding.h"
+#include "HDWallet.h"
 #include "Tezos/BinaryCoding.h"
 #include "proto/Tezos.pb.h"
 #include "TestUtilities.h"
@@ -125,7 +126,46 @@ TEST(TWAnySignerTezos, Sign) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeTezos);
 
-    EXPECT_EQ(hex(output.encoded()), "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05");
+    EXPECT_EQ(hex(output.encoded()), "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95006c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b9572100ca20897ea1fd0251b3bb4f9acfe948f579f9fd4767a28e9a437f30a1193d8cc66d7b8084da70d480fd08873a47e39e4e6155879fe679f7dd2e4643be68c74205");
+}
+
+TEST(TWAnySignerTezos, SignMainnet) {
+    const auto wallet = HDWallet("hen betray system volcano excess wash viable joke elder boil goat cricket", "");
+    const auto privateKey = wallet.getKey(TWCoinTypeTezos, TWDerivationDefault);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    const auto address = wallet.deriveAddress(TWCoinTypeTezos, TWDerivationDefault);
+
+    Proto::SigningInput input;
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto& operations = *input.mutable_operation_list();
+    operations.set_branch("BMWRrvZwJHmUhQEmGET9pshBJ2tTkqoQ8TF1vu78iaDTH98HL3H");
+
+    auto& reveal = *operations.add_operations();
+    auto& revealData = *reveal.mutable_reveal_operation_data();
+    revealData.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+    reveal.set_source(address);
+    reveal.set_fee(1272);
+    reveal.set_counter(187815742);
+    reveal.set_gas_limit(10100);
+    reveal.set_storage_limit(257);
+    reveal.set_kind(Proto::Operation::REVEAL);
+
+    auto& transaction = *operations.add_operations();
+    auto& txData = *transaction.mutable_transaction_operation_data();
+    txData.set_amount(1);
+    txData.set_destination("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    transaction.set_source(address);
+    transaction.set_fee(1272);
+    transaction.set_counter(187815743);
+    transaction.set_gas_limit(10100);
+    transaction.set_storage_limit(257);
+    transaction.set_kind(Proto::Operation::TRANSACTION);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeTezos);
+
+    // https://tzkt.io/oownY91ffLuq3ehdTmDy7rpvmFh2BYvmchKqzHcchoiEvcq4A25/187815742
+    EXPECT_EQ(hex(output.encoded()), "ec7a7f24aa912d8a52c6823a759e04957049ad70ae14d2b90f9bf92d1f3b8a326b00e1adcf685eeadda7d2552cd7d83e9ca07bf2793bf809beaec759f44e81020044ec60cb2d32d9b3f9087a46f18a2ff1bb9b9a798d7738b62ede87d1e721a624006c00e1adcf685eeadda7d2552cd7d83e9ca07bf2793bf809bfaec759f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000fc4263d2ba5ad2b4e770c86f50323726eefce1df5fc7b84cbe59cbb0cc9f583c37b3ee3e765a41b3e06101d75951864a22aea4c9c95ed23aed89eab2073bf03");
 }
 
 TEST(TWAnySignerTezos, SignJSON) {
@@ -134,7 +174,7 @@ TEST(TWAnySignerTezos, SignJSON) {
     auto result = WRAPS(TWAnySignerSignJSON(json.get(), key.get(), TWCoinTypeTezos));
 
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeTezos));
-    assertStringsEqual(result, "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e6c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b957210001b86398d5b9be737dca8e4106ea18d70e69b75e92f892fb283546a99152b8d7794b919c0fbf1c31de386069a60014491c0e7505adef5781cead1cfe6608030b");
+    assertStringsEqual(result, "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e006c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b957210097e828f0ec91b827995ef3ee81aac244f39f9961f2b1479626e228a14b80e860ae1dd3818648222c4b6aebcd3c57de8acebd1640f35c498e900e61876b7ecf0a");
 }
 
 } // namespace TW::Tezos::tests

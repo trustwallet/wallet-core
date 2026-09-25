@@ -1,0 +1,27 @@
+<%
+    method = locals[:method]
+    more_index = locals[:more_index] || 0
+
+    method.parameters.each do |param| -%>
+<%    if param.type.name == :data -%>
+<%      if param.type.is_nullable -%>
+<%= ' ' * more_index %>        val <%= KotlinHelper.fix_name(param.name) %>Data = if (<%= KotlinHelper.fix_name(param.name) %> == null) {
+<%= ' ' * more_index %>            null
+<%= ' ' * more_index %>        } else {
+<%= ' ' * more_index %>            TWDataCreateWithBytes(<%= KotlinHelper.fix_name(param.name) %>.toUByteArray().toCValues(), <%= KotlinHelper.fix_name(param.name) %>.size.toULong())
+<%= ' ' * more_index %>        }
+<%      else -%>
+<%= ' ' * more_index %>        val <%= KotlinHelper.fix_name(param.name) %>Data = TWDataCreateWithBytes(<%= KotlinHelper.fix_name(param.name) %>.toUByteArray().toCValues(), <%= KotlinHelper.fix_name(param.name) %>.size.toULong())
+<%      end -%>
+<%    elsif param.type.name == :string -%>
+<%      if param.type.is_nullable -%>
+<%= ' ' * more_index %>        val <%= KotlinHelper.fix_name(param.name) %>String = if (<%= KotlinHelper.fix_name(param.name) %> == null) {
+<%= ' ' * more_index %>            null
+<%= ' ' * more_index %>        } else {
+<%= ' ' * more_index %>            TWStringCreateWithUTF8Bytes(<%= KotlinHelper.fix_name(param.name) %>)
+<%= ' ' * more_index %>        }
+<%      else -%>
+<%= ' ' * more_index %>        val <%= KotlinHelper.fix_name(param.name) %>String = TWStringCreateWithUTF8Bytes(<%= KotlinHelper.fix_name(param.name) %>)
+<%      end -%>
+<%    end -%>
+<%  end -%>

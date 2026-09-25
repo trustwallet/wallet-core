@@ -50,7 +50,7 @@ TEST(MultiversXCompiler, CompileGenericActionWithSignatures) {
 
     auto preImage = data(preSigningOutput.data());
     auto preImageHash = data(preSigningOutput.data_hash());
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     const PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     Data signature = parse_hex("4f0eb7dca9177f1849bc98b856ab4b3238a666abb3369b4fc0faba429b5c91c46b06893e841a8f411aa199c78cc456514abe39948108baf83a7be0b3fae9d70a");
     // Verify signature (pubkey & hash & signature)
@@ -123,7 +123,7 @@ TEST(MultiversXCompiler, CompileEGLDTransferWithSignatures) {
 
     auto preImage = data(preSigningOutput.data());
     auto preImageHash = data(preSigningOutput.data_hash());
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     const PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     Data signature = parse_hex("e55ad0642c7d47806410c12b1c93eb6250ccb76f711bbf82c5963bf59b5cdfe291d8b083b75de526f20457eede0c8a1dacf65c2c0034d47560c3bab5319c4006");
     // Verify signature (pubkey & hash & signature)
@@ -195,7 +195,7 @@ TEST(MultiversXCompiler, CompileESDTTransferWithSignatures) {
 
     auto preImage = data(preSigningOutput.data());
     auto preImageHash = data(preSigningOutput.data_hash());
-    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX));
+    auto privateKey = PrivateKey(parse_hex(ALICE_SEED_HEX), TWCurveED25519);
     const PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     Data signature = parse_hex("99314010bca2251e52f3a8c2efae2f02b81cb27c83edbaf553e7fb771ffbe69e99ac6304bdc8477ff6727e6e6a47b3d5e17c5537859e21d06a81ec8d632ad100");
     // Verify signature (pubkey & hash & signature)

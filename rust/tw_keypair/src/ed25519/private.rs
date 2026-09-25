@@ -15,7 +15,7 @@ use tw_misc::traits::ToBytesZeroizing;
 use zeroize::{ZeroizeOnDrop, Zeroizing};
 
 /// Represents an `ed25519` private key.
-#[derive(ZeroizeOnDrop)]
+#[derive(Clone, ZeroizeOnDrop)]
 pub struct PrivateKey<H: Hasher512> {
     secret: H256,
     /// An expanded secret key obtained from [`PrivateKey::secret`].
@@ -36,16 +36,6 @@ impl<H: Hasher512> PrivateKey<H> {
     pub fn public(&self) -> PublicKey<H> {
         PublicKey::with_expanded_secret(&self.expanded_key)
     }
-
-    /// `ed25519` signing uses a public key associated with the private key.
-    pub(crate) fn sign_with_public_key(
-        &self,
-        public: &PublicKey<H>,
-        message: &[u8],
-    ) -> KeyPairResult<Signature> {
-        self.expanded_key
-            .sign_with_pubkey(public.to_bytes(), message)
-    }
 }
 
 impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
@@ -53,7 +43,8 @@ impl<H: Hasher512> SigningKeyTrait for PrivateKey<H> {
     type Signature = Signature;
 
     fn sign(&self, message: Self::SigningMessage) -> KeyPairResult<Self::Signature> {
-        self.sign_with_public_key(&self.public(), &message)
+        self.expanded_key
+            .dangerous_sign_with_pubkey(self.public().to_bytes(), &message)
     }
 }
 

@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::{SigningError, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_coin_registry::coin_type::CoinType;
 use tw_coin_registry::dispatcher::coin_dispatcher;
 use tw_memory::Data;
@@ -16,8 +16,6 @@ impl WalletConnectRequest {
     #[inline]
     pub fn parse(coin: CoinType, input: &[u8]) -> SigningResult<Data> {
         let (ctx, entry) = coin_dispatcher(coin)?;
-        entry
-            .wallet_connect_parse_request(&ctx, input)
-            .map_err(SigningError::from)
+        entry.wallet_connect_parse_request(&ctx, input)
     }
 }

@@ -7,7 +7,7 @@ use crate::modules::eip712_signer::{Eip712Signer, Eip712TxPreimage};
 use crate::modules::tx_builder::TxBuilder;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::signing_output_error;
 use tw_keypair::ecdsa::secp256k1;
 use tw_keypair::traits::{KeyPairTrait, SigningKeyTrait};

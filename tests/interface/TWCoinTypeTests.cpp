@@ -174,3 +174,24 @@ TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationSolana) {
     ASSERT_EQ(result, "m/44'/501'/0'/0'");
     TWStringDelete(res);
 }
+
+TEST(TWCoinType, TWCoinTypeDerivationPathPactus) {
+    auto res = TWCoinTypeDerivationPath(TWCoinTypePactus);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/21888'/3'/0'");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationPactusMainnet) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypePactus, TWDerivationPactusMainnet);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/21888'/3'/0'");
+    TWStringDelete(res);
+}
+
+TEST(TWCoinType, TWCoinTypeDerivationPathWithDerivationPactusTestnet) {
+    auto res = TWCoinTypeDerivationPathWithDerivation(TWCoinTypePactus, TWDerivationPactusTestnet);
+    auto result = *reinterpret_cast<const std::string *>(res);
+    ASSERT_EQ(result, "m/44'/21777'/3'/0'");
+    TWStringDelete(res);
+}

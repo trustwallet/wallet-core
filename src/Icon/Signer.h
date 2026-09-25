@@ -15,14 +15,14 @@ namespace TW::Icon {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
   public:
     const Proto::SigningInput& input;
 
     Signer(const Proto::SigningInput& input) : input(input) {}
 
     /// Signs an Icon transaction.
-    Proto::SigningOutput sign() const noexcept;
+    Proto::SigningOutput sign() const;
 
     /// Signature pre-image.
     std::string preImage() const noexcept;

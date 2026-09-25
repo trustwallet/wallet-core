@@ -18,5 +18,7 @@ jbyteArray TWDataJByteArray(TWData *_Nonnull data, JNIEnv *env) {
 TWData *_Nonnull TWDataCreateWithJByteArray(JNIEnv *env, jbyteArray _Nonnull array) {
     jsize size = env->GetArrayLength(array);
     jbyte *bytes = env->GetByteArrayElements(array, nullptr);
-    return TWDataCreateWithBytes((uint8_t *) bytes, size);
+    const auto *twdata = TWDataCreateWithBytes((uint8_t *) bytes, size);
+    env->ReleaseByteArrayElements(array, bytes, JNI_ABORT);
+    return twdata;
 }

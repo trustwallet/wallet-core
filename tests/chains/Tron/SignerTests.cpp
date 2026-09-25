@@ -24,6 +24,38 @@ TEST(TronSigner, SignDirectTransferAsset) {
     ASSERT_EQ(hex(output.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
 }
 
+TEST(TronSigner, SignDirectRawJsonTransferAsset) {
+    auto input = Proto::SigningInput();
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto rawJson = R"({
+	"raw_data": {
+		"contract": [{
+			"parameter": {
+				"type_url": "type.googleapis.com/protocol.TransferAssetContract",
+				"value": {
+					"amount": 4,
+					"asset_name": "31303030393539",
+					"owner_address": "415cd0fb0ab3ce40f3051414c604b27756e69e43db",
+					"to_address": "41521ea197907927725ef36d70f25f850d1659c7c7"
+				}
+			},
+			"type": "TransferAssetContract"
+		}],
+		"expiration": 1541926116000,
+		"ref_block_bytes": "b801",
+		"ref_block_hash": "0e2bc08d550f5f58",
+		"timestamp": 1539295479000
+	},
+	"visible":false,
+	"txID": "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb"
+})";
+    input.set_raw_json(rawJson);
+    const auto output = Signer::sign(input);
+    ASSERT_EQ(hex(output.id()), "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb");
+    ASSERT_EQ(hex(output.signature()), "77f5eabde31e739d34a66914540f1756981dc7d782c9656f5e14e53b59a15371603a183aa12124adeee7991bf55acc8e488a6ca04fb393b1a8ac16610eeafdfc00");
+}
+
 TEST(TronSigner, SignTransferAsset) {
     auto input = Proto::SigningInput();
     auto& transaction = *input.mutable_transaction();
@@ -87,6 +119,40 @@ TEST(TronSigner, SignTransfer) {
 
     ASSERT_EQ(hex(output.id()), "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451");
     ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
+}
+
+TEST(TronSigner, SignTransferWithMemo) {
+    // Successfully broadcasted https://tronscan.org/#/transaction/20321755964d6ec5bcfc9ebfb15faeb043787ae599fff44442962e12e1c357f1
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& transfer = *transaction.mutable_transfer();
+    transfer.set_owner_address("TFnYQCt892UNjn67pjAULTSTkB7YvqsnPp");
+    transfer.set_to_address("TBUCzgc29vykkvFaEG2mgRtxKvaKe6skwX");
+    transfer.set_amount(100000);
+
+    transaction.set_timestamp(1730827017000);
+    transaction.set_expiration(1730827017000 + 10 * 60 * 60 * 1000);
+    transaction.set_memo("Test memo");
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1730827017000);
+    const auto txTrieRoot = parse_hex("a94f115089893f37336baf32dbf6cb7d06adc13cf6bf046d9bc22748bd72e7a6");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("0000000003fa27db7d67f93920f64733532412ab6a71eb4089dc48c8ff5e182c");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(66725852);
+    const auto witnessAddress = parse_hex("4167e39013be3cdd3814bed152d7439fb5b6791409");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(30);
+
+    const auto privateKey = PrivateKey(parse_hex("7c2108a30f6f69f8dce72a7df897eabadfe9810eee6976b43bdf8c0b0d35337d"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    EXPECT_EQ(hex(output.id()), "20321755964d6ec5bcfc9ebfb15faeb043787ae599fff44442962e12e1c357f1");
+    EXPECT_EQ(hex(output.signature()), "6fcee79c61f660ec689299f77924f32b5020b4c41593056052ef07d640cc799325103fab130c8691e8a224c96cd0704a698ac356ff789a543c284605668bf38000");
 }
 
 TEST(TronSigner, SignFreezeBalanceV2) {
@@ -514,4 +580,5 @@ TEST(TronSigner, SignTransferTrc20Contract) {
     ASSERT_EQ(hex(output.id()), "0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058");
     ASSERT_EQ(hex(output.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
 }
+
 } // namespace TW::Tron

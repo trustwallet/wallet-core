@@ -8,7 +8,7 @@ use crate::transaction::message::{BinanceMessage, TWBinanceProto};
 use serde::{Deserialize, Serialize};
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::CoinAddress;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::Binance::Proto;
 

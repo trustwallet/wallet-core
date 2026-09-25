@@ -11,10 +11,12 @@ use tw_bech32_address::bech32_prefix::Bech32Prefix;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::coin_entry::{CoinEntry, PublicKeyBytes, SignatureBytes};
 use tw_coin_entry::derivation::Derivation;
-use tw_coin_entry::error::AddressResult;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::modules::json_signer::NoJsonSigner;
 use tw_coin_entry::modules::message_signer::NoMessageSigner;
 use tw_coin_entry::modules::plan_builder::NoPlanBuilder;
+use tw_coin_entry::modules::transaction_decoder::NoTransactionDecoder;
+use tw_coin_entry::modules::transaction_util::NoTransactionUtil;
 use tw_keypair::tw::PublicKey;
 use tw_proto::Binance::Proto;
 use tw_proto::TxCompiler::Proto as CompilerProto;
@@ -33,6 +35,8 @@ impl CoinEntry for BinanceEntry {
     type PlanBuilder = NoPlanBuilder;
     type MessageSigner = NoMessageSigner;
     type WalletConnector = BinanceWalletConnector;
+    type TransactionDecoder = NoTransactionDecoder;
+    type TransactionUtil = NoTransactionUtil;
 
     #[inline]
     fn parse_address(
@@ -45,11 +49,7 @@ impl CoinEntry for BinanceEntry {
     }
 
     #[inline]
-    fn parse_address_unchecked(
-        &self,
-        _coin: &dyn CoinContext,
-        address: &str,
-    ) -> AddressResult<Self::Address> {
+    fn parse_address_unchecked(&self, address: &str) -> AddressResult<Self::Address> {
         BinanceAddress::from_str(address)
     }
 

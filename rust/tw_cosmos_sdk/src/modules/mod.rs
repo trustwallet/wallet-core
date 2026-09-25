@@ -6,4 +6,5 @@ pub mod broadcast_msg;
 pub mod compiler;
 pub mod serializer;
 pub mod signer;
+pub mod transaction_util;
 pub mod tx_builder;

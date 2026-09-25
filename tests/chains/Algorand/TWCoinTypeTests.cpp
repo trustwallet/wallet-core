@@ -25,8 +25,8 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAlgorand));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAlgorand));
     assertStringsEqual(symbol, "ALGO");
-    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A");
-    assertStringsEqual(accUrl, "https://algoexplorer.io/address/J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM");
+    assertStringsEqual(txUrl, "https://allo.info/tx/CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A");
+    assertStringsEqual(accUrl, "https://allo.info/account/J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM");
     assertStringsEqual(id, "algorand");
     assertStringsEqual(name, "Algorand");
 }

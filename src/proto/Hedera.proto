@@ -7,6 +7,8 @@ syntax = "proto3";
 package TW.Hedera.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // An exact date and time. This is the same data structure as the protobuf Timestamp.proto
 // (see the comments in https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto)
 message Timestamp {
@@ -93,4 +95,10 @@ message SigningInput {
 message SigningOutput {
   // Signed and encoded transaction bytes.
   bytes encoded = 1;
+
+  // error code, 0 is ok, other codes will be treated as errors
+  Common.Proto.SigningError error = 2;
+
+  // error description
+  string error_message = 3;
 }

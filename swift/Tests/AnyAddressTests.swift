@@ -40,6 +40,9 @@ class AnyAddressTests: XCTestCase {
 
         let address2 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinLegacy)
         XCTAssertEqual(address2.description, "1JvRfEQFv5q5qy9uTSAezH7kVQf4hqnHXx")
+        
+        let address3 = AnyAddress(publicKey: pubkey, coin: coin, derivation: .bitcoinTaproot)
+        XCTAssertEqual(address3.description, "bc1pnncpg8s7gu7t6xmmzxqarcj8ydthmaz8gr4m76eephjfprs53maswgel0w")
     }
 
     func testCreateBech32WithPublicKey() {

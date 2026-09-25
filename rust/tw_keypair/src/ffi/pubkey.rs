@@ -34,7 +34,7 @@ pub unsafe extern "C" fn tw_public_key_create_with_data(
     ty: u32,
 ) -> *mut TWPublicKey {
     let bytes_ref = CByteArrayRef::new(input, input_len);
-    let bytes = try_or_else!(bytes_ref.to_vec(), std::ptr::null_mut);
+    let bytes = bytes_ref.to_vec();
     let ty = try_or_else!(PublicKeyType::from_raw(ty), std::ptr::null_mut);
     PublicKey::new(bytes, ty)
         .map(|public| TWPublicKey(public).into_ptr())
@@ -67,8 +67,8 @@ pub unsafe extern "C" fn tw_public_key_verify(
     msg_len: usize,
 ) -> bool {
     let public = try_or_false!(TWPublicKey::from_ptr_as_ref(key));
-    let sig = try_or_false!(CByteArrayRef::new(sig, sig_len).as_slice());
-    let msg = try_or_false!(CByteArrayRef::new(msg, msg_len).as_slice());
+    let sig = CByteArrayRef::new(sig, sig_len).as_slice();
+    let msg = CByteArrayRef::new(msg, msg_len).as_slice();
     public.0.verify(sig, msg)
 }
 

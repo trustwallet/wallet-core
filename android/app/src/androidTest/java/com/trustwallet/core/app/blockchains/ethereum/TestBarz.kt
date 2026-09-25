@@ -6,7 +6,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.*
 import wallet.core.java.AnySigner
-import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.ETHEREUM
 import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.EthereumAbi
@@ -17,7 +16,6 @@ import wallet.core.jni.PrivateKey
 import wallet.core.jni.PublicKey
 import wallet.core.jni.PublicKeyType
 import com.trustwallet.core.app.utils.Numeric
-import org.junit.Assert.assertArrayEquals
 import wallet.core.jni.proto.Barz
 import wallet.core.jni.Barz as WCBarz
 
@@ -117,8 +115,12 @@ class TestBarz {
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
-                    amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                scwExecute = Ethereum.Transaction.SCWalletExecute.newBuilder().apply {
+                    transaction = Ethereum.Transaction.newBuilder().apply {
+                        transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                            amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                        }.build()
+                    }.build()
                 }.build()
             }.build()
         }
@@ -159,8 +161,12 @@ class TestBarz {
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
-                    amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                scwExecute = Ethereum.Transaction.SCWalletExecute.newBuilder().apply {
+                    transaction = Ethereum.Transaction.newBuilder().apply {
+                        transfer = Ethereum.Transaction.Transfer.newBuilder().apply {
+                            amount = ByteString.copyFrom("0x2386f26fc10000".toHexByteArray())
+                        }.build()
+                    }.build()
                 }.build()
             }.build()
         }
@@ -204,14 +210,14 @@ class TestBarz {
             }.build()
 
             transaction = Ethereum.Transaction.newBuilder().apply {
-                batch = Ethereum.Transaction.Batch.newBuilder().apply {
+                scwBatch = Ethereum.Transaction.SCWalletBatch.newBuilder().apply {
                     addAllCalls(listOf(
-                        Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
+                        Ethereum.Transaction.SCWalletBatch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
                             payload = ByteString.copyFrom(approveCall)
                         }.build(),
-                        Ethereum.Transaction.Batch.BatchedCall.newBuilder().apply {
+                        Ethereum.Transaction.SCWalletBatch.BatchedCall.newBuilder().apply {
                             address = "0x03bBb5660B8687C2aa453A0e42dCb6e0732b1266"
                             amount = ByteString.copyFrom("0x00".toHexByteArray())
                             payload = ByteString.copyFrom(transferCall)

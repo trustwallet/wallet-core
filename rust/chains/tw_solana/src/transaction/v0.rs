@@ -2,7 +2,9 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::transaction::{short_vec, CompiledInstruction, MessageHeader, Pubkey};
+use crate::address::SolanaAddress;
+use crate::modules::insert_instruction::InsertInstruction;
+use crate::transaction::{short_vec, CompiledInstruction, MessageHeader};
 use serde::{Deserialize, Serialize};
 use tw_hash::{as_byte_sequence, H256};
 
@@ -10,7 +12,7 @@ use tw_hash::{as_byte_sequence, H256};
 #[serde(rename_all = "camelCase")]
 pub struct MessageAddressTableLookup {
     /// Address lookup table account key
-    pub account_key: Pubkey,
+    pub account_key: SolanaAddress,
     /// List of indexes used to load writable account addresses
     #[serde(with = "short_vec")]
     pub writable_indexes: Vec<u8>,
@@ -29,7 +31,7 @@ pub struct Message {
 
     /// List of accounts loaded by this transaction.
     #[serde(with = "short_vec")]
-    pub account_keys: Vec<Pubkey>,
+    pub account_keys: Vec<SolanaAddress>,
 
     /// The blockhash of a recent block.
     #[serde(with = "as_byte_sequence")]
@@ -55,4 +57,22 @@ pub struct Message {
     /// for this transaction.
     #[serde(with = "short_vec")]
     pub address_table_lookups: Vec<MessageAddressTableLookup>,
+}
+
+impl InsertInstruction for Message {
+    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]> {
+        Some(&self.address_table_lookups)
+    }
+
+    fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress> {
+        &mut self.account_keys
+    }
+
+    fn message_header_mut(&mut self) -> &mut MessageHeader {
+        &mut self.header
+    }
+
+    fn instructions_mut(&mut self) -> &mut Vec<CompiledInstruction> {
+        &mut self.instructions
+    }
 }

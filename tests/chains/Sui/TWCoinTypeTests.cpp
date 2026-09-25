@@ -16,9 +16,9 @@ TEST(TWSuiCoinType, TWCoinType) {
     const auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(coin));
     const auto id = WRAPS(TWCoinTypeConfigurationGetID(coin));
     const auto name = WRAPS(TWCoinTypeConfigurationGetName(coin));
-    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("5i8fbSL6r8yw2xcKmXxwkzHu3wpiyMLsyf2htCvDH8Ao"));
+    const auto txId = WRAPS(TWStringCreateWithUTF8Bytes("68wBKsZyYXmCUydDmabQ71kTcFWTfDG7tFmTLk1HgNdN"));
     const auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(coin, txId.get()));
-    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015"));
+    const auto accId = WRAPS(TWStringCreateWithUTF8Bytes("0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2"));
     const auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(coin, accId.get()));
 
     assertStringsEqual(id, "sui");
@@ -26,6 +26,6 @@ TEST(TWSuiCoinType, TWCoinType) {
     assertStringsEqual(symbol, "SUI");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(coin), 9);
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainSui);
-    assertStringsEqual(txUrl, "https://explorer.sui.io//txblock/5i8fbSL6r8yw2xcKmXxwkzHu3wpiyMLsyf2htCvDH8Ao");
-    assertStringsEqual(accUrl, "https://explorer.sui.io//address/0x259ff8074ab425cbb489f236e18e08f03f1a7856bdf7c7a2877bd64f738b5015");
+    assertStringsEqual(txUrl, "https://suiscan.xyz/mainnet/tx/68wBKsZyYXmCUydDmabQ71kTcFWTfDG7tFmTLk1HgNdN");
+    assertStringsEqual(accUrl, "https://suiscan.xyz/mainnet/account/0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2");
 }

@@ -60,7 +60,7 @@ PrivateKey parsePrivateKey(const std::string& privateKey) {
         throw std::invalid_argument("Invalid Public Key");
     }
     append(pk, Data(decoded.begin() + prefix_size, decoded.end()));
-    return PrivateKey(pk);
+    return PrivateKey(pk, TWCurveSECP256k1);
 }
 
 } // namespace TW::Tezos

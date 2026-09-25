@@ -4,6 +4,7 @@
 
 #include "Address.h"
 #include "CashAddress.h"
+#include "ExchangeAddress.h"
 #include "OpCodes.h"
 #include "Script.h"
 #include "SegwitAddress.h"
@@ -15,6 +16,7 @@
 #include "../Decred/Address.h"
 #include "../Groestlcoin/Address.h"
 #include "../Zcash/TAddress.h"
+#include "../Zcash/TexAddress.h"
 #include "../Zen/Address.h"
 
 #include <algorithm>
@@ -82,6 +84,17 @@ bool Script::matchPayToPublicKeyHash(Data& result) const {
         bytes[23] == OP_EQUALVERIFY && bytes[24] == OP_CHECKSIG) {
         result.clear();
         std::copy(std::begin(bytes) + 3, std::begin(bytes) + 3 + 20, std::back_inserter(result));
+        return true;
+    }
+    return false;
+}
+
+// see: https://github.com/firoorg/firo/blob/8bd4abdea223e22f15c36e7d2d42618dc843e2ef/src/script/standard.cpp#L355
+bool Script::matchPayToExchangePublicKeyHash(Data& result) const {
+    if (bytes.size() == 26 && bytes[0] == OP_EXCHANGEADDR && bytes[1] == OP_DUP && bytes[2] == OP_HASH160 && bytes[3] == 20 &&
+        bytes[24] == OP_EQUALVERIFY && bytes[25] == OP_CHECKSIG) {
+        result.clear();
+        std::copy(std::begin(bytes) + 4, std::begin(bytes) + 4 + 20, std::back_inserter(result));
         return true;
     }
     return false;
@@ -237,6 +250,20 @@ Script Script::buildPayToPublicKey(const Data& publicKey) {
 Script Script::buildPayToPublicKeyHash(const Data& hash) {
     assert(hash.size() == 20);
     Script script;
+    script.bytes.push_back(OP_DUP);
+    script.bytes.push_back(OP_HASH160);
+    script.bytes.push_back(20);
+    append(script.bytes, hash);
+    script.bytes.push_back(OP_EQUALVERIFY);
+    script.bytes.push_back(OP_CHECKSIG);
+    return script;
+}
+
+// see: https://github.com/firoorg/firo/blob/8bd4abdea223e22f15c36e7d2d42618dc843e2ef/src/script/standard.cpp#L355
+Script Script::buildPayToExchangePublicKeyHash(const Data& hash) {
+    assert(hash.size() == 20);
+    Script script;
+    script.bytes.push_back(OP_EXCHANGEADDR);
     script.bytes.push_back(OP_DUP);
     script.bytes.push_back(OP_HASH160);
     script.bytes.push_back(20);
@@ -475,11 +502,21 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             }
             return {};
 
+        case TWCoinTypeFiro:
+            if (ExchangeAddress::isValid(string)) {
+                auto address = ExchangeAddress(string);
+                auto data = Data();
+                data.reserve(ExchangeAddress::size - 3);
+                std::copy(address.bytes.begin() + 3, address.bytes.end(), std::back_inserter(data));
+                return buildPayToExchangePublicKeyHash(data);
+            }
+            return {};
+
         case TWCoinTypeGroestlcoin:
             if (Groestlcoin::Address::isValid(string)) {
                 auto address = Groestlcoin::Address(string);
                 auto data = Data();
-                data.reserve(Address::size - 1);
+                data.reserve(Groestlcoin::Address::size - 1);
                 std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
                 if (address.bytes[0] == TW::p2pkhPrefix(TWCoinTypeGroestlcoin)) {
                     return buildPayToPublicKeyHash(data);
@@ -495,13 +532,17 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
             if (Zcash::TAddress::isValid(string)) {
                 auto address = Zcash::TAddress(string);
                 auto data = Data();
-                data.reserve(Address::size - 2);
+                data.reserve(Zcash::TAddress::size - 2);
                 std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
                 if (address.bytes[1] == TW::p2pkhPrefix(TWCoinTypeZcash)) {
                     return buildPayToPublicKeyHash(data);
                 } else if (address.bytes[1] == TW::p2shPrefix(TWCoinTypeZcash)) {
                     return buildPayToScriptHash(data);
                 }
+            }
+            if (Zcash::TexAddress::isValid(string)) {
+                Zcash::TexAddress address(string);
+                return buildPayToPublicKeyHash(address.getKeyHash());
             }
             return {};
 
@@ -514,7 +555,7 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
     if (Zen::Address::isValid(string)) {
         auto address = Zen::Address(string);
         auto data = Data();
-        data.reserve(Address::size - 2);
+        data.reserve(Zen::Address::size - 2);
         std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
         if (address.bytes[1] == TW::p2pkhPrefix(TWCoinTypeZen)) {
             return buildPayToPublicKeyHashReplay(data, blockHash, blockHeight);
@@ -524,29 +565,6 @@ Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType c
     }
 
     return lockScriptForAddress(string, coin);
-}
-
-Proto::TransactionOutput Script::buildBRC20InscribeTransfer(const std::string& ticker, const std::string& amount, const Data& publicKey) {
-    TW::Bitcoin::Proto::TransactionOutput out;
-    Rust::CByteArrayWrapper res = TW::Rust::tw_bitcoin_legacy_build_brc20_transfer_inscription(ticker.data(), amount.data(), 0, publicKey.data(), publicKey.size());
-    auto result = res.data;
-    out.ParseFromArray(result.data(), static_cast<int>(result.size()));
-    return out;
-}
-
-Proto::TransactionOutput Script::buildOrdinalNftInscription(const std::string& mimeType, const Data& payload, const Data& publicKey) {
-    TW::Bitcoin::Proto::TransactionOutput out;
-    Rust::CByteArrayWrapper res = TW::Rust::tw_bitcoin_legacy_build_nft_inscription(
-        mimeType.data(),
-        payload.data(),
-        payload.size(),
-        0,
-        publicKey.data(),
-        publicKey.size()
-    );
-    auto result = res.data;
-    out.ParseFromArray(result.data(), static_cast<int>(result.size()));
-    return out;
 }
 
 } // namespace TW::Bitcoin

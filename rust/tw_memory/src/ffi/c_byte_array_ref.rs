@@ -22,8 +22,8 @@ impl CByteArrayRef {
     /// # Safety
     ///
     /// The inner data must be valid.
-    pub unsafe fn to_vec(&self) -> Option<Vec<u8>> {
-        self.as_slice().map(|data| data.to_vec())
+    pub unsafe fn to_vec(&self) -> Vec<u8> {
+        self.as_slice().to_vec()
     }
 
     /// Returns a slice.
@@ -32,10 +32,10 @@ impl CByteArrayRef {
     /// # Safety
     ///
     /// The inner data must be valid.
-    pub unsafe fn as_slice(&self) -> Option<&'static [u8]> {
+    pub unsafe fn as_slice(&self) -> &'static [u8] {
         if self.data.is_null() {
-            return None;
+            return &[];
         }
-        Some(std::slice::from_raw_parts(self.data, self.size))
+        std::slice::from_raw_parts(self.data, self.size)
     }
 }

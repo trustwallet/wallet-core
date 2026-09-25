@@ -99,33 +99,33 @@ TEST(Bech32Address, FromKeyHash) {
 
 TEST(Bech32Address, FromPublicKey) {
     {
-        auto privateKey = PrivateKey(parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832"));
+        auto privateKey = PrivateKey(parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832"), TWCurveSECP256k1);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         ASSERT_EQ(hex(publicKey.bytes), "026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
         auto address = Bech32Address("bnb", Hash::HasherSha256ripemd, publicKey);
         ASSERT_EQ("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address.string());
     }
     {
-        auto privateKey = PrivateKey(parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"));
+        auto privateKey = PrivateKey(parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"), TWCurveSECP256k1);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         ASSERT_EQ(hex(publicKey.bytes), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
         auto address = Bech32Address("cosmos", Hash::HasherSha256ripemd, publicKey);
         ASSERT_EQ(address.string(), "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     }
     {
-        auto privateKey = PrivateKey(parse_hex("e2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"));
+        auto privateKey = PrivateKey(parse_hex("e2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"), TWCurveSECP256k1);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto address = Bech32Address("one", Hash::HasherKeccak256, publicKey);
         ASSERT_EQ(address.string(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe");
     }
     {
-        auto privateKey = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"));
+        auto privateKey = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"), TWCurveSECP256k1);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto address = Bech32Address("io", Hash::HasherKeccak256, publicKey);
         ASSERT_EQ(address.string(), "io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j");
     }
     {
-        const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
+        const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"), TWCurveSECP256k1);
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         ASSERT_EQ(hex(publicKey.bytes), "02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d");
         const auto address = Bech32Address("zil", Hash::HasherSha256, publicKey);
@@ -136,7 +136,7 @@ TEST(Bech32Address, FromPublicKey) {
 
 // From same public key, but different hashes: different results
 TEST(Bech32Address, Hashes) {
-    const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
+    const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"), TWCurveSECP256k1);
 
     auto publicKey1 = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey1.bytes));
@@ -158,7 +158,7 @@ TEST(Bech32Address, Hashes) {
 
 // From same public key, but different prefixes: different results (checksum)
 TEST(Bech32Address, Prefixes) {
-    const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
+    const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"), TWCurveSECP256k1);
 
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey.bytes));

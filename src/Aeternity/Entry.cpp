@@ -21,7 +21,7 @@ string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& p
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Proto::SigningInput, Proto::SigningOutput>(dataIn, dataOut);
 }
 
 } // namespace TW::Aeternity

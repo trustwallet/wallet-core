@@ -2,16 +2,18 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use crate::SOLANA_ALPHABET;
 use serde::{Deserialize, Serialize};
-use tw_hash::{as_byte_sequence, H256, H512};
+use std::fmt;
+use std::str::FromStr;
+use tw_coin_entry::error::prelude::*;
+use tw_encoding::base58;
+use tw_hash::{as_byte_sequence, H512};
 
 pub mod legacy;
 pub mod short_vec;
 pub mod v0;
 pub mod versioned;
-
-#[derive(Clone, Copy, Default, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct Pubkey(#[serde(with = "as_byte_sequence")] pub(crate) H256);
 
 #[derive(Serialize, Deserialize, Default, Debug, PartialEq, Eq, Clone, Copy)]
 #[serde(rename_all = "camelCase")]
@@ -45,7 +47,27 @@ pub struct CompiledInstruction {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
-pub struct Signature(#[serde(with = "as_byte_sequence")] pub(crate) H512);
+pub struct Signature(#[serde(with = "as_byte_sequence")] pub H512);
+
+impl FromStr for Signature {
+    type Err = SigningError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let data = base58::decode(s, SOLANA_ALPHABET)
+            .tw_err(SigningErrorType::Error_input_parse)
+            .context("Error decoding Solana Signature from base58")?;
+        H512::try_from(data.as_slice())
+            .map(Signature)
+            .tw_err(SigningErrorType::Error_input_parse)
+            .context("Solana Signature must be 64 byte length")
+    }
+}
+
+impl fmt::Display for Signature {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", base58::encode(self.0.as_slice(), SOLANA_ALPHABET))
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -54,27 +76,24 @@ mod tests {
     use crate::transaction::v0::MessageAddressTableLookup;
     use crate::transaction::versioned::{VersionedMessage, VersionedTransaction};
     use crate::SOLANA_ALPHABET;
-    use std::str::FromStr;
+    use tw_encoding::base58;
+    use tw_encoding::base64::{self, STANDARD};
     use tw_encoding::hex::ToHex;
-    use tw_encoding::{base58, base64};
+    use tw_hash::H256;
     use tw_memory::Data;
 
-    fn address_pubkey(addr: &'static str) -> Pubkey {
-        Pubkey(SolanaAddress::from_str(addr).unwrap().bytes())
-    }
-
     fn base58_decode(s: &'static str) -> Data {
-        base58::decode(s, &SOLANA_ALPHABET).unwrap()
+        base58::decode(s, SOLANA_ALPHABET).unwrap()
     }
 
     fn base58_decode_h256(s: &'static str) -> H256 {
-        let bytes = base58::decode(s, &SOLANA_ALPHABET).unwrap();
+        let bytes = base58::decode(s, SOLANA_ALPHABET).unwrap();
         H256::try_from(bytes.as_slice()).unwrap()
     }
 
     #[test]
     fn test_rango_transaction_ser_de() {
-        let serialized = base64::decode("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAHEIoR5xuWyrvjIW4xU7CWlPOfyFAiy8B295hGo6tNjBmRCgUkQaFYTleMcAX2p74eBXQZd1dwDyQZAPJfSv2KGc5kcFLJj5qd2BVMaSNGVPfVBm74GbLwUq5/U1Ccdqc2gokZQxRDpMq7aeToP3nRaWIP4RXMxN+LJetccXMPq/QumgOqt7kkqk07cyPCKgYoQ4fQtOqqZn5sEqjWHYj3CDS5ha48uggePWu090s1ff4yoCjAvULeZ+cqYFn+Adk5Teyfw71W3u/F6VTnLQEPW96gJr5Kcm3bGi08n224JyF++PTko52VL0CIM2xtl0WkvNslD6Wawxr7yd9HYllN4Lz8lFwXilWGgyJdOq1qqBuZbE49glHeCO/sJHNnIHC0BgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAEedVb8jHAbu50xW7OaBUH/bGy3qP0jlECsc2iVrwTjwbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+Fm0P/on9df2SnTAmx8pWHneSwmrNt/J3VFLMhqns4zl6OL4d+g9rsaIj0Orta57MRu3jDSWCJf85ae4LBbiD/GXvOojZjsHekJrpRUuPggLJr943hDVD5UareeEucjCvaoHCgAFAsBcFQAKAAkDBBcBAAAAAAANBgAGACMJDAEBCQIABgwCAAAAAMqaOwAAAAAMAQYBEQs1DA8ABgEFAiMhCwsOCx0MDxoBGQcYBAgDJBscDB4PBwUQEhEfFR8UFwcFISITHw8MDCAfFgstwSCbM0HWnIEAAwAAABEBZAABCh0BAyZHAQMAypo7AAAAAJaWFAYAAAAAMgAADAMGAAABCQPZoILFk7gfE2y5bt3AC+g/4OwNzdiHKBhIbdeYvYFEjQPKyMkExMUkx0R25UNa/g5KsG0vfUwdUJ8e8HecK/Jkd3qm9XefBOB0BaD1+J+dBJz09vfyGuRYZH09HfdE/kL8v6Ql+H03+tO+9lMmmVg8O1c6gAN6eX0Cbn4=", false).unwrap();
+        let serialized = base64::decode("AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAHEIoR5xuWyrvjIW4xU7CWlPOfyFAiy8B295hGo6tNjBmRCgUkQaFYTleMcAX2p74eBXQZd1dwDyQZAPJfSv2KGc5kcFLJj5qd2BVMaSNGVPfVBm74GbLwUq5/U1Ccdqc2gokZQxRDpMq7aeToP3nRaWIP4RXMxN+LJetccXMPq/QumgOqt7kkqk07cyPCKgYoQ4fQtOqqZn5sEqjWHYj3CDS5ha48uggePWu090s1ff4yoCjAvULeZ+cqYFn+Adk5Teyfw71W3u/F6VTnLQEPW96gJr5Kcm3bGi08n224JyF++PTko52VL0CIM2xtl0WkvNslD6Wawxr7yd9HYllN4Lz8lFwXilWGgyJdOq1qqBuZbE49glHeCO/sJHNnIHC0BgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAAEedVb8jHAbu50xW7OaBUH/bGy3qP0jlECsc2iVrwTjwbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+Fm0P/on9df2SnTAmx8pWHneSwmrNt/J3VFLMhqns4zl6OL4d+g9rsaIj0Orta57MRu3jDSWCJf85ae4LBbiD/GXvOojZjsHekJrpRUuPggLJr943hDVD5UareeEucjCvaoHCgAFAsBcFQAKAAkDBBcBAAAAAAANBgAGACMJDAEBCQIABgwCAAAAAMqaOwAAAAAMAQYBEQs1DA8ABgEFAiMhCwsOCx0MDxoBGQcYBAgDJBscDB4PBwUQEhEfFR8UFwcFISITHw8MDCAfFgstwSCbM0HWnIEAAwAAABEBZAABCh0BAyZHAQMAypo7AAAAAJaWFAYAAAAAMgAADAMGAAABCQPZoILFk7gfE2y5bt3AC+g/4OwNzdiHKBhIbdeYvYFEjQPKyMkExMUkx0R25UNa/g5KsG0vfUwdUJ8e8HecK/Jkd3qm9XefBOB0BaD1+J+dBJz09vfyGuRYZH09HfdE/kL8v6Ql+H03+tO+9lMmmVg8O1c6gAN6eX0Cbn4=", STANDARD).unwrap();
         let actual: VersionedTransaction = bincode::deserialize(&serialized).unwrap();
 
         let expected = VersionedTransaction {
@@ -86,22 +105,22 @@ mod tests {
                     num_readonly_unsigned_accounts: 7,
                 },
                 account_keys: vec![
-                    address_pubkey("AHy6YZA8BsHgQfVkk7MbwpAN94iyN7Nf1zN4nPqUN32Q"),
-                    address_pubkey("g7dD1FHSemkUQrX1Eak37wzvDjscgBW2pFCENwjLdMX"),
-                    address_pubkey("7m57LBTxtzhWn6WdFxKtnoJLBQXyNERLYebebXLVaKy3"),
-                    address_pubkey("AEBCPtV8FFkWFAKxrz7mbYvobpkZuWaRWQCyJVRaheUD"),
-                    address_pubkey("BND2ehwWVeHVA5EtMm2b7Vu51AT8f2PNWusS9KQX5moy"),
-                    address_pubkey("DVCeozFGbe6ew3eWTnZByjHeYqTq1cvbrB7JJhkLxaRJ"),
-                    address_pubkey("GvgWmk8iPACw1AEMt47WzkuTkKoSGbn4Xk3aLM8vdbJD"),
-                    address_pubkey("HkphEpUqnFBxBuCPEq5j1HA9L8EwmsmRT6UcFKziptM1"),
-                    address_pubkey("Hzxx6b5a7dmmJeDXLQzr4dTrc2HGK9ar5YRakZgr3ZZ7"),
-                    address_pubkey("11111111111111111111111111111111"),
-                    address_pubkey("ComputeBudget111111111111111111111111111111"),
-                    address_pubkey("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"),
-                    address_pubkey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-                    address_pubkey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),
-                    address_pubkey("D8cy77BBepLMngZx6ZukaTff5hCt1HrWyKk3Hnd9oitf"),
-                    address_pubkey("GGztQqQ6pCPaJQnNpXBgELr5cs3WwDakRbh1iEMzjgSJ"),
+                    SolanaAddress::from("AHy6YZA8BsHgQfVkk7MbwpAN94iyN7Nf1zN4nPqUN32Q"),
+                    SolanaAddress::from("g7dD1FHSemkUQrX1Eak37wzvDjscgBW2pFCENwjLdMX"),
+                    SolanaAddress::from("7m57LBTxtzhWn6WdFxKtnoJLBQXyNERLYebebXLVaKy3"),
+                    SolanaAddress::from("AEBCPtV8FFkWFAKxrz7mbYvobpkZuWaRWQCyJVRaheUD"),
+                    SolanaAddress::from("BND2ehwWVeHVA5EtMm2b7Vu51AT8f2PNWusS9KQX5moy"),
+                    SolanaAddress::from("DVCeozFGbe6ew3eWTnZByjHeYqTq1cvbrB7JJhkLxaRJ"),
+                    SolanaAddress::from("GvgWmk8iPACw1AEMt47WzkuTkKoSGbn4Xk3aLM8vdbJD"),
+                    SolanaAddress::from("HkphEpUqnFBxBuCPEq5j1HA9L8EwmsmRT6UcFKziptM1"),
+                    SolanaAddress::from("Hzxx6b5a7dmmJeDXLQzr4dTrc2HGK9ar5YRakZgr3ZZ7"),
+                    SolanaAddress::from("11111111111111111111111111111111"),
+                    SolanaAddress::from("ComputeBudget111111111111111111111111111111"),
+                    SolanaAddress::from("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"),
+                    SolanaAddress::from("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+                    SolanaAddress::from("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),
+                    SolanaAddress::from("D8cy77BBepLMngZx6ZukaTff5hCt1HrWyKk3Hnd9oitf"),
+                    SolanaAddress::from("GGztQqQ6pCPaJQnNpXBgELr5cs3WwDakRbh1iEMzjgSJ"),
                 ],
                 recent_blockhash: base58_decode_h256(
                     "DiSimxK2z1cRa6yD4goqte3rDMmghJAD8WDUZEab2CzD",
@@ -151,17 +170,23 @@ mod tests {
                 ],
                 address_table_lookups: vec![
                     MessageAddressTableLookup {
-                        account_key: address_pubkey("FeXRmSWmwChZbB2EC7Qjw9XKk28yBrPj3k3nzT1DKfak"),
+                        account_key: SolanaAddress::from(
+                            "FeXRmSWmwChZbB2EC7Qjw9XKk28yBrPj3k3nzT1DKfak",
+                        ),
                         writable_indexes: vec![202, 200, 201],
                         readonly_indexes: vec![196, 197, 36, 199],
                     },
                     MessageAddressTableLookup {
-                        account_key: address_pubkey("5cFsmTCEfmvpBUBHqsWZnf9n5vTWLYH2LT8X7HdShwxP"),
+                        account_key: SolanaAddress::from(
+                            "5cFsmTCEfmvpBUBHqsWZnf9n5vTWLYH2LT8X7HdShwxP",
+                        ),
                         writable_indexes: vec![160, 245, 248, 159, 157],
                         readonly_indexes: vec![156, 244, 246, 247],
                     },
                     MessageAddressTableLookup {
-                        account_key: address_pubkey("HJ5StCvsDU4JsvK39VcsHjaoTRTtQU749MQ9qUsJaG1m"),
+                        account_key: SolanaAddress::from(
+                            "HJ5StCvsDU4JsvK39VcsHjaoTRTtQU749MQ9qUsJaG1m",
+                        ),
                         writable_indexes: vec![122, 121, 125],
                         readonly_indexes: vec![110, 126],
                     },

@@ -10,7 +10,6 @@
 #include "uint256.h"
 
 using namespace TW;
-using boost::multiprecision::uint128_t;
 
 namespace TW::Aion {
 

@@ -2,6 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+use libparser::codegen::cpp::code_gen::generate_cpp_bindings;
 use libparser::codegen::swift::RenderIntput;
 use libparser::codegen::{cpp, proto, rust};
 use libparser::coin_id::CoinId;
@@ -23,6 +24,7 @@ fn main() -> Result<()> {
         "new-evmchain" => new_evmchain(&args[2..]),
         "new-cosmos-chain" => new_cosmos_chain(&args[2..]),
         "swift" => generate_swift_bindings(),
+        "cpp" => generate_cpp_bindings(),
         _ => Err(Error::InvalidCommand),
     }
 }

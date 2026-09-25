@@ -64,6 +64,29 @@ message Action {
         uint64 fee = 3;        
     }
 
+    // Action for removing public chain addresses from a FIO name; remove_pub_address
+    // Note: actor is not needed, computed from private key
+    message RemovePubAddress {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // List of public addresses to be unregistered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
+        repeated PublicAddress public_addresses = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
+    // Action for removing public chain addresses from a FIO name; remove_pub_address
+    // Note: actor is not needed, computed from private key
+    message RemoveAllPubAddress {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
     // Action for transferring FIO coins; transfer_tokens_pub_key
     // Note: actor is not needed, computed from private key
     message Transfer {
@@ -109,6 +132,18 @@ message Action {
         uint64 fee = 5;
     }
 
+    // Action for adding `100 * bundle_sets` bundled transactions to the supplied FIO Handle. When bundles are purchased one or more sets of bundled transactions are added to the existing count.
+    message AddBundledTransactions {
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // Number of bundled sets. One set is 100 bundled transactions.
+        uint64 bundle_sets = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+    }
+
     // Payload message
     oneof message_oneof {
         RegisterFioAddress register_fio_address_message = 1;
@@ -116,6 +151,9 @@ message Action {
         Transfer transfer_message = 3;
         RenewFioAddress renew_fio_address_message = 4;
         NewFundsRequest new_funds_request_message = 5;
+        RemovePubAddress remove_pub_address_message = 6;
+        RemoveAllPubAddress remove_all_pub_addresses_message = 7;
+        AddBundledTransactions add_bundled_transactions_message = 8;
     }
 }
 
@@ -162,4 +200,7 @@ message SigningOutput {
 
     // error code description
     string error_message = 3;
+
+    // Performed action name, ex. "addaddress", "remaddress", "trnsfiopubky" etc.
+    string action_name = 4;
 }

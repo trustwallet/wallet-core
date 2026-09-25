@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Core' do |ss|
-    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.19.2'
+    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.20.3'
     include_dir = 'build/local/include'
     ss.source_files =
       'src/**/*.{c,cc,cpp,h}',
@@ -45,6 +45,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/api.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/arena.cc",
       "#{protobuf_source_dir}/src/google/protobuf/arenastring.cc",
+      "#{protobuf_source_dir}/src/google/protobuf/arenaz_sampler.cc",
       "#{protobuf_source_dir}/src/google/protobuf/compiler/importer.cc",
       "#{protobuf_source_dir}/src/google/protobuf/compiler/parser.cc",
       "#{protobuf_source_dir}/src/google/protobuf/descriptor.cc",
@@ -59,8 +60,6 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/generated_enum_util.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_bases.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_reflection.cc",
-      "#{protobuf_source_dir}/src/google/protobuf/generated_message_table_driven.cc",
-      "#{protobuf_source_dir}/src/google/protobuf/generated_message_table_driven_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_tctable_full.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_tctable_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/generated_message_util.cc",

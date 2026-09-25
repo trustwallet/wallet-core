@@ -5,16 +5,15 @@
 
 #include "Signer.h"
 #include "../BinaryCoding.h"
-#include "../Hash.h"
 #include "../HexCoding.h"
-#include <nlohmann/json.hpp>
+#include "../uint256.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
+#include <algorithm>
+#include <nlohmann/json.hpp>
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 
-using uint128_t = boost::multiprecision::uint128_t;
 using json = nlohmann::json;
 
 namespace TW::Nano {
@@ -27,8 +26,6 @@ const std::array<byte, 32> kBlockHashPreamble{
 };
 
 std::array<byte, 16> store(const uint128_t& value) {
-    using boost::multiprecision::cpp_int;
-
     Data buf;
     buf.reserve(16);
     export_bits(value, std::back_inserter(buf), 8);
@@ -118,7 +115,7 @@ std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::Sign
 }
 
 Signer::Signer(const Proto::SigningInput& input)
-  : privateKey(Data(input.private_key().begin(), input.private_key().end())),
+  : privateKey(Data(input.private_key().begin(), input.private_key().end()), TWCurveED25519Blake2bNano),
     publicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b)),
     input(input),
     previous{previousFromInput(input)},
@@ -126,7 +123,7 @@ Signer::Signer(const Proto::SigningInput& input)
     blockHash(hashBlockData(publicKey, input)) {}
 
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     Proto::SigningOutput output;
     try {
         auto signer = Signer(input);
@@ -144,9 +141,9 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     return output.json();
 }
 
-std::array<byte, 64> Signer::sign() const noexcept {
+std::array<byte, 64> Signer::sign() const {
     auto digest = Data(blockHash.begin(), blockHash.end());
-    auto sig = privateKey.sign(digest, TWCurveED25519Blake2bNano);
+    auto sig = privateKey.sign(digest);
 
     std::array<byte, 64> signature = {0};
     std::copy_n(sig.begin(), signature.size(), signature.begin());

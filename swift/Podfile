@@ -9,7 +9,7 @@ project 'TrustWalletCore.xcodeproj'
 target 'WalletCore' do
   use_frameworks!
 
-  pod 'SwiftProtobuf'
+  pod 'WalletCoreSwiftProtobuf'
 
   target 'WalletCoreTests'
 end

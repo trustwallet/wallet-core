@@ -3,11 +3,13 @@
 // Copyright © 2017 Trust Wallet.
 
 mod i256;
+pub mod serde;
 mod sign;
 mod u256;
 
 pub use i256::I256;
 pub use sign::Sign;
+use std::fmt::{Display, Formatter};
 pub use u256::U256;
 
 pub type NumberResult<T> = Result<T, NumberError>;
@@ -18,6 +20,17 @@ pub enum NumberError {
     InvalidBinaryRepresentation,
     InvalidStringRepresentation,
     Overflow,
+}
+
+impl Display for NumberError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NumberError::IntegerOverflow => write!(f, "Integer overflow"),
+            NumberError::InvalidBinaryRepresentation => write!(f, "Invalid binary representation"),
+            NumberError::InvalidStringRepresentation => write!(f, "Invalid string representation"),
+            NumberError::Overflow => write!(f, "Overflow"),
+        }
+    }
 }
 
 #[cfg(feature = "serde")]

@@ -44,6 +44,8 @@ message THORChainAsset {
     string symbol = 2;
     string ticker = 3;
     bool synth = 4;
+    bool trade = 5;
+    bool secured = 6;
 }
 
 message THORChainCoin {
@@ -232,6 +234,16 @@ message Message {
         repeated Amount coins = 5;
     }
 
+    // MsgInstantiateContract defines a message for instantiating a new CosmWasm contract.
+    message WasmInstantiateContract {
+        string sender = 1;
+        string admin = 2;
+        uint64 code_id = 3;
+        string label = 4;
+        bytes msg = 5;
+        repeated Amount init_funds = 6;
+    }
+
     message RawJSON {
         string type = 1;
         string value = 2;
@@ -240,8 +252,10 @@ message Message {
     // For signing an already serialized transaction. Account number and chain ID must be set outside.
     message SignDirect {
         // The prepared serialized TxBody
+        // Required
         bytes body_bytes = 1;
         // The prepared serialized AuthInfo
+        // Optional. If not provided, will be generated from `SigningInput` parameters.
         bytes auth_info_bytes = 2;
     }
 
@@ -282,7 +296,6 @@ message Message {
         REDELEGATE = 3;
     }
 
-
     // cosmos-sdk/MsgGrant
     message AuthGrant {
         string granter = 1;
@@ -316,8 +329,8 @@ message Message {
 
     // cosmos-sdk/MsgVote defines a message to cast a vote.
     message MsgVote {
-        uint64     proposal_id = 1;
-        string     voter = 2;
+        uint64 proposal_id = 1;
+        string voter = 2;
         VoteOption option = 3;
     }
 
@@ -351,20 +364,21 @@ message Message {
         WasmExecuteContractSend wasm_execute_contract_send_message = 14;
         WasmExecuteContractGeneric wasm_execute_contract_generic = 15;
         SignDirect sign_direct_message = 16;
-        AuthGrant  auth_grant = 17;
+        AuthGrant auth_grant = 17;
         AuthRevoke auth_revoke = 18;
         SetWithdrawAddress set_withdraw_address_message = 19;
         MsgVote msg_vote = 20;
         MsgStrideLiquidStakingStake msg_stride_liquid_staking_stake = 21;
         MsgStrideLiquidStakingRedeem msg_stride_liquid_staking_redeem = 22;
         THORChainDeposit thorchain_deposit_message = 23;
+        WasmInstantiateContract wasm_instantiate_contract_message = 24;
     }
 }
 
 // Options for transaction encoding: JSON (Amino, older) or Protobuf.
 enum SigningMode {
-    JSON = 0;        // JSON format, Pre-Stargate
-    Protobuf = 1;    // Protobuf-serialized (binary), Stargate
+    JSON = 0;     // JSON format, Pre-Stargate
+    Protobuf = 1; // Protobuf-serialized (binary), Stargate
 }
 
 enum TxHasher {
@@ -425,6 +439,9 @@ message SigningInput {
 
     // Optional. If set, use a different Signer info when signing the transaction.
     SignerInfo signer_info = 12;
+
+    // Optional timeout_height
+    uint64 timeout_height = 13;
 }
 
 // Result containing the signed and encoded transaction.

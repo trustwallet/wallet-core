@@ -25,6 +25,7 @@ pub enum Curve {
     /// Cardano blockchain specific `ed25519` extended key.
     Ed25519ExtendedCardano = 5,
     Starkex = 6,
+    Schnorr = 7,
 }
 
 impl Curve {
@@ -38,6 +39,7 @@ impl Curve {
             4 => Some(Curve::Nist256p1),
             5 => Some(Curve::Ed25519ExtendedCardano),
             6 => Some(Curve::Starkex),
+            7 => Some(Curve::Schnorr),
             _ => None,
         }
     }
@@ -46,6 +48,7 @@ impl Curve {
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
 #[cfg_attr(feature = "arbitrary", derive(arbitrary::Arbitrary))]
+#[non_exhaustive]
 pub enum PublicKeyType {
     #[serde(rename = "secp256k1")]
     Secp256k1 = 0,
@@ -67,6 +70,8 @@ pub enum PublicKeyType {
     Ed25519ExtendedCardano = 7,
     #[serde(rename = "starkex")]
     Starkex = 8,
+    #[serde(rename = "schnorr")]
+    Schnorr = 9,
 }
 
 impl PublicKeyType {
@@ -82,6 +87,7 @@ impl PublicKeyType {
             6 => Some(PublicKeyType::Curve25519Waves),
             7 => Some(PublicKeyType::Ed25519ExtendedCardano),
             8 => Some(PublicKeyType::Starkex),
+            9 => Some(PublicKeyType::Schnorr),
             _ => None,
         }
     }
@@ -101,7 +107,8 @@ mod tests {
             (4, Some(Curve::Nist256p1)),
             (5, Some(Curve::Ed25519ExtendedCardano)),
             (6, Some(Curve::Starkex)),
-            (7, None),
+            (7, Some(Curve::Schnorr)),
+            (8, None),
         ];
         for (raw, expected) in tests {
             assert_eq!(Curve::from_raw(raw), expected);
@@ -120,7 +127,8 @@ mod tests {
             (6, Some(PublicKeyType::Curve25519Waves)),
             (7, Some(PublicKeyType::Ed25519ExtendedCardano)),
             (8, Some(PublicKeyType::Starkex)),
-            (9, None),
+            (9, Some(PublicKeyType::Schnorr)),
+            (10, None),
         ];
         for (raw, expected) in tests {
             assert_eq!(PublicKeyType::from_raw(raw), expected);

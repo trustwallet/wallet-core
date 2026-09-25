@@ -16,8 +16,6 @@ built_dir=${base_dir}/../build/ios-frameworks
 # version to release
 version=$(wc_read_version $1)
 echo "release version ${version}"
-release_url=$(wc_release_url ${version})
-echo "release_url url is $release_url"
 
 pushd ${built_dir}
 # archive headers, swift code and xcframework
@@ -36,7 +34,8 @@ tar -cJvf ../${filename} .
 popd
 
 # upload to release
-download_url=$(wc_upload_asset ${release_url} ${filename})
+echo "Upload asset $filename"
+download_url=$(wc_upload_asset ${version} ${filename})
 echo "download_url is $download_url"
 download_url=$(tr -d '"' <<< $download_url)
 echo "trimmed download_url is ${download_url}"
@@ -65,7 +64,7 @@ Pod::Spec.new do |s|
       'Sources/Types/*.swift',
       'Sources/Generated/Enums/*.swift',
       'Sources/Generated/Protobuf/*.swift'
-    ss.dependency 'SwiftProtobuf'
+    ss.dependency 'WalletCoreSwiftProtobuf'
   end
   s.subspec 'Core' do |ss|
     ss.vendored_frameworks = '*.xcframework'

@@ -38,7 +38,7 @@ TEST(AptosAddress, Invalid) {
 }
 
 TEST(AptosAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("088baa019f081d6eab8dff5c447f9ce2f83c1babf3d03686299eaf6a1e89156e"));
+    auto privateKey = PrivateKey(parse_hex("088baa019f081d6eab8dff5c447f9ce2f83c1babf3d03686299eaf6a1e89156e"), TWCurveED25519);
     auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     Entry entry;
     auto address = entry.deriveAddress(TWCoinTypeAptos, pubkey, TWDerivationDefault, std::monostate{});

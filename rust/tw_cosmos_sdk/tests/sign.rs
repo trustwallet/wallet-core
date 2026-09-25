@@ -136,6 +136,70 @@ fn test_sign_raw_json() {
 }
 
 #[test]
+fn test_sign_raw_json_with_timeout() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let raw_json_msg = Proto::mod_Message::RawJSON {
+        type_pb: "osmosis/poolmanager/split-amount-in".into(),
+        value: r#"{
+        "routes": [
+          {
+            "pools": [
+              {
+                "pool_id": "463",
+                "token_out_denom": "ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59"
+              },
+              {
+                "pool_id": "916",
+                "token_out_denom": "ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"
+              }
+            ],
+            "token_in_amount": "70000"
+          },
+          {
+            "pools": [
+              {
+                "pool_id": "907",
+                "token_out_denom": "ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"
+              }
+            ],
+            "token_in_amount": "30000"
+          }
+        ],
+        "sender": "osmo1qr7dhmvcqm4fnleaqel3gel4u20nk5rp9rwsae",
+        "token_in_denom": "uosmo",
+        "token_out_min_amount": "885297"
+    }"#.into(),
+    };
+    let input = Proto::SigningInput {
+        account_number: 24139,
+        chain_id: "osmosis-1".into(),
+        sequence: 191,
+        fee: Some(make_fee(617438, make_amount("uosmo", "1853"))),
+        private_key: account_1037_private_key(),
+        messages: vec![make_message(MessageEnum::raw_json_message(raw_json_msg))],
+        timeout_height: 13692007,
+        ..Proto::SigningInput::default()
+    };
+
+    // `RawJSON` doesn't support Protobuf serialization and signing.
+    test_sign_protobuf_error::<StandardCosmosContext>(TestErrorInput {
+        coin: &coin,
+        input: input.clone(),
+        error: SigningError::Error_not_supported,
+    });
+    test_sign_json::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input,
+        tx: r#"{"mode":"block","tx":{"fee":{"amount":[{"amount":"1853","denom":"uosmo"}],"gas":"617438"},"memo":"","msg":[{"type":"osmosis/poolmanager/split-amount-in","value":{"routes":[{"pools":[{"pool_id":"463","token_out_denom":"ibc/1DC495FCEFDA068A3820F903EDBD78B942FBD204D7E93D3BA2B432E9669D1A59"},{"pool_id":"916","token_out_denom":"ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"}],"token_in_amount":"70000"},{"pools":[{"pool_id":"907","token_out_denom":"ibc/573FCD90FACEE750F55A8864EF7D38265F07E5A9273FA0E8DAFD39951332B580"}],"token_in_amount":"30000"}],"sender":"osmo1qr7dhmvcqm4fnleaqel3gel4u20nk5rp9rwsae","token_in_denom":"uosmo","token_out_min_amount":"885297"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"7gMxXwqzZDe5+h1i16q7A7CgGUtLl2+Q8/YaUZCeYvp8kISbBwD2SlNTpJtz1RLskzF2uNcDebo61HbcVn9dAw=="}],"timeout_height":"13692007"}}"#,
+        signature: "ee03315f0ab36437b9fa1d62d7aabb03b0a0194b4b976f90f3f61a51909e62fa7c90849b0700f64a5353a49b73d512ec933176b8d70379ba3ad476dc567f5d03",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"7gMxXwqzZDe5+h1i16q7A7CgGUtLl2+Q8/YaUZCeYvp8kISbBwD2SlNTpJtz1RLskzF2uNcDebo61HbcVn9dAw=="}]"#,
+    });
+}
+
+#[test]
 fn test_sign_ibc_transfer() {
     let coin = TestCoinContext::default()
         .with_public_key_type(PublicKeyType::Secp256k1)
@@ -221,6 +285,43 @@ fn test_sign_direct() {
     });
 }
 
+/// Build and sign a transaction with `TxBody` bytes only,
+/// and `AuthInfo` will be generated from `SigningInput` parameters.
+#[test]
+fn test_sign_direct_with_body_bytes() {
+    let coin = TestCoinContext::default()
+        .with_public_key_type(PublicKeyType::Secp256k1)
+        .with_hrp("cosmos");
+
+    let body_bytes = "0a89010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412690a2d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b796778306570683664643032122d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537331a090a046d756f6e120131".decode_hex().unwrap();
+
+    let sign_direct = Proto::mod_Message::SignDirect {
+        body_bytes: Cow::from(body_bytes),
+        // Do not specify the `AuthInfo` bytes.
+        auth_info_bytes: Cow::default(),
+    };
+    let input = Proto::SigningInput {
+        account_number: 1037,
+        chain_id: "gaia-13003".into(),
+        fee: Some(make_fee(200000, make_amount("muon", "200"))),
+        sequence: 8,
+        private_key: account_1037_private_key(),
+        messages: vec![make_message(MessageEnum::sign_direct_message(sign_direct))],
+        ..Proto::SigningInput::default()
+    };
+
+    // real-world tx: https://www.mintscan.io/cosmos/txs/817101F3D96314AD028733248B28BAFAD535024D7D2C8875D3FE31DC159F096B
+    // curl -H 'Content-Type: application/json' --data-binary '{"tx_bytes": "Cr4BCr...1yKOU=", "mode": "BROADCAST_MODE_BLOCK"}' https://api.cosmos.network/cosmos/tx/v1beta1/txs
+    // also similar TX: BCDAC36B605576C8182C2829C808B30A69CAD4959D5ED1E6FF9984ABF280D603
+    test_sign_protobuf::<StandardCosmosContext>(TestInput {
+        coin: &coin,
+        input,
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CowBCokBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmkKLWNvc21vczFoc2s2anJ5eXFqZmhwNWRoYzU1dGM5anRja3lneDBlcGg2ZGQwMhItY29zbW9zMXp0NTBhenVwYW5xbGZhbTVhZmh2M2hleHd5dXRudWtlaDRjNTczGgkKBG11b24SATESZQpQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3FEgQKAggBGAgSEQoLCgRtdW9uEgMyMDAQwJoMGkD54fQAFlekIAnE62hZYl0uQelh/HLv0oQpCciY5Dn8H1SZFuTsrGdu41PH1Uxa4woptCELi/8Ov9yzdeEFAC9H"}"#,
+        signature: "f9e1f4001657a42009c4eb6859625d2e41e961fc72efd2842909c898e439fc1f549916e4ecac676ee353c7d54c5ae30a29b4210b8bff0ebfdcb375e105002f47",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F"},"signature":"+eH0ABZXpCAJxOtoWWJdLkHpYfxy79KEKQnImOQ5/B9UmRbk7KxnbuNTx9VMWuMKKbQhC4v/Dr/cs3XhBQAvRw=="}]"#,
+    });
+}
+
 #[test]
 fn test_sign_direct_0a90010a() {
     let coin = TestCoinContext::default()
@@ -286,12 +387,12 @@ fn test_sign_vote() {
 
     // Successfully broadcasted https://www.mintscan.io/cosmos/txs/2EFA054B842B1641B131137B13360F95164C6C1D51BB4A4AC6DE8F75F504AA4C
     test_sign_protobuf::<StandardCosmosContext>(TestInput {
-            coin: &coin,
-            input: input.clone(),
-            tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClQKUgobL2Nvc21vcy5nb3YudjFiZXRhMS5Nc2dWb3RlEjMITRItY29zbW9zMW1yeTQ3cGtnYTV0ZHN3dGx1eTBtOHRlc2xwYWxrZHEwN3Bzd3U0GAESZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAsv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarlEgQKAggBEhMKDQoFdWF0b20SBDI0MTgQkfsFGkA+Nb3NULc38quGC1x+8ZXry4w9mMX3IA7wUjFboTv7kVOwPlleIc8UqIsjVvKTUFnUuW8dlGQzNR1KkvbvZ1NA"}"#,
-            signature: "3e35bdcd50b737f2ab860b5c7ef195ebcb8c3d98c5f7200ef052315ba13bfb9153b03e595e21cf14a88b2356f2935059d4b96f1d946433351d4a92f6ef675340",
-            signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Asv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarl"},"signature":"PjW9zVC3N/KrhgtcfvGV68uMPZjF9yAO8FIxW6E7+5FTsD5ZXiHPFKiLI1byk1BZ1LlvHZRkMzUdSpL272dTQA=="}]"#,
-        });
+        coin: &coin,
+        input: input.clone(),
+        tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"ClQKUgobL2Nvc21vcy5nb3YudjFiZXRhMS5Nc2dWb3RlEjMITRItY29zbW9zMW1yeTQ3cGtnYTV0ZHN3dGx1eTBtOHRlc2xwYWxrZHEwN3Bzd3U0GAESZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAsv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarlEgQKAggBEhMKDQoFdWF0b20SBDI0MTgQkfsFGkA+Nb3NULc38quGC1x+8ZXry4w9mMX3IA7wUjFboTv7kVOwPlleIc8UqIsjVvKTUFnUuW8dlGQzNR1KkvbvZ1NA"}"#,
+        signature: "3e35bdcd50b737f2ab860b5c7ef195ebcb8c3d98c5f7200ef052315ba13bfb9153b03e595e21cf14a88b2356f2935059d4b96f1d946433351d4a92f6ef675340",
+        signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"Asv9teRyiTMiKU5gzwiD1D30MeEInSnstEep5tVQRarl"},"signature":"PjW9zVC3N/KrhgtcfvGV68uMPZjF9yAO8FIxW6E7+5FTsD5ZXiHPFKiLI1byk1BZ1LlvHZRkMzUdSpL272dTQA=="}]"#,
+    });
 
     // `MsgVote` doesn't support JSON serialization and signing.
     test_sign_json_error::<StandardCosmosContext>(TestErrorInput {

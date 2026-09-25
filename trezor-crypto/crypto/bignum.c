@@ -46,7 +46,7 @@
  A limb of a bignum256 is *normalized* iff it's less than 2**29.
  A bignum256 is *normalized* iff every its limb is normalized.
  A number is *fully reduced modulo p* iff it is less than p.
- A number is *partly reduced modulo p* iff is is less than 2*p.
+ A number is *partly reduced modulo p* iff it is less than 2*p.
  The number p is usually a prime number such that 2^256 - 2^224 <= p <= 2^256.
 
  All functions except bn_fast_mod expect that all their bignum256 inputs are

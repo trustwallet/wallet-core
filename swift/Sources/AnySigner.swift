@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import Foundation
-import SwiftProtobuf
+import WalletCoreSwiftProtobuf
 
 public typealias SigningInput = Message
 public typealias SigningOutput = Message
@@ -22,7 +22,7 @@ public final class AnySigner {
     public static func sign<SigningOutput: Message>(input: SigningInput, coin: CoinType) -> SigningOutput {
         do {
             let outputData = nativeSign(data: try input.serializedData(), coin: coin)
-            return try SigningOutput(serializedData: outputData)
+            return try SigningOutput(serializedBytes: outputData)
         } catch let error {
             fatalError(error.localizedDescription)
         }
@@ -72,7 +72,7 @@ public final class AnySigner {
     public static func plan<TransactionPlan: Message>(input: SigningInput, coin: CoinType) -> TransactionPlan {
         do {
             let outputData = nativePlan(data: try input.serializedData(), coin: coin)
-            return try TransactionPlan(serializedData: outputData)
+            return try TransactionPlan(serializedBytes: outputData)
         } catch let error {
             fatalError(error.localizedDescription)
         }

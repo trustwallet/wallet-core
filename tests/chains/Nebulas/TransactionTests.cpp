@@ -28,7 +28,7 @@ TEST(NebulasTransaction, serialize) {
         /* timestamp: */ 1560052938,
         /* payload: */ std::string());
 
-    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
+    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"), TWCurveSECP256k1);
     auto signer = Signer(1);
     signer.sign(privateKey, transaction);
     transaction.serializeToRaw();
@@ -49,7 +49,7 @@ TEST(NebulasTransaction, binaryPayload) {
         /* timestamp: */ 1560052938,
         /* payload: */ std::string("{\"binary\":\"test\"}"));
 
-    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
+    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"), TWCurveSECP256k1);
     auto signer = Signer(1);
     signer.sign(privateKey, transaction);
     ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiB1Oqj7bxLQMHEoNyg/vFHmsTrGdkpTf/5qFDkYPB3bkxIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6PQoGYmluYXJ5EjN7IkRhdGEiOnsiZGF0YSI6WzExNiwxMDEsMTE1LDExNl0sInR5cGUiOiJCdWZmZXIifX1AAUoQAAAAAAAAAAAAAAAAAA9CQFIQAAAAAAAAAAAAAAAAAAMNQFgBYkGHXq+JWPaEyeB19bqL3QB5jyM961WLq7PMTpnGM4iLtBjCkngjS81kgPM2TE4qKDcpzqjum/NccrZtUPQLGk0MAQ==");

@@ -23,7 +23,7 @@ TEST(ZenAddress, Invalid) {
 }
 
 TEST(ZenAddress, FromPrivateKey) {
-    auto privateKey = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"));
+    auto privateKey = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"), TWCurveSECP256k1);
     auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Address(pubKey);
     ASSERT_EQ(address.string(), "znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");

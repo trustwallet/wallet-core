@@ -19,7 +19,7 @@ pub struct MessageTypesBuilder {
 }
 
 impl MessageTypesBuilder {
-    pub fn add_custom_type(&mut self, type_name: String) -> Option<CustomTypeBuilder> {
+    pub fn add_custom_type(&mut self, type_name: String) -> Option<CustomTypeBuilder<'_>> {
         match self.types.entry(type_name) {
             Entry::Vacant(entry) => {
                 let type_properties = entry.insert(Vec::default());
@@ -38,7 +38,7 @@ pub struct CustomTypeBuilder<'a> {
     type_properties: &'a mut Vec<Property>,
 }
 
-impl<'a> CustomTypeBuilder<'a> {
+impl CustomTypeBuilder<'_> {
     pub fn add_property(&mut self, name: &str, property_type: PropertyType) -> &mut Self {
         self.type_properties.push(Property {
             name: name.to_string(),

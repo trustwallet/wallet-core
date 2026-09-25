@@ -15,9 +15,9 @@ using namespace TW;
 
 namespace TW::Tezos {
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer();
-    PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    PrivateKey key = PrivateKey(input.private_key(), TWCurveED25519);
     Data encoded;
     if (input.encoded_operations().empty()) {
         auto operationList = Tezos::OperationList(input.operation_list().branch());
@@ -53,7 +53,7 @@ Data Signer::signData(const PrivateKey& privateKey, const Data& data) {
     append(watermarkedData, data);
 
     Data hash = Hash::blake2b(watermarkedData, 32);
-    Data signature = privateKey.sign(hash, TWCurve::TWCurveED25519);
+    Data signature = privateKey.sign(hash);
 
     Data signedData = Data();
     append(signedData, data);

@@ -7,15 +7,13 @@
 #include "Transaction.h"
 
 #include "Ethereum/RLP.h"
+#include "uint256.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
 #include <string>
 #include <vector>
 
 namespace TW::Aion {
-
-using boost::multiprecision::uint128_t;
 
 /// Aion's RLP encoding for long numbers
 /// https://github.com/aionnetwork/aion/issues/680

@@ -191,26 +191,6 @@ struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessPubkeyHash(TWDa
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript* _Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWData* _Nonnull scriptHash);
 
-/// Builds the Ordinals inscripton for BRC20 transfer.
-///
-/// \param ticker ticker of the brc20
-/// \param amount uint64 transfer amount
-/// \param pubkey Non-null pointer to a pubkey
-/// \note Must be deleted with \TWBitcoinScriptDelete
-/// \return A pointer to the built script
-TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWBitcoinScriptBuildBRC20InscribeTransfer(TWString* _Nonnull ticker, TWString* _Nonnull amount, TWData* _Nonnull pubkey);
-
-/// Builds the Ordinals inscripton for NFT construction.
-///
-/// \param mimeType the MIME type of the payload
-/// \param payload the payload to inscribe
-/// \param pubkey Non-null pointer to a pubkey
-/// \note Must be deleted with \TWBitcoinScriptDelete
-/// \return A pointer to the built script
-TW_EXPORT_STATIC_METHOD
-TWData* _Nonnull TWBitcoinScriptBuildOrdinalNftInscription(TWString* _Nonnull mimeType, TWData* _Nonnull payload, TWData* _Nonnull pubkey);
-
 /// Builds a appropriate lock script for the given address..
 ///
 /// \param address Non-null pointer to an address

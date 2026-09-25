@@ -1,5 +1,7 @@
 package com.example.kmpsample
-import com.trustwallet.core.*
+
+import com.trustwallet.core.CoinType
+import com.trustwallet.core.HDWallet
 
 class Sample {
     private val platform: Platform = getPlatform()
@@ -7,11 +9,11 @@ class Sample {
     fun greet(): String {
         var log = "Wallet Core KMP on platform: ${platform.name}!\n\n"
         val wallet = HDWallet(256, "")
-        log += "Created mnemonic: ${wallet.mnemonic}\n"
+        log += "Created mnemonic: ${wallet.mnemonic}\n\n"
         val btcAddress = wallet.getAddressForCoin(CoinType.Bitcoin)
+        log += "Bitcoin address: ${btcAddress}\n\n"
         val ethAddress = wallet.getAddressForCoin(CoinType.Ethereum)
-        log += "Bitcoin address: ${btcAddress}\n"
-        log += "Ethereum address: ${ethAddress}\n"
+        log += "Ethereum address: ${ethAddress}\n\n"
         return log
     }
 }

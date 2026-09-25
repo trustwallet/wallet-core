@@ -29,6 +29,6 @@ TEST(TWTONCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeBlockchain(coin), TWBlockchainTheOpenNetwork);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0x0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0x0);
-    assertStringsEqual(txUrl, "https://tonscan.org/tx/fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs=");
-    assertStringsEqual(accUrl, "https://tonscan.org/address/EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N");
+    assertStringsEqual(txUrl, "https://tonviewer.com/transaction/fJXfn0EVhV09HFuEgUHu4Cchb24nUQtIMwSzmzk2tLs=");
+    assertStringsEqual(accUrl, "https://tonviewer.com/EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N");
 }

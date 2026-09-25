@@ -18,7 +18,38 @@ class SuiTests: XCTestCase {
         XCTAssertFalse(AnyAddress.isValid(string: invalid, coin: .sui))
     }
 
-    func testSign() {
+    func testSignDirect() {
+        // Successfully broadcasted: https://suiscan.xyz/mainnet/tx/D4Ay9TdBJjXkGmrZSstZakpEWskEQHaWURP6xWPRXbAm
+        let privateKeyData = Data(hexString: "7e6682f7bf479ef0f627823cffd4e1a940a7af33e5fb39d9e0f631d2ecc5daff")!
+        let txBytes = """
+AAAEAAjoAwAAAAAAAAAIUMMAAAAAAAAAIKcXWr3V7ZLr4605DbNmxqcGR4zfUXzebPmGMAZc2jd6ACBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgMCAAIBAAABAQABAQMAAAAAAQIAAQEDAAABAAEDAFToDXbXkMJ39aRPPOkvU9JvWJSJK/OV3uY3WYiHa+ayAWNgILOn3HsRw6pvQZsX+KnBLn95ox0b3S3mcLTt1jAFeHEaBQAAAAAgGGuNnxrqusosgjP3gQ3jBjnhapGNBlcU0yTaupXpa0BU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsu4CAAAAAAAAwMYtAAAAAAAA
+"""
+
+        let input = SuiSigningInput.with {
+            $0.paySui = SuiPaySui.with {
+                $0.inputCoins = [SuiObjectRef.with {
+                    $0.objectID = "0x636020b3a7dc7b11c3aa6f419b17f8a9c12e7f79a31d1bdd2de670b4edd63005"
+                    $0.version = 85619064
+                    $0.objectDigest = "2eKuWbZSVfpFVfg8FXY9wP6W5AFXnTchSoUdp7obyYZ5"
+                }]
+                $0.recipients = [
+                    "0xa7175abdd5ed92ebe3ad390db366c6a706478cdf517cde6cf98630065cda377a",
+                    "0x54e80d76d790c277f5a44f3ce92f53d26f5894892bf395dee6375988876be6b2"
+                ]
+                $0.amounts = [1000, 50000]
+            }
+            $0.privateKey = privateKeyData
+            // 0.003 SUI
+            $0.gasBudget = 3000000
+            $0.referenceGasPrice = 750
+        }
+        let output: SuiSigningOutput = AnySigner.sign(input: input, coin: .sui)
+        XCTAssertEqual(output.unsignedTx, txBytes)
+        let expectedSignature = "AEh44B7iGArEHF1wOLAQJMLNgGnaIwn3gKPC92vtDJqITDETAM5z9plaxio1xomt6/cZReQ5FZaQsMC6l7E0BwmF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g=="
+        XCTAssertEqual(output.signature, expectedSignature)
+    }
+    
+    func testTransferSui() {
         // Successfully broadcasted https://explorer.sui.io/txblock/HkPo6rYPyDY53x1MBszvSZVZyixVN7CHvCJGX381czAh?network=devnet
         let privateKeyData = Data(hexString: "3823dce5288ab55dd1c00d97e91933c613417fdb282a0b8b01a7f5f5a533b266")!
         let txBytes = """

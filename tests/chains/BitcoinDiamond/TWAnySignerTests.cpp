@@ -45,7 +45,7 @@ TEST(TWAnySignerBitcoinDiamond, Sign) {
     auto script0 = parse_hex("76a914a48da46386ce52cccad178de900c71f06130c31088ac");
     utxo0->set_script(script0.data(), (int)script0.size());
 
-    auto utxoKey0 = PrivateKey(parse_hex("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee"));
+    auto utxoKey0 = PrivateKey(parse_hex("d2b9f2846d3adcead910ee0124a3ba7ae29e8a4729787d27f9bea1f532928eee"), TWCoinTypeCurve(TWCoinTypeBitcoinDiamond));
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
     Bitcoin::Proto::TransactionPlan plan;

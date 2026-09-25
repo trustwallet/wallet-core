@@ -3,15 +3,6 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Address.h"
-#include "Program.h"
-#include "Transaction.h"
-#include "../Base58.h"
-#include "../Base58Address.h"
-#include "../Hash.h"
-
-#include <TrezorCrypto/ed25519-donna/ed25519-donna.h>
-
-#include <cassert>
 
 using namespace TW;
 
@@ -51,10 +42,6 @@ std::string Address::string() const {
 
 Data Address::vector() const {
     return Data(begin(bytes), end(bytes));
-}
-
-Address Address::defaultTokenAddress(const Address& tokenMintAddress) {
-    return TokenProgram::defaultTokenAddress(*this, tokenMintAddress);
 }
 
 } // namespace TW::Solana

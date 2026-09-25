@@ -8,7 +8,7 @@ use crate::abi::param_type::ParamType;
 pub struct Writer;
 
 impl Writer {
-    /// Returns string which is a formatted represenation of param.
+    /// Returns string which is a formatted representation of param.
     pub fn write(param: &ParamType) -> String {
         Writer::write_for_abi(param, true)
     }

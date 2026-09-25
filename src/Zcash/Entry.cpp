@@ -7,6 +7,7 @@
 #include "Bitcoin/Address.h"
 #include "Signer.h"
 #include "TAddress.h"
+#include "TexAddress.h"
 
 namespace TW::Zcash {
 
@@ -15,7 +16,7 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
         auto* base58Prefix = std::get_if<Base58Prefix>(&addressPrefix);
         return base58Prefix ? Bitcoin::Address::isValid(address, {{base58Prefix->p2pkh}, {base58Prefix->p2sh}}) : false;
     }
-    return TAddress::isValid(address);
+    return TAddress::isValid(address) || TexAddress::isValid(address);
 }
 
 std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, const PrefixVariant& addressPrefix) const {
@@ -23,6 +24,7 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, [[
     if (coin == TWCoinTypeKomodo) {
         return Bitcoin::Address(publicKey, p2pkh).string();
     }
+    // For now, do not derive Tex address, even if the prefix is `Bech32Prefix`.
     return TAddress(publicKey, p2pkh).string();
 }
 
@@ -31,17 +33,20 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
         const auto addr = Bitcoin::Address(address);
         return {addr.bytes.begin() + 1, addr.bytes.end()};
     }
-
+    if (TexAddress::isValid(address)) {
+        const auto addr = TexAddress(address);
+        return {addr.getKeyHash()};
+    }
     const auto addr = TAddress(address);
     return {addr.bytes.begin() + 2, addr.bytes.end()};
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    signTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Bitcoin::Proto::SigningInput, Bitcoin::Proto::SigningOutput>(dataIn, dataOut);
 }
 
 void Entry::plan([[maybe_unused]] TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    planTemplate<Signer, Bitcoin::Proto::SigningInput>(dataIn, dataOut);
+    planTemplate<Signer, Bitcoin::Proto::SigningInput, Bitcoin::Proto::TransactionPlan>(dataIn, dataOut);
 }
 
 TW::Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {

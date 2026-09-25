@@ -22,13 +22,13 @@ struct EncryptionParameters {
     static EncryptionParameters getPreset(enum TWStoredKeyEncryptionLevel preset, enum TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr) {
         switch (preset) {
         case TWStoredKeyEncryptionLevelMinimal:
-            return EncryptionParameters(AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::Minimal);
+            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::minimal() };
         case TWStoredKeyEncryptionLevelWeak:
         case TWStoredKeyEncryptionLevelDefault:
         default:
-            return EncryptionParameters(AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::Weak);
+            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::weak() };
         case TWStoredKeyEncryptionLevelStandard:
-            return EncryptionParameters(AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::Standard);
+            return { AESParameters::AESParametersFromEncryption(encryption), ScryptParameters::standard() };
         }
     }
 
@@ -54,7 +54,7 @@ struct EncryptionParameters {
     }
 
     /// Initializes with a JSON object.
-    EncryptionParameters(const nlohmann::json& json);
+    explicit EncryptionParameters(const nlohmann::json& json);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
@@ -91,7 +91,7 @@ public:
     EncryptedPayload() = default;
 
     /// Initializes with standard values.
-    EncryptedPayload(const EncryptionParameters& params, const Data& encrypted, const Data& mac)
+    EncryptedPayload(EncryptionParameters  params, Data encrypted, Data mac)
         : params(std::move(params))
         , encrypted(std::move(encrypted))
         , _mac(std::move(mac)) {}
@@ -101,7 +101,7 @@ public:
     EncryptedPayload(const Data& password, const Data& data, const EncryptionParameters& params);
 
     /// Initializes with a JSON object.
-    EncryptedPayload(const nlohmann::json& json);
+    explicit EncryptedPayload(const nlohmann::json& json);
 
     /// Decrypts the payload with the given password.
     Data decrypt(const Data& password) const;

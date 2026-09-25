@@ -3,30 +3,32 @@ syntax = "proto3";
 package TW.Nebulas.Proto;
 option java_package = "wallet.core.jni.proto";
 
+import "Common.proto";
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
     // sender's address.
     string from_address = 1;
 
-    // Chain identifier (uint256, serialized little endian)
+    // Chain identifier (uint256, serialized big endian)
     bytes chain_id = 2;
 
-    // Nonce (uint256, serialized little endian)
+    // Nonce (uint256, serialized big endian)
     bytes nonce = 3;
 
-    // Gas price (uint256, serialized little endian)
+    // Gas price (uint256, serialized big endian)
     bytes gas_price = 4;
 
-    // Gas limit (uint256, serialized little endian)
+    // Gas limit (uint256, serialized big endian)
     bytes gas_limit = 5;
 
     // Recipient's address.
     string to_address = 6;
 
-    // Amount to send in wei, 1 NAS = 10^18 Wei (uint256, serialized little endian)
+    // Amount to send in wei, 1 NAS = 10^18 Wei (uint256, serialized big endian)
     bytes amount = 7;
 
-    // Timestamp to create transaction (uint256, serialized little endian)
+    // Timestamp to create transaction (uint256, serialized big endian)
     bytes timestamp = 8;
 
     // Optional payload
@@ -46,6 +48,12 @@ message SigningOutput {
 
     // Encoded transaction
     string raw = 3;
+
+    // error code, 0 is ok, other codes will be treated as errors
+    Common.Proto.SigningError error = 4;
+
+    // error description
+    string error_message = 5;
 }
 
 // Generic data
@@ -65,7 +73,7 @@ message RawTransaction {
     // destination address
     bytes to = 3;
 
-    // amount (uint256, serialized little endian)
+    // amount (uint256, serialized big endian)
     bytes value = 4;
 
     // Nonce (should be larger than in the last transaction of the account)
@@ -80,10 +88,10 @@ message RawTransaction {
     // chain ID (4 bytes)
     uint32 chain_id = 8;
 
-    // gas price (uint256, serialized little endian)
+    // gas price (uint256, serialized big endian)
     bytes gas_price = 9;
 
-    // gas limit (uint256, serialized little endian)
+    // gas limit (uint256, serialized big endian)
     bytes gas_limit = 10;
 
     // algorithm

@@ -52,3 +52,9 @@ name = "sign"
 path = "fuzz_targets/sign.rs"
 test = false
 doc = false
+
+[[bin]]
+name = "diamond_cut_code"
+path = "fuzz_targets/diamond_cut_code.rs"
+test = false
+doc = false

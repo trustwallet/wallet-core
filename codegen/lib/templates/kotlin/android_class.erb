@@ -9,6 +9,9 @@ actual class <%= entity.name %> private constructor(
 
     init {
         if (nativeHandle == 0L) throw IllegalArgumentException()
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+        GenericPhantomReference.register(this, nativeHandle, ::delete)
+<%  end -%>
     }
 <%# Constructors -%>
 <%- constructors.each do |constructor| -%>
@@ -52,6 +55,12 @@ actual class <%= entity.name %> private constructor(
         @JvmStatic
         @JvmName("createFromNative")
         private fun createFromNative(nativeHandle: Long) = <%= entity.name %>(nativeHandle)
+
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+        @JvmStatic
+        @JvmName("delete")
+        private external fun delete(handle: Long)
+<%- end -%>
 <%- constructors.each do |constructor| -%>
 
         @JvmStatic

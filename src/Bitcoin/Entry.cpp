@@ -6,10 +6,13 @@
 
 #include "Address.h"
 #include "CashAddress.h"
+#include "ExchangeAddress.h"
 #include "SegwitAddress.h"
 #include "Signer.h"
 
 namespace TW::Bitcoin {
+
+const EntryV2 bitcoinV2Dispatcher;
 
 bool Entry::validateAddress(TWCoinType coin, const std::string& address, const PrefixVariant& addressPrefix) const {
     auto* base58Prefix = std::get_if<Base58Prefix>(&addressPrefix);
@@ -32,11 +35,12 @@ bool Entry::validateAddress(TWCoinType coin, const std::string& address, const P
         return base58Prefix ? isValidBase58 : BitcoinCashAddress::isValid(address);
     case TWCoinTypeECash:
         return base58Prefix ? isValidBase58 : ECashAddress::isValid(address);
+    case TWCoinTypeFiro:
+        return isValidBase58 || ExchangeAddress::isValid(address);
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypePivx:
     case TWCoinTypeRavencoin:
-    case TWCoinTypeFiro:
     default:
         return isValidBase58;
     }
@@ -84,6 +88,9 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
         case TWDerivationBitcoinTestnet:
             return SegwitAddress::createTestnetFromPublicKey(publicKey).string();
 
+        case TWDerivationBitcoinTaproot:
+            return bitcoinV2Dispatcher.deriveAddress(coin, publicKey, derivation, addressPrefix);
+
         case TWDerivationBitcoinSegwit:
         case TWDerivationDefault:
         default:
@@ -96,13 +103,18 @@ std::string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW
     case TWCoinTypeECash:
         return ECashAddress(publicKey).string();
 
+    case TWCoinTypeFiro:
+        if (std::get_if<ExchangePrefix>(&addressPrefix)) {
+            return ExchangeAddress(publicKey).string();
+        }
+        return Address(publicKey, p2pkh).string();
+
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeMonacoin:
     case TWCoinTypePivx:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
-    case TWCoinTypeFiro:
     default:
         return Address(publicKey, p2pkh).string();
     }
@@ -121,6 +133,18 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
     case TWCoinTypeECash:
         return cashAddressToData(ECashAddress(address));
 
+    case TWCoinTypeFiro: {
+        // check if it is a legacy address
+        if (Address::isValid(address)) {
+            const auto addr = Address(address);
+            return {addr.bytes.begin() + 1, addr.bytes.end()};
+        } else if (ExchangeAddress::isValid(address)) {
+            const auto addr = ExchangeAddress(address);
+            return {addr.bytes.begin() + 3, addr.bytes.end()};
+        }
+        return {};
+    }
+
     default: {
         const auto decoded = SegwitAddress::decode(address);
         if (!std::get<2>(decoded)) {
@@ -137,11 +161,11 @@ Data Entry::addressToData(TWCoinType coin, const std::string& address) const {
 }
 
 void Entry::sign([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
-    signTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, Proto::SigningInput, Proto::SigningOutput>(dataIn, dataOut);
 }
 
 void Entry::plan([[maybe_unused]] TWCoinType coin, const Data& dataIn, Data& dataOut) const {
-    planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+    planTemplate<Signer, Proto::SigningInput, Proto::TransactionPlan>(dataIn, dataOut);
 }
 
 Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInputData) const {
@@ -152,27 +176,8 @@ Data Entry::preImageHashes([[maybe_unused]] TWCoinType coin, const Data& txInput
 void Entry::compile([[maybe_unused]] TWCoinType coin, const Data& txInputData, const std::vector<Data>& signatures,
                     const std::vector<PublicKey>& publicKeys, Data& dataOut) const {
     auto txCompilerFunctor = [&signatures, &publicKeys](auto&& input, auto&& output) noexcept {
-        if (signatures.empty() || publicKeys.empty()) {
-            output.set_error(Common::Proto::Error_invalid_params);
-            output.set_error_message("empty signatures or publickeys");
-            return;
-        }
-
-        if (signatures.size() != publicKeys.size()) {
-            output.set_error(Common::Proto::Error_invalid_params);
-            output.set_error_message("signatures size and publickeys size not equal");
-            return;
-        }
-
-        HashPubkeyList externalSignatures;
-        auto insertFunctor = [](auto&& signature, auto&& pubkey) noexcept {
-            return std::make_pair(signature, pubkey.bytes);
-        };
-        transform(begin(signatures), end(signatures), begin(publicKeys),
-                  back_inserter(externalSignatures), insertFunctor);
-        output = Signer::sign(input, externalSignatures);
+        output = Signer::compile(input, signatures, publicKeys);
     };
-
     dataOut = txCompilerTemplate<Proto::SigningInput, Proto::SigningOutput>(txInputData,
                                                                             txCompilerFunctor);
 }

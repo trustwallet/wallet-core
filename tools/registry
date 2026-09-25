@@ -2,8 +2,9 @@
 
 import argparse
 import json
-import sys
 import requests
+import subprocess
+import sys
 
 PATH_TO_REGISTRY_JSON = "registry.json"
 
@@ -34,6 +35,21 @@ def ping_explorers(_args):
             print("\tError: ", exception)
 
 
+def registry_stats(_args):
+    """Print registry stats"""
+    subprocess.run([
+        "cargo",
+        "run",
+        "--manifest-path",
+        "rust/Cargo.toml",
+        "-p",
+        "wallet_core_bin",
+        "--",
+        "registry-stats"
+    ],
+        shell=False)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Operations over registry.json")
     subparsers = parser.add_subparsers()
@@ -41,6 +57,10 @@ if __name__ == '__main__':
     ping_explorers_parser = subparsers.add_parser('ping-explorers',
                                                   help="Ping blockchain explorers inside 'registry.json'")
     ping_explorers_parser.set_defaults(func=ping_explorers)
+
+    registry_stats_parser = subparsers.add_parser('registry-stats',
+                                                  help="Print registry statistic (e.g Rust transition progress)")
+    registry_stats_parser.set_defaults(func=registry_stats)
 
     args = parser.parse_args()
     args.func(args)

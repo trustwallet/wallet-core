@@ -38,3 +38,20 @@ uint32_t Crc::crc32(const Data& data) {
     }
     return ~c;
 }
+
+Data Crc::crc16_xmodem(const Data& data) {
+    uint16_t crc16 = 0x0;
+
+    for (size_t i = 0; i < data.size(); i++) {
+        uint8_t byte = data[i];
+        uint8_t lookupIndex = (crc16 >> 8) ^ byte;
+        crc16 = static_cast<uint16_t>((crc16 << 8) ^ crc16_xmodem_table[lookupIndex]);
+        crc16 &= 0xffff;
+    }
+    
+    Data checksum(2);
+    checksum[0] = crc16 & 0xff;
+    checksum[1] = (crc16 >> 8) & 0xff;
+    return checksum;
+}
+

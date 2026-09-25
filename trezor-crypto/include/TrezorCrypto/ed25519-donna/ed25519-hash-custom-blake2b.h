@@ -15,9 +15,9 @@
 #include <TrezorCrypto/blake2b.h>
 
 #define ed25519_hash_context BLAKE2B_CTX
-#define ed25519_hash_init(ctx) blake2b_Init(ctx, 64)
-#define ed25519_hash_update(ctx, in, inlen) blake2b_Update((ctx), (in), (inlen))
-#define ed25519_hash_final(ctx, hash) blake2b_Final((ctx), (hash), 64)
-#define ed25519_hash(hash, in, inlen) blake2b((in), (inlen), (hash), 64)
+#define ed25519_hash_init(ctx) tc_blake2b_Init(ctx, 64)
+#define ed25519_hash_update(ctx, in, inlen) tc_blake2b_Update((ctx), (in), (inlen))
+#define ed25519_hash_final(ctx, hash) tc_blake2b_Final((ctx), (hash), 64)
+#define ed25519_hash(hash, in, inlen) tc_blake2b((in), (inlen), (hash), 64)
 
 #endif // ED25519_HASH_CUSTOM

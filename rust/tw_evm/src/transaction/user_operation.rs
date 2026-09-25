@@ -9,7 +9,7 @@ use crate::address::Address;
 use crate::transaction::signature::Signature;
 use crate::transaction::{SignedTransaction, TransactionCommon, UnsignedTransaction};
 use serde::Serialize;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex;
 use tw_hash::sha3::keccak256;
 use tw_hash::H256;
@@ -162,7 +162,8 @@ struct SignedUserOperationSerde {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::abi::prebuild::erc4337::{Erc4337SimpleAccount, ExecuteArgs};
+    use crate::abi::prebuild::erc4337::Erc4337SimpleAccount;
+    use crate::abi::prebuild::ExecuteArgs;
 
     #[test]
     fn test_encode_user_operation() {

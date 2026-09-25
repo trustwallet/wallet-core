@@ -50,10 +50,10 @@ void hasher_InitParam(Hasher *hasher, HasherType type, const void *param,
       groestl512_Init(&hasher->ctx.groestl);
       break;
     case HASHER_BLAKE2B:
-      blake2b_Init(&hasher->ctx.blake2b, 32);
+      tc_blake2b_Init(&hasher->ctx.blake2b, 32);
       break;
     case HASHER_BLAKE2B_PERSONAL:
-      blake2b_InitPersonal(&hasher->ctx.blake2b, 32, hasher->param,
+      tc_blake2b_InitPersonal(&hasher->ctx.blake2b, 32, hasher->param,
                            hasher->param_size);
       break;
   }
@@ -90,7 +90,7 @@ void hasher_Update(Hasher *hasher, const uint8_t *data, size_t length) {
       break;
     case HASHER_BLAKE2B:
     case HASHER_BLAKE2B_PERSONAL:
-      blake2b_Update(&hasher->ctx.blake2b, data, length);
+      tc_blake2b_Update(&hasher->ctx.blake2b, data, length);
       break;
   }
 }
@@ -132,7 +132,7 @@ void hasher_Final(Hasher *hasher, uint8_t hash[HASHER_DIGEST_LENGTH]) {
       break;
     case HASHER_BLAKE2B:
     case HASHER_BLAKE2B_PERSONAL:
-      blake2b_Final(&hasher->ctx.blake2b, hash, 32);
+      tc_blake2b_Final(&hasher->ctx.blake2b, hash, 32);
       break;
   }
 }

@@ -6,7 +6,7 @@ use crate::context::CosmosContext;
 use crate::modules::compiler::tw_compiler::TWTransactionCompiler;
 use crate::modules::signer::tw_signer::TWSigner;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::SigningErrorType;
+use tw_coin_entry::error::prelude::*;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Cosmos::Proto;
@@ -27,7 +27,7 @@ pub struct TestInput<'a> {
 pub struct TestCompileInput<'a> {
     pub coin: &'a dyn CoinContext,
     pub input: Proto::SigningInput<'a>,
-    /// Either a stringified JSON object or a hex-encoded serialzied `SignDoc`.
+    /// Either a stringified JSON object or a hex-encoded serialized `SignDoc`.
     pub tx_preimage: &'a str,
     /// Expected transaction preimage hash.
     pub tx_prehash: &'a str,

@@ -5,6 +5,7 @@ option java_package = "wallet.core.jni.proto";
 
 import "Binance.proto";
 import "Common.proto";
+import "Solana.proto";
 
 // The transaction protocol may differ from version to version.
 enum Protocol {
@@ -16,6 +17,8 @@ enum Method {
     Unknown = 0;
     // cosmos_signAmino
     CosmosSignAmino = 1;
+    // solana_signTransaction
+    SolanaSignTransaction = 2;
 }
 
 message ParseRequestInput {
@@ -40,5 +43,6 @@ message ParseRequestOutput {
     // Prepared unsigned transaction input, on the source chain. Some fields must be completed, and it has to be signed.
     oneof signing_input_oneof {
         Binance.Proto.SigningInput binance = 3;
+        Solana.Proto.SigningInput solana = 4;
     }
 }

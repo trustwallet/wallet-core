@@ -3,11 +3,16 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::ffi::tw_any_address::{
-    tw_any_address_create_bech32_with_public_key, tw_any_address_create_with_string,
+    tw_any_address_create_base58_with_public_key, tw_any_address_create_bech32_with_public_key,
+    tw_any_address_create_ss58_with_public_key, tw_any_address_create_with_public_key_derivation,
+    tw_any_address_create_with_string, tw_any_address_create_with_string_unchecked,
     tw_any_address_data, tw_any_address_delete, tw_any_address_description,
-    tw_any_address_is_valid, tw_any_address_is_valid_bech32, TWAnyAddress,
+    tw_any_address_is_valid, tw_any_address_is_valid_base58, tw_any_address_is_valid_bech32,
+    tw_any_address_is_valid_ss58, TWAnyAddress,
 };
 use tw_coin_registry::coin_type::CoinType;
+use tw_coin_registry::registry::get_coin_item;
+use tw_coin_registry::tw_derivation::TWDerivation;
 use tw_encoding::hex::{DecodeHex, ToHex};
 use tw_keypair::ffi::privkey::tw_private_key_get_public_key_by_type;
 use tw_keypair::test_utils::tw_private_key_helper::TWPrivateKeyHelper;
@@ -25,6 +30,48 @@ impl WithDestructor for TWAnyAddress {
     }
 }
 
+pub enum KeyType {
+    PrivateKey(&'static str),
+    PublicKey(&'static str),
+}
+
+pub fn test_address_derive(coin: CoinType, key: KeyType, address: &str) {
+    test_address_derive_with_derivation(coin, key, address, TWDerivation::Default)
+}
+
+pub fn test_address_derive_with_derivation(
+    coin: CoinType,
+    key: KeyType,
+    address: &str,
+    derivation: TWDerivation,
+) {
+    let coin_item = get_coin_item(coin).unwrap();
+
+    let public_key = match key {
+        KeyType::PrivateKey(key) => {
+            let private_key = TWPrivateKeyHelper::with_hex(key);
+            TWPublicKeyHelper::wrap(unsafe {
+                tw_private_key_get_public_key_by_type(
+                    private_key.ptr(),
+                    coin_item.public_key_type as u32,
+                )
+            })
+        },
+        KeyType::PublicKey(key) => TWPublicKeyHelper::with_hex(key, coin_item.public_key_type),
+    };
+
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_with_public_key_derivation(
+            public_key.ptr(),
+            coin as u32,
+            derivation as u32,
+        )
+    });
+
+    let actual = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    assert_eq!(actual.to_string().unwrap(), address);
+}
+
 pub fn test_address_normalization(coin: CoinType, denormalized: &str, normalized: &str) {
     let expected = normalized;
     let denormalized = TWStringHelper::create(denormalized);
@@ -36,16 +83,52 @@ pub fn test_address_normalization(coin: CoinType, denormalized: &str, normalized
     let normalized = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
 
     assert_eq!(normalized.to_string(), Some(expected.to_string()));
+
+    // Double check if the address is also valid by using `tw_any_address_create_with_string_unchecked`.
+    let any_address_unchecked = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_with_string_unchecked(denormalized.ptr(), coin as u32)
+    });
+    let normalized_unchecked =
+        TWStringHelper::wrap(unsafe { tw_any_address_description(any_address_unchecked.ptr()) });
+    normalized_unchecked
+        .to_string()
+        .expect("!tw_any_address_create_with_string_unchecked");
 }
 
 pub fn test_address_valid(coin: CoinType, address: &str) {
-    let address = TWStringHelper::create(address);
-    assert!(unsafe { tw_any_address_is_valid(address.ptr(), coin as u32) });
+    let addr = TWStringHelper::create(address);
+    assert!(
+        unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be valid",
+        address
+    );
+}
+
+pub fn test_address_ss58_is_valid(coin: CoinType, address: &str, ss58: u16) {
+    let addr = TWStringHelper::create(address);
+    assert!(
+        unsafe { tw_any_address_is_valid_ss58(addr.ptr(), coin as u32, ss58) },
+        "'{}' expected to be valid",
+        address
+    );
 }
 
 pub fn test_address_invalid(coin: CoinType, address: &str) {
-    let address = TWStringHelper::create(address);
-    assert!(!unsafe { tw_any_address_is_valid(address.ptr(), coin as u32) });
+    let addr = TWStringHelper::create(address);
+    assert!(
+        !unsafe { tw_any_address_is_valid(addr.ptr(), coin as u32) },
+        "'{}' expected to be invalid",
+        address
+    );
+}
+
+pub fn test_address_ss58_is_invalid(coin: CoinType, address: &str, ss58: u16) {
+    let addr = TWStringHelper::create(address);
+    assert!(
+        !unsafe { tw_any_address_is_valid_ss58(addr.ptr(), coin as u32, ss58) },
+        "'{}' expected to be invalid",
+        address
+    );
 }
 
 pub fn test_address_get_data(coin: CoinType, address: &str, data_hex: &str) {
@@ -100,4 +183,64 @@ pub fn test_address_bech32_is_valid(input: AddressBech32IsValid<'_>) {
     let result =
         unsafe { tw_any_address_is_valid_bech32(address_str.ptr(), input.coin as u32, hrp.ptr()) };
     assert!(result);
+}
+
+pub struct AddressCreateBase58WithPublicKey<'a> {
+    pub coin: CoinType,
+    pub public_key: &'a str,
+    pub public_key_type: PublicKeyType,
+    pub p2pkh: u8,
+    pub p2sh: u8,
+    pub expected: &'a str,
+}
+
+pub fn test_address_create_base58_with_public_key(input: AddressCreateBase58WithPublicKey<'_>) {
+    let public_key = TWPublicKeyHelper::with_hex(input.public_key, input.public_key_type);
+
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_base58_with_public_key(
+            public_key.ptr(),
+            input.coin as u32,
+            input.p2pkh,
+            input.p2sh,
+        )
+    });
+
+    let actual = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    assert_eq!(actual.to_string(), Some(input.expected.to_string()));
+}
+
+pub struct AddressBase58IsValid<'a> {
+    pub coin: CoinType,
+    pub address: &'a str,
+    pub p2pkh: u8,
+    pub p2sh: u8,
+}
+
+pub fn test_address_base58_is_valid(input: AddressBase58IsValid<'_>) {
+    // First, check if the address is valid.
+    let addr_str = TWStringHelper::create(input.address);
+    let is_valid = unsafe {
+        tw_any_address_is_valid_base58(addr_str.ptr(), input.coin as u32, input.p2pkh, input.p2sh)
+    };
+    assert!(is_valid, "!tw_any_address_is_valid_base58");
+}
+
+pub struct AddressCreateSS58WithPublicKey<'a> {
+    pub coin: CoinType,
+    pub public_key: &'a str,
+    pub public_key_type: PublicKeyType,
+    pub ss58: u16,
+    pub expected: &'a str,
+}
+
+pub fn test_address_create_ss58_with_public_key(input: AddressCreateSS58WithPublicKey<'_>) {
+    let public_key = TWPublicKeyHelper::with_hex(input.public_key, input.public_key_type);
+
+    let any_address = TWAnyAddressHelper::wrap(unsafe {
+        tw_any_address_create_ss58_with_public_key(public_key.ptr(), input.coin as u32, input.ss58)
+    });
+
+    let actual = TWStringHelper::wrap(unsafe { tw_any_address_description(any_address.ptr()) });
+    assert_eq!(actual.to_string(), Some(input.expected.to_string()));
 }

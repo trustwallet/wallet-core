@@ -6,14 +6,12 @@
 
 #include "Address.h"
 #include "Data.h"
-
-#include <boost/multiprecision/cpp_int.hpp>
+#include "uint256.h"
 
 namespace TW::Aion {
 
 class Transaction {
   public:
-    using uint128_t = boost::multiprecision::uint128_t;
 
     uint128_t nonce;
     uint128_t gasPrice;

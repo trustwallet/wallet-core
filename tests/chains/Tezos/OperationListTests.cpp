@@ -63,7 +63,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
     revealOperation.set_allocated_reveal_operation_data(revealOperationData);
 
     op_list.addOperation(revealOperation);
-    auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+    auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e00";
     auto forged = op_list.forge(key);
 
     ASSERT_EQ(hex(forged), expected);
@@ -147,7 +147,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     op_list.addOperation(revealOperation);
     op_list.addOperation(transactionOperation);
 
-    auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b003e47f837f0467b4acde406ed5842f35e2414b1a8f80992f001f44e810200603247bbf52501498293686da89ad8b2aca85f83b90903d4521dd2aba66054eb6c003e47f837f0467b4acde406ed5842f35e2414b1a8f80993f001f44e8102010000e42504da69a7c8d5baeaaeebe157a02db6b22ed800";
+    auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b003e47f837f0467b4acde406ed5842f35e2414b1a8f80992f001f44e810200603247bbf52501498293686da89ad8b2aca85f83b90903d4521dd2aba66054eb006c003e47f837f0467b4acde406ed5842f35e2414b1a8f80993f001f44e8102010000e42504da69a7c8d5baeaaeebe157a02db6b22ed800";
     auto forged = op_list.forge(key);
 
     ASSERT_EQ(hex(forged), expected);
@@ -171,7 +171,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealWithoutPublicKey) {
 
     op_list.addOperation(revealOperation);
 
-    auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b003e47f837f0467b4acde406ed5842f35e2414b1a8f80992f001f44e810200603247bbf52501498293686da89ad8b2aca85f83b90903d4521dd2aba66054eb";
+    auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b003e47f837f0467b4acde406ed5842f35e2414b1a8f80992f001f44e810200603247bbf52501498293686da89ad8b2aca85f83b90903d4521dd2aba66054eb00";
     auto forged = op_list.forge(key);
 
     ASSERT_EQ(hex(forged), expected);

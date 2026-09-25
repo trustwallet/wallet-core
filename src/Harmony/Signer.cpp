@@ -22,7 +22,7 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
+Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
@@ -43,7 +43,7 @@ Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T& transac
     return protoOutput;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) {
     auto output = Proto::SigningOutput();
     try {
 
@@ -86,7 +86,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
 }
 
 Proto::SigningOutput Signer::signTransaction(const Proto::SigningInput& input) {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
 
     auto transaction = Signer::buildUnsignedTransaction(input);
 
@@ -131,7 +131,7 @@ uint8_t Signer::getEnum<CollectRewards>() noexcept {
 
 template <typename T>
 Proto::SigningOutput Signer::signStaking(const Proto::SigningInput &input, function<T(const Proto::SigningInput &input)> func) {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
     auto stakingTx = buildUnsignedStakingTransaction(input, func);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
@@ -295,14 +295,6 @@ CollectRewards Signer::buildUnsignedCollectRewards(const Proto::SigningInput &in
         throw std::invalid_argument("Invalid address");
     }
     return CollectRewards(delegatorAddr);
-}
-
-template <typename T>
-void Signer::sign(const PrivateKey& privateKey, const Data& hash, T& transaction) const noexcept {
-    auto tuple = sign(chainID, privateKey, hash);
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
 }
 
 Data Signer::rlpNoHash(const Transaction& transaction, const bool include_vrs) const noexcept {

@@ -1,5 +1,8 @@
 <%= render('kotlin/package.erb') %>
 
+import kotlinx.cinterop.toCValues
+
+@OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 actual object <%= entity.name %> {
 <%# Static property declarations -%>
 <%  entity.static_properties.each do |property| -%>
@@ -10,7 +13,11 @@ actual object <%= entity.name %> {
 <%  entity.static_methods.each do |method| -%>
 <%    next if method.name.start_with?('Create') -%>
 
-    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> =
-        <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
+    actual fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters) %>)<%= KotlinHelper.return_type(method.return_type) %> {
+<%=   render('kotlin/ios_parameter_access.erb', { method: method }) -%>
+        val result = <%= KotlinHelper.convert_calling_return_type_ios(method.return_type, "TW#{entity.name}#{method.name}(#{KotlinHelper.calling_parameters_ios(method.parameters)})") %>
+<%=   render('kotlin/ios_parameter_release.erb', { method: method }) -%>
+        return result
+    }
 <%  end -%>
 }

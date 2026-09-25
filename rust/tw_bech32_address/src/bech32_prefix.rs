@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use tw_coin_entry::error::AddressError;
+use tw_coin_entry::error::prelude::*;
 use tw_coin_entry::prefix::AddressPrefix;
 
 pub struct Bech32Prefix {
@@ -15,6 +15,7 @@ impl TryFrom<AddressPrefix> for Bech32Prefix {
     fn try_from(prefix: AddressPrefix) -> Result<Self, Self::Error> {
         match prefix {
             AddressPrefix::Hrp(hrp) => Ok(Bech32Prefix { hrp }),
+            _ => Err(AddressError::UnexpectedAddressPrefix),
         }
     }
 }

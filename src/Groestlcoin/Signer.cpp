@@ -14,12 +14,19 @@ namespace TW::Groestlcoin {
 
 using TransactionBuilder = Bitcoin::TransactionBuilder;
 
-TransactionPlan Signer::plan(const SigningInput& input) noexcept {
+TransactionPlan Signer::plan(const SigningInput& input) {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::planAsV2(input);
+    }
     auto plan = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::plan(input);
     return plan.proto();
 }
 
-SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) noexcept {
+SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePubkeyList> optionalExternalSigs) {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::signAsV2(input);
+    }
+
     SigningOutput output;
     auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::sign(input, false, optionalExternalSigs);
     if (!result) {
@@ -44,7 +51,11 @@ SigningOutput Signer::sign(const SigningInput& input, std::optional<SignaturePub
     return output;
 }
 
-PreSigningOutput Signer::preImageHashes(const SigningInput& input) noexcept {
+PreSigningOutput Signer::preImageHashes(const SigningInput& input) {
+    if (input.has_signing_v2()) {
+        return Bitcoin::Signer::preImageHashesAsV2(input);
+    }
+
     PreSigningOutput output;
     auto result = Bitcoin::TransactionSigner<Transaction, TransactionBuilder>::preImageHashes(input);
     if (!result) {

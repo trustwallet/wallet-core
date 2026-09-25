@@ -2,6 +2,8 @@
 //
 // Copyright © 2017 Trust Wallet.
 
+#![allow(unused_assignments)]
+
 //! `tw_keypair` crate defines the keypairs, private and public keys that are used to sign messages,
 //! verify signatures and more.
 //!
@@ -45,6 +47,9 @@
 pub mod ecdsa;
 pub mod ed25519;
 pub mod ffi;
+pub mod nacl_crypto_box;
+pub mod rand;
+pub mod schnorr;
 pub mod starkex;
 pub mod traits;
 pub mod tw;
@@ -60,6 +65,8 @@ pub enum KeyPairError {
     InvalidPublicKey,
     InvalidSignature,
     InvalidSignMessage,
+    InvalidEncryptedMessage,
     SignatureVerifyError,
     SigningError,
+    InternalError,
 }

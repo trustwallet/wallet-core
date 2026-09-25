@@ -14,16 +14,16 @@
 using namespace TW;
 
 namespace TW::Stellar {
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     auto output = Proto::SigningOutput();
     output.set_signature(signer.sign());
     return output;
 }
 
-std::string Signer::sign() const noexcept {
+std::string Signer::sign() const {
 
-    auto key = PrivateKey(Data(_input.private_key().begin(), _input.private_key().end()));
+    auto key = PrivateKey(_input.private_key(), TWCurveED25519);
     auto account = Address(_input.account());
     auto encoded = encode(_input);
 
@@ -39,7 +39,7 @@ std::string Signer::sign() const noexcept {
     auto hash = Hash::sha256(encodedWithHeaders);
     auto data = Data(hash.begin(), hash.end());
 
-    auto sign = key.sign(data, TWCurveED25519);
+    auto sign = key.sign(data);
 
     auto signature = Data();
     signature.insert(signature.end(), encoded.begin(), encoded.end());

@@ -18,6 +18,7 @@ use std::borrow::Cow;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::str::FromStr;
+use tw_encoding::hex::as_hex;
 use tw_hash::H32;
 use tw_misc::traits::ToBytesVec;
 use tw_number::{I256, U256};
@@ -25,6 +26,7 @@ use tw_proto::EthereumAbi::Proto;
 
 use crate::abi::non_empty_array::{NonEmptyArray, NonEmptyBytes, NonZeroLen};
 use crate::abi::uint::UintBits;
+use tw_coin_entry::error::prelude::*;
 use Proto::mod_ParamType::OneOfparam as ProtoParamType;
 use Proto::mod_ParamsDecodingInput::OneOfabi as AbiEnum;
 use Proto::mod_Token::OneOftoken as TokenEnum;
@@ -59,8 +61,13 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     #[inline]
-    pub fn get_function_signature(input: Proto::FunctionGetTypeInput<'_>) -> String {
-        Self::get_function_signature_impl(input)
+    pub fn get_function_signature_from_proto(input: Proto::FunctionGetTypeInput<'_>) -> String {
+        Self::get_function_signature_from_proto_impl(input)
+    }
+
+    #[inline]
+    pub fn get_function_signature_from_abi(abi: &str) -> AbiResult<String> {
+        Self::get_function_signature_from_abi_impl(abi)
     }
 
     #[inline]
@@ -75,7 +82,8 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         input: Proto::ContractCallDecodingInput,
     ) -> AbiResult<Proto::ContractCallDecodingOutput<'static>> {
         if input.encoded.len() < H32::len() {
-            return Err(AbiError(AbiErrorKind::Error_decoding_data));
+            return AbiError::err(AbiErrorKind::Error_decoding_data)
+                .context("Encoded Contract Call bytes too short");
         }
         let short_signature = &input.encoded[0..H32::len()];
         let short_signature =
@@ -84,12 +92,18 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
         let mut abi_json: SmartContractCallAbiJson =
             serde_json::from_str(&input.smart_contract_abi_json)
-                .map_err(|_| AbiError(AbiErrorKind::Error_invalid_abi))?;
+                .tw_err(AbiErrorKind::Error_invalid_abi)
+                .context("Error deserializing Smart Contract ABI as JSON")?;
 
         let function = abi_json
             .map
-            .get_mut(&short_signature)
-            .ok_or(AbiError(AbiErrorKind::Error_abi_mismatch))?;
+            .get_mut(&ContractCallSignature(short_signature))
+            .or_tw_err(AbiErrorKind::Error_abi_mismatch)
+            .with_context(|| {
+                format!(
+                    "Contract Call ABI does not have a function with {short_signature} signature"
+                )
+            })?;
 
         let decoded_tokens = function.decode_input(encoded_data)?;
 
@@ -104,7 +118,8 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             inputs: &decoded_tokens,
         };
         let decoded_json = serde_json::to_string(&decoded_res)
-            .map_err(|_| AbiError(AbiErrorKind::Error_internal))?;
+            .tw_err(AbiErrorKind::Error_internal)
+            .context("Error serializing Smart Contract Input as JSON")?;
 
         // Serialize the Proto parameters.
         let decoded_protos = decoded_tokens
@@ -124,13 +139,16 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     ) -> AbiResult<Proto::ParamsDecodingOutput<'static>> {
         let abi = match input.abi {
             AbiEnum::abi_json(abi_json) => serde_json::from_str(&abi_json)
-                .map_err(|_| AbiError(AbiErrorKind::Error_invalid_abi))?,
+                .tw_err(AbiErrorKind::Error_invalid_abi)
+                .context("Error deserializing ABI as JSON")?,
             AbiEnum::abi_params(abi_params) => abi_params
                 .params
                 .into_iter()
                 .map(Self::param_from_proto)
                 .collect::<AbiResult<Vec<_>>>()?,
-            AbiEnum::None => return Err(AbiError(AbiErrorKind::Error_invalid_abi)),
+            AbiEnum::None => {
+                return AbiError::err(AbiErrorKind::Error_invalid_abi).context("No ABI specified")
+            },
         };
 
         let decoded_tokens = decode_params(&abi, &input.encoded)?;
@@ -149,7 +167,9 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     fn decode_value_impl(
         input: Proto::ValueDecodingInput<'_>,
     ) -> AbiResult<Proto::ValueDecodingOutput<'static>> {
-        let param_type = DecodingValueType::from_str(&input.param_type)?.0;
+        let param_type = DecodingValueType::from_str(&input.param_type)
+            .context("Invalid parameter type")?
+            .0;
         let token = decode_value(&param_type, &input.encoded)?;
         let token_str = token.to_string();
         Ok(Proto::ValueDecodingOutput {
@@ -159,7 +179,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
         })
     }
 
-    fn get_function_signature_impl(input: Proto::FunctionGetTypeInput<'_>) -> String {
+    fn get_function_signature_from_proto_impl(input: Proto::FunctionGetTypeInput<'_>) -> String {
         let function_inputs = input
             .inputs
             .into_iter()
@@ -173,6 +193,16 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             ..Function::default()
         };
         fun.signature()
+    }
+
+    fn get_function_signature_from_abi_impl(function_abi: &str) -> AbiResult<String> {
+        let mut fun: Function = serde_json::from_str(function_abi)
+            .tw_err(AbiErrorKind::Error_invalid_abi)
+            .context("Error deserializing Function ABI as JSON")?;
+
+        // Clear the `outputs` to avoid adding them to the signature.
+        fun.outputs.clear();
+        Ok(fun.signature())
     }
 
     fn encode_contract_call_impl(
@@ -217,7 +247,8 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
         let proto_param_type = param
             .param
-            .ok_or(AbiError(AbiErrorKind::Error_missing_param_type))?;
+            .or_tw_err(AbiErrorKind::Error_missing_param_type)
+            .context("Missing parameter type")?;
         let kind = Self::param_type_from_proto(proto_param_type)?;
 
         Ok(Param {
@@ -248,13 +279,14 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             },
             TokenEnum::string_value(str) => Ok(Token::String(str.to_string())),
             TokenEnum::address(addr) => {
-                let addr = Address::from_str(&addr)
-                    .map_err(|_| AbiError(AbiErrorKind::Error_invalid_address_value))?;
+                let addr =
+                    Address::from_str(&addr).tw_err(AbiErrorKind::Error_invalid_address_value)?;
                 Ok(Token::Address(addr))
             },
             TokenEnum::byte_array(bytes) => Ok(Token::Bytes(bytes.to_vec())),
             TokenEnum::byte_array_fix(bytes) => {
-                let checked_bytes = NonEmptyBytes::new(bytes.to_vec())?;
+                let checked_bytes = NonEmptyBytes::new(bytes.to_vec())
+                    .context("Empty `FixedBytes` collection is not allowed")?;
                 Ok(Token::FixedBytes(checked_bytes))
             },
             TokenEnum::array(arr) => {
@@ -263,7 +295,8 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             },
             TokenEnum::fixed_array(arr) => {
                 let (arr, kind) = Self::array_from_proto(arr)?;
-                let arr = NonEmptyArray::new(arr)?;
+                let arr = NonEmptyArray::new(arr)
+                    .context("Empty `FixedArray` collection is not allowed")?;
                 Ok(Token::FixedArray { arr, kind })
             },
             TokenEnum::tuple(Proto::TupleParam { params }) => {
@@ -273,14 +306,14 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                     .collect::<AbiResult<Vec<_>>>()?;
                 Ok(Token::Tuple { params })
             },
-            TokenEnum::None => Err(AbiError(AbiErrorKind::Error_missing_param_value)),
+            TokenEnum::None => AbiError::err(AbiErrorKind::Error_missing_param_value),
         }
     }
 
     fn array_from_proto(array: Proto::ArrayParam<'_>) -> AbiResult<(Vec<Token>, ParamType)> {
         let element_type = array
             .element_type
-            .ok_or(AbiError(AbiErrorKind::Error_missing_param_type))?;
+            .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
         let element_type = Self::param_type_from_proto(element_type)?;
 
         let mut array_tokens = Vec::with_capacity(array.elements.len());
@@ -290,7 +323,9 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 
             // Check if all tokens are the same as declared in `ArrayParam::element_type`.
             if token_type != element_type {
-                return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+                return AbiError::err(AbiErrorKind::Error_invalid_param_type).with_context(|| {
+                    format!("Expected '{element_type:?}' array element type, found {token_type:?}")
+                });
             }
             array_tokens.push(token);
         }
@@ -346,13 +381,14 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             ProtoParamType::address(_) => Ok(ParamType::Address),
             ProtoParamType::byte_array(_) => Ok(ParamType::Bytes),
             ProtoParamType::byte_array_fix(bytes) => {
-                let len = NonZeroLen::new(bytes.size as usize)?;
+                let len = NonZeroLen::new(bytes.size as usize)
+                    .context("Expected non-zero 'FixByteArray' length")?;
                 Ok(ParamType::FixedBytes { len })
             },
             ProtoParamType::array(arr) => {
                 let element_type = arr
                     .element_type
-                    .ok_or(AbiError(AbiErrorKind::Error_missing_param_type))?;
+                    .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
                 let kind = Self::param_type_from_proto(*element_type)?;
                 Ok(ParamType::Array {
                     kind: Box::new(kind),
@@ -361,7 +397,7 @@ impl<Context: EvmContext> AbiEncoder<Context> {
             ProtoParamType::fixed_array(arr) => {
                 let element_type = arr
                     .element_type
-                    .ok_or(AbiError(AbiErrorKind::Error_missing_param_type))?;
+                    .or_tw_err(AbiErrorKind::Error_missing_param_type)?;
                 let kind = Box::new(Self::param_type_from_proto(*element_type)?);
                 let len = NonZeroLen::new(arr.size as usize)?;
                 Ok(ParamType::FixedArray { kind, len })
@@ -373,11 +409,12 @@ impl<Context: EvmContext> AbiEncoder<Context> {
                     .map(Self::param_from_proto)
                     .collect::<AbiResult<Vec<_>>>()?;
                 if params.is_empty() {
-                    return Err(AbiError(AbiErrorKind::Error_invalid_abi));
+                    return AbiError::err(AbiErrorKind::Error_invalid_abi)
+                        .context("Empty 'Tuple' collection is not allowed");
                 }
                 Ok(ParamType::Tuple { params })
             },
-            ProtoParamType::None => Err(AbiError(AbiErrorKind::Error_missing_param_type)),
+            ProtoParamType::None => AbiError::err(AbiErrorKind::Error_missing_param_type),
         }
     }
 
@@ -412,13 +449,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
     }
 
     fn s_number_n_from_proto(encoded: &[u8]) -> AbiResult<I256> {
-        I256::from_big_endian_slice(encoded)
-            .map_err(|_| AbiError(AbiErrorKind::Error_invalid_uint_value))
+        I256::from_big_endian_slice(encoded).tw_err(AbiErrorKind::Error_invalid_uint_value)
     }
 
     fn u_number_n_from_proto(encoded: &[u8]) -> AbiResult<U256> {
-        U256::from_big_endian_slice(encoded)
-            .map_err(|_| AbiError(AbiErrorKind::Error_invalid_uint_value))
+        U256::from_big_endian_slice(encoded).tw_err(AbiErrorKind::Error_invalid_uint_value)
     }
 
     fn s_number_n_proto(i: I256, bits: UintBits) -> Proto::NumberNParam<'static> {
@@ -451,8 +486,11 @@ impl<Context: EvmContext> AbiEncoder<Context> {
 #[derive(Deserialize)]
 struct SmartContractCallAbiJson {
     #[serde(flatten)]
-    map: HashMap<H32, Function>,
+    map: HashMap<ContractCallSignature, Function>,
 }
+
+#[derive(Eq, Deserialize, Hash, PartialEq, Serialize)]
+struct ContractCallSignature(#[serde(with = "as_hex")] H32);
 
 #[derive(Serialize)]
 struct SmartContractCallDecodedInputJson<'a> {
@@ -470,7 +508,7 @@ impl FromStr for DecodingValueType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let param_type = ParamType::try_from_type_short(s)?;
         if param_type.has_tuple_components() {
-            return Err(AbiError(AbiErrorKind::Error_invalid_param_type));
+            return AbiError::err(AbiErrorKind::Error_invalid_param_type);
         }
         Ok(DecodingValueType(param_type))
     }

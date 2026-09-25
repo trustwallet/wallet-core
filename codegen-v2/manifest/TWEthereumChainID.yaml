@@ -63,7 +63,7 @@ enums:
     value: 2222
   - name: iotexevm
     value: 4689
-  - name: klaytn
+  - name: kaia
     value: 8217
   - name: avalanchec
     value: 43114

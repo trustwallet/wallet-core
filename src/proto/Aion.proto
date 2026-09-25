@@ -7,19 +7,19 @@ import "Common.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Nonce (uint256, serialized little endian)
+    // Nonce (uint256, serialized big endian)
     bytes nonce = 1;
 
-    // Gas price (uint256, serialized little endian)
+    // Gas price (uint256, serialized big endian)
     bytes gas_price = 2;
 
-    // Gas limit (uint256, serialized little endian)
+    // Gas limit (uint256, serialized big endian)
     bytes gas_limit = 3;
 
     // Recipient's address.
     string to_address = 4;
 
-    // Amount to send in wei (uint256, serialized little endian)
+    // Amount to send in wei (uint256, serialized big endian)
     bytes amount = 5;
 
     // Optional payload

@@ -31,7 +31,7 @@ public:
     explicit Signer(Proto::SigningInput input) : input(input) {};
 
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
     /// Signs the transaction.
     ///

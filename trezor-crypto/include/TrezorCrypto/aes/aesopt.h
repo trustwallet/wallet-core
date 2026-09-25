@@ -363,10 +363,10 @@ Issue Date: 20/12/2007
 
 /*  10. TABLE ALIGNMENT
 
-    On some sytsems speed will be improved by aligning the AES large lookup
+    On some systems speed will be improved by aligning the AES large lookup
     tables on particular boundaries. This define should be set to a power of
     two giving the desired alignment. It can be left undefined if alignment
-    is not needed.  This option is specific to the Microsft VC++ compiler -
+    is not needed.  This option is specific to the Microsoft VC++ compiler -
     it seems to sometimes cause trouble for the VC++ version 6 compiler.
 */
 

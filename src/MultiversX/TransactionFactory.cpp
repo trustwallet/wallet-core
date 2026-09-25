@@ -41,6 +41,7 @@ Transaction TransactionFactory::fromGenericAction(const Proto::SigningInput& inp
     transaction.receiver = action.accounts().receiver();
     transaction.receiverUsername = action.accounts().receiver_username();
     transaction.guardian = action.accounts().guardian();
+    transaction.relayer = action.accounts().relayer();
     transaction.value = action.value();
     transaction.data = action.data();
     transaction.gasLimit = input.gas_limit();
@@ -62,6 +63,7 @@ Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput& inpu
     transaction.receiver = transfer.accounts().receiver();
     transaction.receiverUsername = transfer.accounts().receiver_username();
     transaction.guardian = transfer.accounts().guardian();
+    transaction.relayer = transfer.accounts().relayer();
     transaction.value = transfer.amount();
     transaction.data = transfer.data();
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
@@ -70,7 +72,7 @@ Transaction TransactionFactory::fromEGLDTransfer(const Proto::SigningInput& inpu
     transaction.options = decideOptions(transaction);
 
     // Estimate & set gasLimit:
-    uint64_t estimatedGasLimit = computeGasLimit(0, 0, transaction.hasGuardian());
+    uint64_t estimatedGasLimit = computeGasLimit(0, 0, transaction.hasGuardian(), transaction.hasRelayer());
     transaction.gasLimit = coalesceGasLimit(input.gas_limit(), estimatedGasLimit);
 
     return transaction;
@@ -90,6 +92,7 @@ Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput& inpu
     transaction.receiver = transfer.accounts().receiver();
     transaction.receiverUsername = transfer.accounts().receiver_username();
     transaction.guardian = transfer.accounts().guardian();
+    transaction.relayer = transfer.accounts().relayer();
     transaction.value = "0";
     transaction.data = data;
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
@@ -99,7 +102,7 @@ Transaction TransactionFactory::fromESDTTransfer(const Proto::SigningInput& inpu
 
     // Estimate & set gasLimit:
     uint64_t executionGasLimit = this->config.getGasCostESDTTransfer() + this->config.getAdditionalGasForESDTTransfer();
-    uint64_t estimatedGasLimit = computeGasLimit(data.size(), executionGasLimit, transaction.hasGuardian());
+    uint64_t estimatedGasLimit = computeGasLimit(data.size(), executionGasLimit, transaction.hasGuardian(), transaction.hasRelayer());
     transaction.gasLimit = coalesceGasLimit(input.gas_limit(), estimatedGasLimit);
 
     return transaction;
@@ -120,6 +123,7 @@ Transaction TransactionFactory::fromESDTNFTTransfer(const Proto::SigningInput& i
     transaction.sender = transfer.accounts().sender();
     transaction.receiver = transfer.accounts().sender();
     transaction.guardian = transfer.accounts().guardian();
+    transaction.relayer = transfer.accounts().relayer();
     transaction.value = "0";
     transaction.data = data;
     transaction.gasPrice = coalesceGasPrice(input.gas_price());
@@ -129,18 +133,22 @@ Transaction TransactionFactory::fromESDTNFTTransfer(const Proto::SigningInput& i
 
     // Estimate & set gasLimit:
     uint64_t executionGasLimit = this->config.getGasCostESDTNFTTransfer() + this->config.getAdditionalGasForESDTNFTTransfer();
-    uint64_t estimatedGasLimit = computeGasLimit(data.size(), executionGasLimit, transaction.hasGuardian());
+    uint64_t estimatedGasLimit = computeGasLimit(data.size(), executionGasLimit, transaction.hasGuardian(), transaction.hasRelayer());
     transaction.gasLimit = coalesceGasLimit(input.gas_limit(), estimatedGasLimit);
 
     return transaction;
 }
 
-uint64_t TransactionFactory::computeGasLimit(size_t dataLength, uint64_t executionGasLimit, bool hasGuardian) {
+uint64_t TransactionFactory::computeGasLimit(size_t dataLength, uint64_t executionGasLimit, bool hasGuardian, bool hasRelayer) {
     uint64_t dataMovementGasLimit = this->config.getMinGasLimit() + this->config.getGasPerDataByte() * dataLength;
     uint64_t gasLimit = dataMovementGasLimit + executionGasLimit;
 
     if (hasGuardian) {
         gasLimit += this->config.getExtraGasLimitForGuardedTransaction();
+    }
+
+    if (hasRelayer) {
+        gasLimit += this->config.getExtraGasLimitForRelayedTransaction();
     }
 
     return gasLimit;

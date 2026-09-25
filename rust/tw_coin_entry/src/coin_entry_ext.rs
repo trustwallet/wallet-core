@@ -5,11 +5,12 @@
 use crate::coin_context::CoinContext;
 use crate::coin_entry::{CoinAddress, CoinEntry, PublicKeyBytes, SignatureBytes};
 use crate::derivation::Derivation;
-use crate::error::SigningResult;
-use crate::error::{AddressResult, SigningError, SigningErrorType};
+use crate::error::prelude::*;
 use crate::modules::json_signer::JsonSigner;
 use crate::modules::message_signer::MessageSigner;
 use crate::modules::plan_builder::PlanBuilder;
+use crate::modules::transaction_decoder::TransactionDecoder;
+use crate::modules::transaction_util::TransactionUtil;
 use crate::modules::wallet_connector::WalletConnector;
 use crate::prefix::AddressPrefix;
 use tw_keypair::tw::{PrivateKey, PublicKey};
@@ -29,7 +30,15 @@ pub trait CoinEntryExt {
     ) -> AddressResult<()>;
 
     /// Validates and normalizes the given `address`.
-    fn normalize_address(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<String>;
+    fn normalize_address(
+        &self,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<AddressPrefix>,
+    ) -> AddressResult<String>;
+
+    /// Normalizes the given `address` without checking its belonging to the `coin` network.
+    fn normalize_address_unchecked(&self, address: &str) -> AddressResult<String>;
 
     /// Derives an address associated with the given `public_key` by `coin` context, `derivation` and address `prefix`.
     fn derive_address(
@@ -41,7 +50,7 @@ pub trait CoinEntryExt {
     ) -> AddressResult<String>;
 
     /// Returns underlying data (public key or key hash).
-    fn address_to_data(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<Data>;
+    fn address_to_data(&self, address: &str) -> AddressResult<Data>;
 
     /// Signs a transaction declared as the given `input`.
     fn sign(&self, coin: &dyn CoinContext, input: &[u8]) -> ProtoResult<Data>;
@@ -91,6 +100,12 @@ pub trait CoinEntryExt {
         coin: &dyn CoinContext,
         input: &[u8],
     ) -> SigningResult<Data>;
+
+    /// Decodes a transaction from binary representation.
+    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data>;
+
+    /// Calculate the TX hash of a transaction.
+    fn calc_tx_hash(&self, coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String>;
 }
 
 impl<T> CoinEntryExt for T
@@ -107,11 +122,22 @@ where
         self.parse_address(coin, address, prefix).map(|_| ())
     }
 
-    fn normalize_address(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<String> {
+    fn normalize_address(
+        &self,
+        coin: &dyn CoinContext,
+        address: &str,
+        prefix: Option<AddressPrefix>,
+    ) -> AddressResult<String> {
+        let prefix = prefix.map(T::AddressPrefix::try_from).transpose()?;
         // Parse the address and display it.
         // Please note that `Self::Address::to_string()` returns a normalize address.
-        <Self as CoinEntry>::parse_address_unchecked(self, coin, address)
-            .map(|addr| addr.to_string())
+        <Self as CoinEntry>::parse_address(self, coin, address, prefix).map(|addr| addr.to_string())
+    }
+
+    fn normalize_address_unchecked(&self, address: &str) -> AddressResult<String> {
+        // Parse the address and display it.
+        // Please note that `Self::Address::to_string()` returns a normalize address.
+        <Self as CoinEntry>::parse_address_unchecked(self, address).map(|addr| addr.to_string())
     }
 
     fn derive_address(
@@ -128,8 +154,8 @@ where
             .map(|addr| addr.to_string())
     }
 
-    fn address_to_data(&self, coin: &dyn CoinContext, address: &str) -> AddressResult<Data> {
-        self.parse_address_unchecked(coin, address)
+    fn address_to_data(&self, address: &str) -> AddressResult<Data> {
+        self.parse_address_unchecked(address)
             .map(|addr| addr.data())
     }
 
@@ -150,7 +176,7 @@ where
         private_key: PrivateKeyBytes,
     ) -> SigningResult<String> {
         let Some(json_signer) = self.json_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let private_key = PrivateKey::new(private_key)?;
@@ -177,17 +203,17 @@ where
 
     fn plan(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(plan_builder) = self.plan_builder() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::PlanBuilder as PlanBuilder>::SigningInput<'_> = deserialize(input)?;
-        let output = plan_builder.plan(coin, input);
+        let output = plan_builder.plan(coin, &input);
         serialize(&output).map_err(SigningError::from)
     }
 
     fn sign_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
@@ -198,7 +224,7 @@ where
 
     fn message_preimage_hashes(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<Data> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageSigningInput<'_> =
@@ -209,7 +235,7 @@ where
 
     fn verify_message(&self, coin: &dyn CoinContext, input: &[u8]) -> SigningResult<bool> {
         let Some(message_signer) = self.message_signer() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: <T::MessageSigner as MessageSigner>::MessageVerifyingInput<'_> =
@@ -223,11 +249,28 @@ where
         input: &[u8],
     ) -> SigningResult<Data> {
         let Some(wc_connector) = self.wallet_connector() else {
-            return Err(SigningError(SigningErrorType::Error_not_supported));
+            return TWError::err(SigningErrorType::Error_not_supported);
         };
 
         let input: WCProto::ParseRequestInput = deserialize(input)?;
         let output = wc_connector.parse_request(coin, input);
         serialize(&output).map_err(SigningError::from)
+    }
+
+    fn decode_transaction(&self, coin: &dyn CoinContext, tx: &[u8]) -> SigningResult<Data> {
+        let Some(tx_decoder) = self.transaction_decoder() else {
+            return TWError::err(SigningErrorType::Error_not_supported);
+        };
+
+        let output = tx_decoder.decode_transaction(coin, tx);
+        serialize(&output).map_err(SigningError::from)
+    }
+
+    fn calc_tx_hash(&self, coin: &dyn CoinContext, encoded_tx: &str) -> SigningResult<String> {
+        let Some(tx_util) = self.transaction_util() else {
+            return TWError::err(SigningErrorType::Error_not_supported);
+        };
+
+        tx_util.calc_tx_hash(coin, encoded_tx)
     }
 }

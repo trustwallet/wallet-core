@@ -68,6 +68,7 @@ class TronTests: XCTestCase {
                 "ref_block_hash": "b21ace8d6ac20e7e",
                 "timestamp": 1539295479000
             },
+            "raw_data_hex": "0a027b3b2208b21ace8d6ac20e7e40d8abb9bae62c5a67080112630a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412320a15415cd0fb0ab3ce40f3051414c604b27756e69e43db121541521ea197907927725ef36d70f25f850d1659c7c71880897a70d889a4a9e62c",
             "signature": ["6b5de85a80b2f4f02351f691593fb0e49f14c5cb42451373485357e42d7890cd77ad7bfcb733555c098b992da79dabe5050f5e2db77d9d98f199074222de037701"],
             "txID": "dc6f6d9325ee44ab3c00528472be16e1572ab076aa161ccd12515029869d0451"
         }
@@ -79,7 +80,7 @@ class TronTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a")!)!
         let msg = "Hello World"
         let signature = TronMessageSigner.signMessage(privateKey: privateKey, message: msg)
-        XCTAssertEqual(signature, "9bb6d11ec8a6a3fb686a8f55b123e7ec4e9746a26157f6f9e854dd72f5683b450397a7b0a9653865658de8f9243f877539882891bad30c7286c3bf5622b900471b")
+        XCTAssertEqual(signature, "bc0753c070cc55693097df11bc11e1a7c4bd5e1a40b9dc94c75568e59bcc9d6b50a7873ef25b469e494490a54de37327b4bc7fc825c81a377b555e34fb7261ba1c")
         let pubKey = privateKey.getPublicKey(coinType: .tron)
         XCTAssertTrue(TronMessageSigner.verifyMessage(pubKey: pubKey, message: msg, signature: signature))
     }

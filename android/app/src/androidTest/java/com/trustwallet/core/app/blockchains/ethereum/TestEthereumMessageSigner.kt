@@ -37,6 +37,17 @@ class TestEthereumMessageSigner {
     }
 
     @Test
+    fun testEthereumSignAndVerifyMessageLegacyHex() {
+        val data = Numeric.hexStringToByteArray("9066aa168c379a403becb235c15e7129c133c244e56a757ab07bc369288bcab0")
+        val privateKey = PrivateKey(data)
+        val publicKey = privateKey.getPublicKey(CoinType.ETHEREUM)
+        val msg = "0xc0a96273d5c3fbe4d4000491f08daef9c17f88df846c1d6f57eb5f33c1fbd035"
+        val signature = EthereumMessageSigner.signMessage(privateKey, msg)
+        assertEquals(signature, "b18a666ad08bf9bfcd39920b26b5a5d1486b67b45119810b3c7bda22e41e5c4c1bfbe0c932f6c14df4947a18ba310831a37b7307d724a3ac2a4935b99d7075141b");
+        assertTrue(EthereumMessageSigner.verifyMessage(publicKey, msg, signature))
+    }
+
+    @Test
     fun testEthereumSignAndVerifyMessage712Legacy() {
         val data = Numeric.hexStringToByteArray("03a9ca895dca1623c7dfd69693f7b4111f5d819d2e145536e0b03c136025a25d")
         val privateKey = PrivateKey(data)

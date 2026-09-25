@@ -9,7 +9,6 @@
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <nlohmann/json.hpp>
 
 #include <algorithm>
@@ -72,16 +71,16 @@ std::string Signer::encode(const Data& signature) const noexcept {
     return json.dump();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     return signer.sign();
 }
 
-Proto::SigningOutput Signer::sign() const noexcept {
+Proto::SigningOutput Signer::sign() const {
     const auto hash = Hash::sha3_256(Signer::preImage());
 
-    const auto key = PrivateKey(input.private_key());
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
+    const auto signature = key.sign(hash);
 
     auto output = Proto::SigningOutput();
     output.set_signature(signature.data(), signature.size());

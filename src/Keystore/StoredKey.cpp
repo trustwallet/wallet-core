@@ -9,11 +9,6 @@
 #include "Mnemonic.h"
 #include "PrivateKey.h"
 
-#define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
-
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
 #include <TrezorCrypto/memzero.h>
 
@@ -57,27 +52,59 @@ StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& p
     return StoredKey(StoredKeyType::privateKey, name, password, privateKeyData, TWStoredKeyEncryptionLevelDefault, encryption);
 }
 
-StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData, TWStoredKeyEncryption encryption) {
+StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(
+    const std::string& name,
+    const Data& password,
+    TWCoinType coin,
+    const Data& privateKeyData,
+    TWStoredKeyEncryption encryption,
+    TWDerivation derivation
+) {
     const auto curve = TW::curve(coin);
     if (!PrivateKey::isValid(privateKeyData, curve)) {
         throw std::invalid_argument("Invalid private key data");
     }
 
     StoredKey key = createWithPrivateKey(name, password, privateKeyData, encryption);
-    const auto derivationPath = TW::derivationPath(coin);
+    const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto pubKeyType = TW::publicKeyType(coin);
-    const auto pubKey = PrivateKey(privateKeyData).getPublicKey(pubKeyType);
-    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
-    key.accounts.emplace_back(address, coin, TWDerivationDefault, derivationPath, hex(pubKey.bytes), "");
+    const auto pubKey = PrivateKey(privateKeyData, TWCoinTypeCurve(coin)).getPublicKey(pubKeyType);
+    const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData), derivation);
+    key.accounts.emplace_back(address, coin, derivation, derivationPath, hex(pubKey.bytes), "");
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption)
+StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
+    const std::string& name,
+    const Data& password,
+    TWCoinType coin,
+    const std::string& encodedPrivateKey,
+    TWStoredKeyEncryption encryption,
+    TWDerivation derivation
+) {
+    const auto curve = TW::curve(coin);
+    const auto privateKey = TW::decodePrivateKey(coin, encodedPrivateKey);
+    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, encodedPrivateKey);
+    const auto derivationPath = TW::derivationPath(coin, derivation);
+    const auto pubKeyType = TW::publicKeyType(coin);
+    const auto pubKey = privateKey.getPublicKey(pubKeyType);
+    const auto address = TW::deriveAddress(coin, privateKey, derivation);
+    key.accounts.emplace_back(address, coin, derivation, derivationPath, hex(pubKey.bytes), "");
+    return key;
+}
+
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::optional<std::string>& encodedStr)
     : type(type), id(), name(std::move(name)), accounts() {
     const auto encryptionParams = EncryptionParameters::getPreset(encryptionLevel, encryption);
     payload = EncryptedPayload(password, data, encryptionParams);
-    boost::uuids::random_generator gen;
-    id = boost::lexical_cast<std::string>(gen());
+    if (encodedStr) {
+        const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
+        const auto encodedData = Data(bytes, bytes + encodedStr->size());
+        encodedPayload = EncryptedPayload(password, encodedData, encryptionParams);
+    }
+    const char* uuid_ptr = Rust::tw_uuid_random();
+    id = std::make_optional<std::string>(uuid_ptr);
+    Rust::free_string(uuid_ptr);
 }
 
 const HDWallet<> StoredKey::wallet(const Data& password) const {
@@ -156,6 +183,12 @@ Account StoredKey::fillAddressIfMissing(Account& account, const HDWallet<>* wall
         account.publicKey = hex(pubKey.bytes);
     }
     return account;
+}
+
+void StoredKey::updateAddressForAccount(const PrivateKey& privKey, Account& account) {
+    const auto pubKey = privKey.getPublicKey(TW::publicKeyType(account.coin));
+    account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
+    account.publicKey = hex(pubKey.bytes);
 }
 
 std::optional<const Account> StoredKey::account(TWCoinType coin, const HDWallet<>* wallet) {
@@ -258,7 +291,7 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, [[maybe_unused]] TWDeriv
         return wallet.getKey(coin, account.derivationPath);
     }
     // type == StoredKeyType::privateKey
-    return PrivateKey(payload.decrypt(password));
+    return PrivateKey(payload.decrypt(password), TWCoinTypeCurve(coin));
 }
 
 void StoredKey::fixAddresses(const Data& password) {
@@ -272,9 +305,7 @@ void StoredKey::fixAddresses(const Data& password) {
             }
             const auto& derivationPath = account.derivationPath;
             const auto key = wallet.getKey(account.coin, derivationPath);
-            const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-            account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
-            account.publicKey = hex(pubKey.bytes);
+            updateAddressForAccount(key, account);
         }
     } break;
 
@@ -285,11 +316,37 @@ void StoredKey::fixAddresses(const Data& password) {
                 TW::validateAddress(account.coin, account.address)) {
                 continue;
             }
-            const auto pubKey = key.getPublicKey(TW::publicKeyType(account.coin));
-            account.address = TW::deriveAddress(account.coin, pubKey, account.derivation);
-            account.publicKey = hex(pubKey.bytes);
+            updateAddressForAccount(key, account);
         }
     } break;
+    }
+}
+
+bool StoredKey::updateAddress(TWCoinType coin) {
+    bool addressUpdated = false;
+    const auto publicKeyType = TW::publicKeyType(coin);
+
+    for (auto& account : accounts) {
+        // Update the address for the given chain if only `publicKey` is set.
+        if (account.coin == coin && !account.publicKey.empty()) {
+            const auto publicKeyBytes = parse_hex(account.publicKey);
+            const PublicKey publicKey(publicKeyBytes, publicKeyType);
+            account.address = TW::deriveAddress(account.coin, publicKey, account.derivation);
+
+            addressUpdated = true;
+        }
+    }
+
+    return addressUpdated;
+}
+
+const std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+    if (encodedPayload) {
+        auto data = encodedPayload->decrypt(password);
+        return std::string(reinterpret_cast<const char*>(data.data()), data.size());
+    } else {
+        auto data = payload.decrypt(password);
+        return TW::hex(data);
     }
 }
 
@@ -310,6 +367,7 @@ static const auto type = "type";
 static const auto name = "name";
 static const auto id = "id";
 static const auto crypto = "crypto";
+static const auto encodedCrypto = "encodedCrypto";
 static const auto activeAccounts = "activeAccounts";
 static const auto version = "version";
 static const auto coin = "coin";
@@ -350,6 +408,12 @@ void StoredKey::loadJson(const nlohmann::json& json) {
         throw DecryptionError::invalidKeyFile;
     }
 
+    if (json.count(CodingKeys::SK::encodedCrypto) != 0) {
+        encodedPayload = EncryptedPayload(json[CodingKeys::SK::encodedCrypto]);
+    } else { 
+        encodedPayload = std::nullopt;
+    }
+
     if (json.count(CodingKeys::SK::activeAccounts) != 0 &&
         json[CodingKeys::SK::activeAccounts].is_array()) {
         for (auto& accountJSON : json[CodingKeys::SK::activeAccounts]) {
@@ -387,6 +451,9 @@ nlohmann::json StoredKey::json() const {
 
     j[CodingKeys::SK::name] = name;
     j[CodingKeys::SK::crypto] = payload.json();
+    if (encodedPayload) {
+        j[CodingKeys::SK::encodedCrypto] = encodedPayload->json();
+    }
 
     nlohmann::json accountsJSON = nlohmann::json::array();
     for (const auto& account : accounts) {

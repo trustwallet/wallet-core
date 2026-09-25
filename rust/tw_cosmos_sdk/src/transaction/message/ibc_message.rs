@@ -7,7 +7,7 @@ use crate::modules::serializer::protobuf_serializer::build_coin;
 use crate::proto::ibc;
 use crate::transaction::message::{CosmosMessage, ProtobufMessage};
 use crate::transaction::Coin;
-use tw_coin_entry::error::SigningResult;
+use tw_coin_entry::error::prelude::*;
 use tw_proto::to_any;
 
 pub struct Height {
@@ -38,11 +38,11 @@ impl<Address: CosmosAddress> CosmosMessage for TransferTokensMessage<Address> {
         };
 
         let proto_msg = ibc::applications::transfer::v1::MsgTransfer {
-            source_port: self.source_port.clone(),
-            source_channel: self.source_channel.clone(),
+            source_port: self.source_port.clone().into(),
+            source_channel: self.source_channel.clone().into(),
             token: Some(build_coin(&self.token)),
-            sender: self.sender.to_string(),
-            receiver: self.receiver.to_string(),
+            sender: self.sender.to_string().into(),
+            receiver: self.receiver.to_string().into(),
             timeout_height: Some(height),
             timeout_timestamp: self.timeout_timestamp,
         };

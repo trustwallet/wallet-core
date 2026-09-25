@@ -2,42 +2,28 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "TestUtilities.h"
-#include <TrustWalletCore/TWEthereum.h>
-#include <TrustWalletCore/TWBarz.h>
-#include <TrustWalletCore/TWHash.h>
-#include <Ethereum/Barz.h>
-#include <PrivateKey.h>
-#include "proto/Ethereum.pb.h"
 #include "HexCoding.h"
+#include "TestUtilities.h"
+#include "TrustWalletCore/TWEip7702.h"
+#include "proto/Barz.pb.h"
+#include "proto/Ethereum.pb.h"
+#include "uint256.h"
+
+#include <TrustWalletCore/TWBarz.h>
+#include <TrustWalletCore/TWBiz.h>
+#include <TrustWalletCore/TWEip7702.h>
+#include <TrustWalletCore/TWEthereum.h>
+#include <TrustWalletCore/TWHash.h>
+#include <PrivateKey.h>
+
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWEthereumAbi.h>
 #include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 namespace TW::Barz::tests {
-
 // https://testnet.bscscan.com/tx/0x6c6e1fe81c722c0abce1856b9b4e078ab2cad06d51f2d1b04945e5ba2286d1b4
 TEST(Barz, GetInitCode) {
     const PublicKey& publicKey = PublicKey(parse_hex("0x04e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b02"), TWPublicKeyTypeNIST256p1Extended);
-
-    // C++
-    {
-        const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
-        const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
-        const auto salt = 0;
-
-        const auto& initCode = Barz::getInitCode(factoryAddress, publicKey, verificationFacetAddress, salt);
-        ASSERT_EQ(hexEncoded(initCode), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000");
-    }
-
-    {
-        const std::string& factoryAddress = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
-        const std::string& verificationFacetAddress = "0x6BF22ff186CC97D88ECfbA47d1473a234CEBEFDf";
-        const auto salt = 1;
-
-        const auto& initCode = Barz::getInitCode(factoryAddress, publicKey, verificationFacetAddress, salt);
-        ASSERT_EQ(hexEncoded(initCode), "0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000006bf22ff186cc97d88ecfba47d1473a234cebefdf00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000004104e6f4e0351e2f556fd7284a9a033832bae046ac31fd529ad02ab6220870624b79eb760e718fdaed7a037dd1d77a561759cee9f2706eb55a729dc953e0d5719b0200000000000000000000000000000000000000000000000000000000000000");
-    }
 
     // C
     {
@@ -73,12 +59,6 @@ TEST(Barz, GetCounterfactualAddress) {
     input.set_public_key("0xB5547FBdC56DCE45e1B8ef75569916D438e09c46");
     input.set_salt(0);
 
-    // C++
-    {
-        const std::string& address = getCounterfactualAddress(input);
-        ASSERT_EQ(address, "0x77F62bb3E43190253D4E198199356CD2b25063cA");
-    }
-
     // C
     {
         const auto inputData = input.SerializeAsString();
@@ -100,12 +80,6 @@ TEST(Barz, GetCounterfactualAddressNonZeroSalt) {
     input.set_public_key("0xB5547FBdC56DCE45e1B8ef75569916D438e09c46");
     input.set_salt(123456);
 
-    // C++
-    {
-        const std::string& address = getCounterfactualAddress(input);
-        ASSERT_EQ(address, "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1");
-    }
-
     // C
     {
         const auto inputData = input.SerializeAsString();
@@ -116,17 +90,6 @@ TEST(Barz, GetCounterfactualAddressNonZeroSalt) {
 }
 
 TEST(Barz, GetFormattedSignature) {
-    // C++
-    {
-        const Data& signature = parse_hex("0x3044022012d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf0220256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca276");
-        const Data& challenge = parse_hex("0xcf267a78c5adaf96f341a696eb576824284c572f3e61be619694d539db1925f9");
-        const Data& authenticatorData = parse_hex("0x1a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e071d00000000");
-        const std::string& clientDataJSON = "{\"type\":\"webauthn.get\",\"challenge\":\"zyZ6eMWtr5bzQaaW61doJChMVy8-Yb5hlpTVOdsZJfk\",\"origin\":\"https://trustwallet.com\"}";
-
-        const auto& formattedSignature = Barz::getFormattedSignature(signature, challenge, authenticatorData, clientDataJSON);
-        ASSERT_EQ(hexEncoded(formattedSignature), "0x12d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca27600000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000000251a70842af8c1feb7133b81e6a160a6a2be45ee057f0eb6d3f7f5126daa202e071d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000247b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a22000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000025222c226f726967696e223a2268747470733a2f2f747275737477616c6c65742e636f6d227d000000000000000000000000000000000000000000000000000000");
-    }
-
     // C
     {
         const auto signature = DATA("0x3044022012d89e3b41e253dc9e90bd34dc1750d059b76d0b1d16af2059aa26e90b8960bf0220256d8a05572c654906ce422464693e280e243e6d9dbc5f96a681dba846bca276");
@@ -172,7 +135,7 @@ TEST(Barz, SignK1TransferAccountDeployed) {
     user_operation.set_sender(sender);
 
     input.set_private_key(key.data(), key.size());
-    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    auto& transfer = *input.mutable_transaction()->mutable_scw_execute()->mutable_transaction()->mutable_transfer();
     transfer.set_amount(amount.data(), amount.size());
 
     std::string expected = "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"100000\",\"initCode\":\"0x\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"2\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0xb16Db98B365B1f89191996942612B14F1Da4Bd5f\",\"signature\":\"0x80e84992ebf8d5f71180231163ed150a7557ed0aa4b4bcee23d463a09847e4642d0fbf112df2e5fa067adf4b2fa17fc4a8ac172134ba5b78e3ec9c044e7f28d71c\",\"verificationGasLimit\":\"100000\"}";
@@ -201,11 +164,12 @@ TEST(Barz, SignR1TransferAccountNotDeployed) {
     auto entryPoint = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
     auto sender = "0x1392Ae041BfBdBAA0cFF9234a0C8F64df97B7218";
     auto to = "0x61061fCAE11fD5461535e134EfF67A98CFFF44E9";
-    auto factory = "0x3fC708630d85A3B5ec217E53100eC2b735d4f800";
-    auto verificationFacet = "0x5034534Efe9902779eD6eA6983F435c00f3bc510";
+    auto factory = STRING("0x3fC708630d85A3B5ec217E53100eC2b735d4f800");
+    auto verificationFacet = STRING( "0x5034534Efe9902779eD6eA6983F435c00f3bc510");
     auto publicKey = PublicKey(parse_hex("0x04b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f"), TWPublicKeyTypeNIST256p1Extended);
     auto salt = 0;
-    auto initCode = Barz::getInitCode(factory, publicKey, verificationFacet, salt);
+
+    const auto& initCodeData = WRAPD(TWBarzGetInitCode(factory.get(), WRAP(TWPublicKey, new TWPublicKey{ TW::PublicKey(publicKey) }).get(), verificationFacet.get(), salt));
 
     auto key = parse_hex("0x3c90badc15c4d35733769093d3733501e92e7f16e101df284cee9a310d36c483");
 
@@ -222,10 +186,10 @@ TEST(Barz, SignR1TransferAccountNotDeployed) {
     user_operation.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
     user_operation.set_entry_point(entryPoint);
     user_operation.set_sender(sender);
-    user_operation.set_init_code(initCode.data(), initCode.size());
+    user_operation.set_init_code(TWDataBytes(initCodeData.get()), TWDataSize(initCodeData.get()));
 
     input.set_private_key(key.data(), key.size());
-    auto& transfer = *input.mutable_transaction()->mutable_transfer();
+    auto& transfer = *input.mutable_transaction()->mutable_scw_execute()->mutable_transaction()->mutable_transfer();
     transfer.set_amount(amount.data(), amount.size());
 
     std::string expected = "{\"callData\":\"0xb61d27f600000000000000000000000061061fcae11fd5461535e134eff67a98cfff44e9000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"2500000\",\"initCode\":\"0x3fc708630d85a3b5ec217e53100ec2b735d4f800296601cd0000000000000000000000005034534efe9902779ed6ea6983f435c00f3bc51000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004104b173a6a812025c40c38bac46343646bd0a8137c807aae6e04aac238cc24d2ad2116ca14d23d357588ff2aabd7db29d5976f4ecc8037775db86f67e873a306b1f00000000000000000000000000000000000000000000000000000000000000\",\"maxFeePerGas\":\"7033440745\",\"maxPriorityFeePerGas\":\"7033440745\",\"nonce\":\"0\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"46856\",\"sender\":\"0x1392Ae041BfBdBAA0cFF9234a0C8F64df97B7218\",\"signature\":\"0xbf1b68323974e71ad9bd6dfdac07dc062599d150615419bb7876740d2bcf3c8909aa7e627bb0e08a2eab930e2e7313247c9b683c884236dd6ea0b6834fb2cb0a1b\",\"verificationGasLimit\":\"3000000\"}";
@@ -287,7 +251,7 @@ TEST(Barz, SignR1BatchedTransferAccountDeployed) {
     auto transferCall = data(TWDataBytes(transferCallEncoded.get()), TWDataSize(transferCallEncoded.get()));
     EXPECT_EQ(hex(transferCall), "a9059cbb0000000000000000000000005ff137d4b0fdcd49dca30c7cf57e578a026d27890000000000000000000000000000000000000000000000008ac7230489e80000");
 
-    auto *batch = input.mutable_transaction()->mutable_batch();
+    auto *batch = input.mutable_transaction()->mutable_scw_batch();
     auto *c1 = batch->add_calls();
     c1->set_address(to);
     c1->set_amount(amount.data(), amount.size());
@@ -316,11 +280,12 @@ TEST(Barz, SignR1BatchedTransferAccountDeployed) {
 TEST(Barz, GetPrefixedMsgHash) {
     {
         const Data& msgHash = parse_hex("0xa6ebe22d8c1ec7edbd7f5776e49a161f67ab97161d7b8c648d80abf365765cf2");
-        const std::string& barzAddress = "0x913233BfC283ffe89a5E70ADC39c0926d240bbD9";
+        const auto barzAddress = STRING("0x913233BfC283ffe89a5E70ADC39c0926d240bbD9");
         const auto chainId = 3604;
 
-        const auto& prefixedMsgHash = Barz::getPrefixedMsgHash(msgHash, barzAddress, chainId);
-        ASSERT_EQ(hexEncoded(prefixedMsgHash), "0x0488fb3e4fdaa890bf55532fc9840fb9edef9c38244f431c9430a78a86d89157");
+        const auto& prefixedMsgHash = TWBarzGetPrefixedMsgHash(WRAPD(TWDataCreateWithBytes(msgHash.data(), msgHash.size())).get(), barzAddress.get(), chainId);
+        const auto& prefixedMsgHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(prefixedMsgHash).get()));
+        ASSERT_EQ(prefixedMsgHashData, "0x0488fb3e4fdaa890bf55532fc9840fb9edef9c38244f431c9430a78a86d89157");
     }
 }
 
@@ -330,8 +295,9 @@ TEST(Barz, GetPrefixedMsgHashWithZeroChainId) {
         const std::string& barzAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
         const auto chainId = 0;
 
-        const auto& prefixedMsgHash = Barz::getPrefixedMsgHash(msgHash, barzAddress, chainId);
-        ASSERT_EQ(hexEncoded(prefixedMsgHash), "0xc74e78634261222af51530703048f98a1b7b995a606a624f0a008e7aaba7a21b");
+        const auto& prefixedMsgHash = TWBarzGetPrefixedMsgHash(WRAPD(TWDataCreateWithBytes(msgHash.data(), msgHash.size())).get(), WRAPS(TWStringCreateWithUTF8Bytes(barzAddress.c_str())).get(), chainId);
+        const auto& prefixedMsgHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(prefixedMsgHash).get()));
+        ASSERT_EQ(prefixedMsgHashData, "0xc74e78634261222af51530703048f98a1b7b995a606a624f0a008e7aaba7a21b");
     }
 }
 
@@ -340,7 +306,9 @@ TEST(Barz, GetDiamondCutCode) {
         TW::Barz::Proto::DiamondCutInput input;
 
         input.set_init_address("0x0000000000000000000000000000000000000000");
-        input.set_init_data("0x00");
+
+        auto init_data = parse_hex("0x00");
+        input.set_init_data(init_data.data(), init_data.size());
 
         auto* facetCutAdd = input.add_facet_cuts();
         facetCutAdd->set_facet_address("0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6");
@@ -349,8 +317,11 @@ TEST(Barz, GetDiamondCutCode) {
         auto functionSelectorAdd = parse_hex("0xfdd8a83c");
         facetCutAdd->add_function_selectors(functionSelectorAdd.data(), functionSelectorAdd.size());
 
-        const auto& diamondCutCode = Barz::getDiamondCutCode(input);
-        ASSERT_EQ(hexEncoded(diamondCutCode), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001fdd8a83c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000");
+        const auto& inputData = input.SerializeAsString();
+        const auto& inputTWData = WRAPD(TWDataCreateWithBytes((uint8_t*)inputData.data(), inputData.size()));
+        const auto& diamondCutCode = TWBarzGetDiamondCutCode(inputTWData.get());
+        const auto& diamondCutCodeData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(diamondCutCode).get()));
+        ASSERT_EQ(diamondCutCodeData, "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001fdd8a83c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000");
     }
 }
 
@@ -359,7 +330,9 @@ TEST(Barz, GetDiamondCutCodeWithMultipleCut) {
         TW::Barz::Proto::DiamondCutInput input;
 
         input.set_init_address("0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6");
-        input.set_init_data("0x12341234");
+
+        auto init_data = parse_hex("0x12341234");
+        input.set_init_data(init_data.data(), init_data.size());
 
         auto* facetCutMigrationFacet = input.add_facet_cuts();
         facetCutMigrationFacet->set_facet_address("0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6");
@@ -378,9 +351,10 @@ TEST(Barz, GetDiamondCutCodeWithMultipleCut) {
         auto testSignature = parse_hex("0x12345678");
         facetCutTestFacet->add_function_selectors(testSignature.data(), testSignature.size());
 
-
-        const auto& diamondCutCode = Barz::getDiamondCutCode(input);
-        ASSERT_EQ(hexEncoded(diamondCutCode), "0x1f931c1c00000000000000000000000000000000000000000000000000000000000000600000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000002400000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003fdd8a83c00000000000000000000000000000000000000000000000000000000fdd8a83c00000000000000000000000000000000000000000000000000000000fdd8a83c000000000000000000000000000000000000000000000000000000000000000000000000000000006e3c94d74af6227aeef75b54a679e969189a6aec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001123456780000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041234123400000000000000000000000000000000000000000000000000000000");
+        const auto& serialized = input.SerializeAsString();
+        const auto& diamondCutCode = TWBarzGetDiamondCutCode(WRAPD(TWDataCreateWithBytes((const uint8_t *)serialized.data(), serialized.size())).get());
+        const auto& diamondCutCodeData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(diamondCutCode).get()));
+        ASSERT_EQ(diamondCutCodeData, "0x1f931c1c00000000000000000000000000000000000000000000000000000000000000600000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000002400000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000001200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000003fdd8a83c00000000000000000000000000000000000000000000000000000000fdd8a83c00000000000000000000000000000000000000000000000000000000fdd8a83c000000000000000000000000000000000000000000000000000000000000000000000000000000006e3c94d74af6227aeef75b54a679e969189a6aec000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001123456780000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041234123400000000000000000000000000000000000000000000000000000000");
     }
 }
 
@@ -389,13 +363,17 @@ TEST(Barz, GetDiamondCutCodeWithZeroSelector) {
         TW::Barz::Proto::DiamondCutInput input;
 
         input.set_init_address("0x0000000000000000000000000000000000000000");
-        input.set_init_data("0x00");
+        auto init_data = parse_hex("0x00");
+        input.set_init_data(init_data.data(), init_data.size());
+
         auto* facetCutAdd = input.add_facet_cuts();
         facetCutAdd->set_facet_address("0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6");
         facetCutAdd->set_action(TW::Barz::Proto::FacetCutAction::ADD);
 
-        const auto& diamondCutCode = Barz::getDiamondCutCode(input);
-        ASSERT_EQ(hexEncoded(diamondCutCode), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000");
+        const auto& serialized = input.SerializeAsString();
+        const auto& diamondCutCode = TWBarzGetDiamondCutCode(WRAPD(TWDataCreateWithBytes((const uint8_t *)serialized.data(), serialized.size())).get());
+        const auto& diamondCutCodeData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(diamondCutCode).get()));
+        ASSERT_EQ(diamondCutCodeData, "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000");
     }
 }
 
@@ -404,15 +382,103 @@ TEST(Barz, GetDiamondCutCodeWithLongInitData) {
         TW::Barz::Proto::DiamondCutInput input;
 
         input.set_init_address("0x0000000000000000000000000000000000000000");
-        input.set_init_data("0xb61d27f6000000000000000000000000c2ce171d25837cd43e496719f5355a847edc679b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000024a526d83b00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000");
+
+        auto init_data = parse_hex("0xb61d27f6000000000000000000000000c2ce171d25837cd43e496719f5355a847edc679b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000024a526d83b00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b90600000000000000000000000000000000000000000000000000000000");
+        input.set_init_data(init_data.data(), init_data.size());
+
         auto* facetCutAdd = input.add_facet_cuts();
         facetCutAdd->set_facet_address("0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6");
         facetCutAdd->set_action(TW::Barz::Proto::FacetCutAction::ADD);
 
-        const auto& diamondCutCode = Barz::getDiamondCutCode(input);
-        ASSERT_EQ(hexEncoded(diamondCutCode), "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c4b61d27f6000000000000000000000000c2ce171d25837cd43e496719f5355a847edc679b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000024a526d83b00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+        const auto& serialized = input.SerializeAsString();
+        const auto& diamondCutCode = TWBarzGetDiamondCutCode(WRAPD(TWDataCreateWithBytes((const uint8_t *)serialized.data(), serialized.size())).get());
+        const auto& diamondCutCodeData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(diamondCutCode).get()));
+        ASSERT_EQ(diamondCutCodeData, "0x1f931c1c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000002279b7a0a67db372996a5fab50d91eaa73d2ebe600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c4b61d27f6000000000000000000000000c2ce171d25837cd43e496719f5355a847edc679b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000024a526d83b00000000000000000000000090f79bf6eb2c4f870365e785982e1f101e93b9060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    }
+}
+
+TEST(Barz, GetAuthorizationHash) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = STRING("0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1");
+        const auto nonce = store(uint256_t(1));
+
+        const auto& authorizationHash = TWEip7702GetAuthorizationHash(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), contractAddress.get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get());
+        const auto& authorizationHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(authorizationHash).get()));
+        ASSERT_EQ(authorizationHashData, "0x3ae543b2fa103a39a6985d964a67caed05f6b9bb2430ad6d498cda743fe911d9"); // Verified with viem
+    }
+}
+
+TEST(Barz, SignAuthorization) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const auto nonce = store(uint256_t(1));
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+
+        const auto signedAuthorization = WRAPS(TWEip7702SignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
+        auto json = nlohmann::json::parse(std::string(TWStringUTF8Bytes(signedAuthorization.get())));
+        // Verified with viem
+        ASSERT_EQ(json["chainId"], hexEncoded(chainId));
+        ASSERT_EQ(json["address"], contractAddress);
+        ASSERT_EQ(json["nonce"], hexEncoded(nonce));
+        ASSERT_EQ(json["yParity"], hexEncoded(store(uint256_t(1))));
+        ASSERT_EQ(json["r"], "0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710");
+        ASSERT_EQ(json["s"], "0x5f1bcde93dee4b214e60bc0e63babcc13e4fecb8a23c4098fd89844762aa012c");
+    }
+}
+
+TEST(Barz, SignAuthorizationZeroNonce) {
+    {
+        const auto chainId = store(uint256_t(1));
+        const auto contractAddress = "0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1";
+        const Data nonce;
+        const auto privateKey = "0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+
+        const auto signedAuthorization = WRAPS(TWEip7702SignAuthorization(WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(), STRING(contractAddress).get(), WRAPD(TWDataCreateWithBytes(nonce.data(), nonce.size())).get(), STRING(privateKey).get()));
+        auto json = nlohmann::json::parse(std::string(TWStringUTF8Bytes(signedAuthorization.get())));
+        ASSERT_EQ(json["chainId"], hexEncoded(chainId));
+        ASSERT_EQ(json["address"], contractAddress);
+        ASSERT_EQ(json["nonce"], "0x00");
+        ASSERT_EQ(json["yParity"], hexEncoded(store(uint256_t(0))));
+        ASSERT_EQ(json["r"], "0x2269a34ea41b8898fb28196c3548836e2df0efe5968574be1cefc0355af11c24");
+        ASSERT_EQ(json["s"], "0x601b4443deafb48303d4f4a580505485e3fa7f516472675227494a88e9d0a5b5");
+    }
+}
+
+TEST(Barz, GetEncodedHash) {
+    {
+        const auto chainId = store(uint256_t(31337), 32);
+        const auto codeAddress = STRING("0x2e234DAe75C793f67A35089C9d99245E1C58470b");
+        const auto codeName = STRING("Biz");
+        const auto codeVersion = STRING("v1.0.0");
+        const auto typeHash = STRING("0x4f51e7a567f083a31264743067875fc6a7ae45c32c5bd71f6a998c4625b13867");
+        const auto domainSeparatorHash = STRING("0xd87cd6ef79d4e2b95e15ce8abf732db51ec771f1ca2edccf22a46c729ac56472");
+        const auto sender = STRING("0x174a240e5147D02dE4d7724D5D3E1c1bF11cE029");
+        const auto userOpHash = STRING("0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb");
+
+        const auto& encodedHash = TWBizGetEncodedHash(
+            WRAPD(TWDataCreateWithBytes(chainId.data(), chainId.size())).get(),
+            codeAddress.get(),
+            codeName.get(),
+            codeVersion.get(),
+            typeHash.get(),
+            domainSeparatorHash.get(),
+            sender.get(),
+            userOpHash.get());
+        const auto& encodedHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(encodedHash).get()));
+        ASSERT_EQ(encodedHashData, "0xc63891abc38f7a991f89ad7cb6d7e53543627b0536c3f5e545b736756c971635");
+    }
+}
+
+TEST(Barz, GetSignedHash) {
+    {
+        const auto hash = STRING("0xc63891abc38f7a991f89ad7cb6d7e53543627b0536c3f5e545b736756c971635");
+        const auto privateKey = STRING("0x947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8");
+        const auto signedHash = TWBizGetSignedHash(hash.get(), privateKey.get());
+        const auto& signedHashData = hexEncoded(*reinterpret_cast<const Data*>(WRAPD(signedHash).get()));
+        ASSERT_EQ(signedHashData, "0xa29e460720e4b539f593d1a407827d9608cccc2c18b7af7b3689094dca8a016755bca072ffe39bc62285b65aff8f271f20798a421acf18bb2a7be8dbe0eb05f81c");
     }
 }
 
 }
-

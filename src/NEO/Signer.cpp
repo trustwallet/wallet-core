@@ -46,7 +46,7 @@ void Signer::sign(Transaction& tx) const {
 }
 
 Data Signer::sign(const Data& data) const {
-    auto signature = getPrivateKey().sign(TW::Hash::sha256(data), TWCurveNIST256p1);
+    auto signature = getPrivateKey().sign(TW::Hash::sha256(data));
     signature.pop_back();
     return signature;
 }
@@ -260,11 +260,11 @@ std::shared_ptr<Transaction> Signer::prepareUnsignedTransaction(const Proto::Sig
     return transaction;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto output = Proto::SigningOutput();
     try {
         auto signer =
-            Signer(PrivateKey(Data(input.private_key().begin(), input.private_key().end())));
+            Signer(PrivateKey(input.private_key(), TWCurveNIST256p1));
         Proto::TransactionPlan plan;
         if (input.has_plan()) {
             plan = input.plan();

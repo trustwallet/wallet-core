@@ -25,8 +25,8 @@ TEST(TWNanoCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNano));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNano));
     assertStringsEqual(symbol, "XNO");
-    assertStringsEqual(txUrl, "https://www.nanolooker.com/block/C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
-    assertStringsEqual(accUrl, "https://www.nanolooker.com/account/nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf");
+    assertStringsEqual(txUrl, "https://nanexplorer.com/nano/block/C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
+    assertStringsEqual(accUrl, "https://nanexplorer.com/nano/account/nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf");
     assertStringsEqual(id, "nano");
     assertStringsEqual(name, "Nano");
 }

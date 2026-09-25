@@ -14,5 +14,11 @@ struct BaseEncodeInput<'a> {
 fuzz_target!(|input: BaseEncodeInput<'_>| {
     base32::encode(input.data, None, input.padding).ok();
     base58::encode(input.data, input.alphabet_base58.into());
-    base64::encode(input.data, input.is_url);
+    base64::encode(
+        input.data,
+        base64::Config {
+            url: input.is_url,
+            padding: input.padding,
+        },
+    );
 });

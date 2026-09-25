@@ -27,6 +27,8 @@
 
 using namespace TW;
 
+const static uint64_t ONE_BTC = 100'000'000ll;
+
 TEST(BitcoinCompiler, CompileWithSignatures) {
     // Test external signining with a Bircoin transaction with 3 input UTXOs, all used, but only
     // using 2 public keys. Three signatures are neeeded.  This illustrates that order of
@@ -291,4 +293,82 @@ TEST(BitcoinCompiler, CompileWithSignatures) {
         EXPECT_EQ(output.encoded().size(), 0ul);
         EXPECT_EQ(output.error(), Common::Proto::Error_signing);
     }
+}
+
+TEST(BitcoinCompiler, CompileWithSignaturesV2) {
+    Bitcoin::Proto::SigningInput inputLegacy;
+    auto& input = *inputLegacy.mutable_signing_v2();
+
+    const PrivateKey alicePrivateKey(parse_hex("56429688a1a6b00b90ccd22a0de0a376b6569d8684022ae92229a28478bfb657"));
+    const auto alicePublicKey = alicePrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    const auto bobPublicKey = parse_hex("037ed9a436e11ec4947ac4b7823787e24ba73180f1edd2857bff19c9f4d62b65bf");
+
+    input.mutable_chain_info()->set_p2pkh_prefix(0);
+    input.mutable_chain_info()->set_p2sh_prefix(5);
+    input.add_public_keys(alicePublicKey.bytes.data(), alicePublicKey.bytes.size());
+
+    auto txid0 = parse_hex("1e1cdc48aa990d7e154a161d5b5f1cad737742e97d2712ab188027bb42e6e47b");
+    std::reverse(txid0.begin(), txid0.end());
+
+    // Step 1: Prepare transaction input (protobuf)
+
+    auto& builder = *input.mutable_builder();
+
+    auto& utxo0 = *builder.add_inputs();
+    utxo0.mutable_out_point()->set_hash(txid0.data(), txid0.size());
+    utxo0.mutable_out_point()->set_vout(0);
+    utxo0.set_value(ONE_BTC * 50);
+    utxo0.set_sighash_type(TWBitcoinSigHashTypeAll);
+    // Set the Alice public key as the owner of the P2PKH input.
+    utxo0.mutable_script_builder()->mutable_p2pkh()->set_pubkey(alicePublicKey.bytes.data(), alicePublicKey.bytes.size());
+
+    auto& out0 = *builder.add_outputs();
+    out0.set_value(ONE_BTC * 50 - 1'000'000);
+    // Set the Bob public key as the receiver of the P2PKH output.
+    out0.mutable_builder()->mutable_p2pkh()->set_pubkey(bobPublicKey.data(), bobPublicKey.size());
+
+    builder.set_version(BitcoinV2::Proto::TransactionVersion::V2);
+    builder.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
+    builder.set_fixed_dust_threshold(546);
+
+    const auto inputLegacyData = data(inputLegacy.SerializeAsString());
+
+    // Step 2: Obtain preimage hashes
+
+    const auto preOutputData = TransactionCompiler::preImageHashes(TWCoinTypeBitcoin, inputLegacyData);
+    Bitcoin::Proto::PreSigningOutput preOutput;
+    preOutput.ParseFromArray(preOutputData.data(), static_cast<int>(preOutputData.size()));
+
+    EXPECT_EQ(preOutput.error(), Common::Proto::SigningError::OK);
+    EXPECT_TRUE(preOutput.has_pre_signing_result_v2());
+    EXPECT_EQ(preOutput.pre_signing_result_v2().error(), Common::Proto::SigningError::OK);
+
+    const auto& sighashes = preOutput.pre_signing_result_v2().sighashes();
+    EXPECT_EQ(sighashes.size(), 1);
+    const auto& sighash0 = sighashes.Get(0);
+    EXPECT_EQ(data(sighash0.public_key()), alicePublicKey.bytes);
+    EXPECT_EQ(hex(sighash0.sighash()), "6a0e072da66b141fdb448323d54765cafcaf084a06d2fa13c8aed0c694e50d18");
+
+    // Step 3: Simulate signature, normally obtained from signature server
+
+    const auto sig0 = alicePrivateKey.sign(data(sighash0.sighash()), TWCurveSECP256k1);
+    EXPECT_EQ(hex(sig0), "78eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b11a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd45900");
+
+    // Step 4: Compile transaction info
+
+    const std::vector<Data> signatures { sig0 };
+    const std::vector<Data> publicKeys { alicePublicKey.bytes };
+    const auto outputData = TransactionCompiler::compileWithSignatures(TWCoinTypeBitcoin, inputLegacyData, signatures, publicKeys);
+    Bitcoin::Proto::SigningOutput output;
+    output.ParseFromArray(outputData.data(), static_cast<int>(outputData.size()));
+
+    EXPECT_EQ(output.error(), Common::Proto::SigningError::OK);
+    EXPECT_TRUE(output.has_signing_result_v2());
+    const auto& outputV2 = output.signing_result_v2();
+    EXPECT_EQ(outputV2.error(), Common::Proto::SigningError::OK);
+    EXPECT_EQ(
+        hex(outputV2.encoded()),
+        "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000"
+    );
+    EXPECT_EQ(hex(outputV2.txid()), "c19f410bf1d70864220e93bca20f836aaaf8cdde84a46692616e9f4480d54885");
 }

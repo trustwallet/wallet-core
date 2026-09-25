@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <boost/integer.hpp>
 #include <utility>
 
 #include "PublicKey.h"

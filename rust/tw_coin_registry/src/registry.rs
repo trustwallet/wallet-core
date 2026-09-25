@@ -8,13 +8,14 @@ use crate::error::{RegistryError, RegistryResult};
 use lazy_static::lazy_static;
 use serde::Deserialize;
 use std::collections::HashMap;
+use tw_coin_entry::derivation::DerivationWithPath;
 use tw_hash::hasher::Hasher;
 use tw_keypair::tw::PublicKeyType;
 
 type RegistryMap = HashMap<CoinType, CoinItem>;
 
 /// cbindgen:ignore
-const REGISTRY_JSON: &str =
+pub const REGISTRY_JSON: &str =
     include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../../registry.json"));
 
 lazy_static! {
@@ -29,9 +30,13 @@ pub struct CoinItem {
     pub name: String,
     pub coin_id: CoinType,
     pub blockchain: BlockchainType,
+    pub derivation: Vec<DerivationWithPath>,
     pub public_key_type: PublicKeyType,
     pub address_hasher: Option<Hasher>,
     pub hrp: Option<String>,
+    pub p2pkh_prefix: Option<u8>,
+    pub p2sh_prefix: Option<u8>,
+    pub ss58_prefix: Option<u16>,
 }
 
 #[inline]
@@ -41,7 +46,7 @@ pub fn get_coin_item(coin: CoinType) -> RegistryResult<&'static CoinItem> {
 
 #[inline]
 pub fn registry_iter() -> impl Iterator<Item = &'static CoinItem> {
-    REGISTRY.iter().map(|(_coin_type, item)| item)
+    REGISTRY.values()
 }
 
 #[inline]

@@ -30,7 +30,8 @@ TEST(NimiqSigner, Sign) {
         Address("NQ86 2H8F YGU5 RM77 QSN9 LYLH C56A CYYR 0MLA"),
         42042042,
         1000,
-        314159
+        314159,
+        Proto::NetworkId::Mainnet
     );
 
     Signer signer;

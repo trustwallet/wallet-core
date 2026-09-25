@@ -204,4 +204,68 @@ TEST(GroestlcoinSigning, PlanP2WPKH) {
     EXPECT_EQ(plan.branch_id(), "");
 }
 
+// Tests the BitcoinV2 API through the legacy `SigningInput`.
+// Successfully broadcasted: https://blockbook.groestlcoin.org/tx/40b539c578934c9863a93c966e278fbeb3e67b0da4eb9e3030092c1b717e7a64
+TEST(GroestlcoinSigning, SignV2P2WPKH) {
+    auto privateKey = parse_hex("dc334e7347f2f9f72fce789b11832bdf78adf0158bc6617e6d2d2a530a0d4bc6");
+    auto txId = parse_hex("8f4ecc7844e19aa1d3183e47eee89d795f9e7c875a55ec0203946d6c9eb06895");
+    std::reverse(txId.begin(), txId.end());
+    int64_t inAmount = 4774;
+    int64_t outAmount = 2500;
+    int64_t changeAmount = 2048;
+    auto senderAddress = "grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne";
+    auto toAddress = "31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P";
+    auto changeAddress = "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM";
+
+    BitcoinV2::Proto::SigningInput signing;
+    signing.add_private_keys(privateKey.data(), privateKey.size());
+
+    auto& chainInfo = *signing.mutable_chain_info();
+    chainInfo.set_p2pkh_prefix(36);
+    chainInfo.set_p2sh_prefix(5);
+
+    auto& builder = *signing.mutable_builder();
+    builder.set_version(BitcoinV2::Proto::TransactionVersion::UseDefault);
+    builder.set_input_selector(BitcoinV2::Proto::InputSelector::UseAll);
+    builder.set_fixed_dust_threshold(546);
+
+    auto& in = *builder.add_inputs();
+    auto& inOutPoint = *in.mutable_out_point();
+    inOutPoint.set_hash(txId.data(), txId.size());
+    inOutPoint.set_vout(1);
+    in.set_value(inAmount);
+    in.set_receiver_address(senderAddress);
+    in.set_sighash_type(TWBitcoinSigHashTypeAll);
+
+    auto& out = *builder.add_outputs();
+    out.set_value(outAmount);
+    out.set_to_address(toAddress);
+
+    auto& changeOut = *builder.add_outputs();
+    changeOut.set_value(changeAmount);
+    changeOut.set_to_address(changeAddress);
+
+    Bitcoin::Proto::SigningInput legacy;
+    legacy.set_coin_type(TWCoinTypeGroestlcoin);
+    *legacy.mutable_signing_v2() = signing;
+
+    Bitcoin::Proto::TransactionPlan plan;
+    ANY_PLAN(legacy, plan, TWCoinTypeGroestlcoin);
+    EXPECT_EQ(plan.error(), Common::Proto::OK);
+    ASSERT_TRUE(plan.has_planning_result_v2());
+    EXPECT_EQ(plan.planning_result_v2().error(), Common::Proto::SigningError::OK)
+                    << plan.planning_result_v2().error_message();
+    EXPECT_EQ(plan.planning_result_v2().vsize_estimate(), 145ul);
+
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(legacy, TWCoinTypeGroestlcoin);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    ASSERT_TRUE(output.has_signing_result_v2());
+    EXPECT_EQ(output.signing_result_v2().error(), Common::Proto::SigningError::OK)
+                    << output.signing_result_v2().error_message();
+    EXPECT_EQ(hex(output.signing_result_v2().encoded()), "010000000001019568b09e6c6d940302ec555a877c9e5f799de8ee473e18d3a19ae14478cc4e8f0100000000ffffffff02c40900000000000017a9140055b0c94df477ee6b9f75185dfc9aa8ce2e52e48700080000000000001976a91498af0aaca388a7e1024f505c033626d908e3b54a88ac024830450221009bbd0228dcb7343828633ded99d216555d587b74db40c4a46f560187eca222dd022032364cf6dbf9c0213076beb6b4a20935d4e9c827a551c3f6f8cbb22d8b464467012102e9c9b9b76e982ad8fa9a7f48470eafbeeba9bf6d287579318c517db5157d936e00000000");
+    EXPECT_EQ(hex(output.signing_result_v2().txid()), "40b539c578934c9863a93c966e278fbeb3e67b0da4eb9e3030092c1b717e7a64");
+}
+
 } // namespace TW::Bitcoin

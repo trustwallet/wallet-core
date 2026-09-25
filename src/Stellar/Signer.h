@@ -16,14 +16,14 @@ namespace TW::Stellar {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
   public:
     const Proto::SigningInput& _input;
 
     Signer(const Proto::SigningInput& input) : _input(input) {}
 
     /// Signs the given transaction.
-    std::string sign() const noexcept;
+    std::string sign() const;
 
     Data encode(const Proto::SigningInput& input) const;
     Data signaturePreimage() const;

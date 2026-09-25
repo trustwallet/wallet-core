@@ -2,7 +2,7 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-use crate::codegen::rust::tw_any_coin_directory;
+use crate::codegen::rust::tw_tests_directory;
 use crate::registry::CoinItem;
 use crate::utils::FileContent;
 use crate::Result;
@@ -14,7 +14,7 @@ const EVM_ADDRESS_DERIVATION_TEST_END: &str =
     "end_of_evm_address_derivation_tests_marker_do_not_modify";
 
 pub fn coin_address_derivation_test_path() -> PathBuf {
-    tw_any_coin_directory()
+    tw_tests_directory()
         .join("tests")
         .join("coin_address_derivation_test.rs")
 }

@@ -6,8 +6,8 @@ use crate::context::CosmosContext;
 use crate::modules::serializer::protobuf_serializer::{ProtobufSerializer, SignDirectArgs};
 use crate::transaction::UnsignedTransaction;
 use std::marker::PhantomData;
-use tw_coin_entry::error::SigningResult;
-use tw_hash::hasher::Hasher;
+use tw_coin_entry::error::prelude::*;
+use tw_hash::hasher::{Hasher, StatefulHasher};
 use tw_memory::Data;
 use tw_proto::serialize;
 

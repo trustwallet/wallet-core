@@ -13,7 +13,7 @@ namespace TW::Aeternity {
 class Signer {
 public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const PrivateKey& privateKey, Transaction& transaction);

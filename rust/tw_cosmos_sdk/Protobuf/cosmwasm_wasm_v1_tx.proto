@@ -17,3 +17,12 @@ message MsgExecuteContract {
     // Gap in field numbering is intentional!
     repeated cosmos.base.v1beta1.Coin funds = 5;
 }
+
+message MsgInstantiateContract {
+    string sender = 1;
+    string admin = 2; // optional
+    uint64 code_id = 3;
+    string label = 4;
+    bytes msg = 5; // JSON
+    repeated cosmos.base.v1beta1.Coin init_funds = 6;
+}

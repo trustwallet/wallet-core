@@ -101,7 +101,7 @@ class CoinAddressDerivationTests: XCTestCase {
                      .moonriver,
                      .moonbeam,
                      .kavaEvm,
-                     .klaytn,
+                     .kaia,
                      .meter,
                      .okxchain,
                      .confluxeSpace,
@@ -114,7 +114,16 @@ class CoinAddressDerivationTests: XCTestCase {
                      .mantle,
                      .zenEON,
                      .mantaPacific,
-                     .zetaEVM:
+                     .zetaEVM,
+                     .merlin,
+                     .lightlink,
+                     .blast,
+                     .bounceBit,
+                     .zkLinkNova,
+                     .sonic,
+                     .plasma,
+                     .monad,
+                     .megaETH:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ronin:
@@ -125,7 +134,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .rootstock:
                     let expectedResult = "0xA2D7065F94F838a3aB9C04D67B312056846424Df"
-                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)       
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .filecoin:
                     let expectedResult = "f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -197,6 +206,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .polkadot:
                     let expectedResult = "13nN6BGAoJwd7Nw1XxeBCx5YcBXuYnL94Mh7i3xBprqVSsFk"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .polymesh:
+                    let expectedResult = "2DHK8VhBpacs9quk78AVP9TmmcG5iXi2oKtZqneSNsVXxCKw"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .qtum:
                     let expectedResult = "QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF"
@@ -303,7 +315,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "0:0c39661089f86ec5926ea7d4ee4223d634ba4ed6dcc2e80c7b6a8e6d59f79b04";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ton:
-                    let expectedResult = "EQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUfk9";
+                    let expectedResult = "UQDgEMqToTacHic7SnvnPFmvceG5auFkCcAw0mSCvzvKUaT4";
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .aptos:
                     let expectedResult = "0x7968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30";
@@ -384,7 +396,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "sei142j9u5eaduzd7faumygud6ruhdwme98qagm0sj"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .internetComputer:
-                    let expectedResult = "b9a13d974ee9db036d5abc5b66ace23e513cb5676f3996626c7717c339a3ee87"
+                    let expectedResult = "6f8e568160a3c8362789848dc0fa52891964473c045cc25208a305fb35b7c4ab"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tia:
                     let expectedResult = "celestia142j9u5eaduzd7faumygud6ruhdwme98qpwmfv7"
@@ -394,6 +406,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .dydx:
                     let expectedResult = "dydx142j9u5eaduzd7faumygud6ruhdwme98qeayaky"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .pactus:
+                    let expectedResult = "pc1r7ys2g5a4xc2qtm0t4q987m4mvs57w5g0v4pvzg"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()

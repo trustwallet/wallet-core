@@ -37,11 +37,19 @@ void TransactionFactoryConfig::setMinGasLimit(uint32_t value) {
 }
 
 uint32_t TransactionFactoryConfig::getExtraGasLimitForGuardedTransaction() const {
-    return this->minGasLimit;
+    return this->extraGasLimitForGuardedTransaction;
 }
 
 void TransactionFactoryConfig::setExtraGasLimitForGuardedTransaction(uint32_t value) {
     this->extraGasLimitForGuardedTransaction = value;
+}
+
+uint32_t TransactionFactoryConfig::getExtraGasLimitForRelayedTransaction() const {
+    return this->extraGasLimitForRelayedTransaction;
+}
+
+void TransactionFactoryConfig::setExtraGasLimitForRelayedTransaction(uint32_t value) {
+    this->extraGasLimitForRelayedTransaction = value;
 }
 
 uint64_t TransactionFactoryConfig::getMinGasPrice() const {
@@ -97,6 +105,7 @@ TransactionFactoryConfig TransactionFactoryConfig::GetByTimestamp(uint64_t times
         config.setGasPerDataByte(1500);
         config.setMinGasLimit(50000);
         config.setExtraGasLimitForGuardedTransaction(50000);
+        config.setExtraGasLimitForRelayedTransaction(50000);
         config.setMinGasPrice(1000000000);
         config.setGasCostESDTTransfer(200000);
         config.setGasCostESDTNFTTransfer(200000);

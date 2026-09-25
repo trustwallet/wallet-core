@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Save the arguments on the first `source ./tools/parse_args "$@"` call.
+ARGS=("$@")
+
+function containsArg() {
+  for arg in "${ARGS[@]}"; do
+    if [[ "$arg" == "$1" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+function isHelp() {
+  if containsArg "--help" || containsArg "-h"; then
+    return 0
+  fi
+  return 1
+}
+
+function noArgs() {
+  if [[ "${#ARGS}" -eq 0 ]]; then
+    return 0
+  fi
+  return 1
+}
+
+# Whether the command line arguments contain a target.
+# Returns `true` if either no arguments are specified, or `all`, or the exact target specified.
+function isTargetSpecified() {
+  if noArgs || containsArg "all" || containsArg "$1"; then
+    return 0
+  fi
+  return 1
+}

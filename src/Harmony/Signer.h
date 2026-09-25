@@ -12,7 +12,6 @@
 #include "../proto/Harmony.pb.h"
 #include "../proto/EthereumRlp.pb.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
 #include <tuple>
 #include <vector>
@@ -23,7 +22,7 @@ namespace TW::Harmony {
 class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     /// Signs a json Proto::SigningInput with private key
     static std::string signJSON(const std::string& json, const Data& key);
 
@@ -61,13 +60,18 @@ class Signer {
 
     /// Signs the given transaction.
     template <typename T>
-    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept;
+    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) noexcept {
+        auto tuple = sign(chainID, privateKey, hash);
+        transaction.r = std::get<0>(tuple);
+        transaction.s = std::get<1>(tuple);
+        transaction.v = std::get<2>(tuple);
+    }
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// \returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept;
+    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash);
 
     /// R, S, and V values for the given chain identifier and signature.
     ///

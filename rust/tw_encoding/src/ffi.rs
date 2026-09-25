@@ -5,7 +5,6 @@
 #![allow(clippy::missing_safety_doc)]
 
 use crate::{base32, base58, base64, hex, EncodingError};
-use bs58::Alphabet;
 use std::ffi::{c_char, CStr, CString};
 use tw_memory::ffi::c_byte_array::{CByteArray, CByteArrayResult};
 use tw_memory::ffi::c_result::{CStrMutResult, ErrorCode};
@@ -48,11 +47,11 @@ pub enum Base58Alphabet {
     Ripple = 2,
 }
 
-impl From<Base58Alphabet> for &Alphabet {
+impl From<Base58Alphabet> for base58::Alphabet {
     fn from(value: Base58Alphabet) -> Self {
         match value {
-            Base58Alphabet::Bitcoin => Alphabet::BITCOIN,
-            Base58Alphabet::Ripple => Alphabet::RIPPLE,
+            Base58Alphabet::Bitcoin => base58::Alphabet::Bitcoin,
+            Base58Alphabet::Ripple => base58::Alphabet::Ripple,
         }
     }
 }
@@ -155,7 +154,11 @@ pub unsafe extern "C" fn decode_base58(
 #[no_mangle]
 pub unsafe extern "C" fn encode_base64(data: *const u8, len: usize, is_url: bool) -> *mut c_char {
     let data = std::slice::from_raw_parts(data, len);
-    let encoded = base64::encode(data, is_url);
+    let config = base64::Config {
+        url: is_url,
+        pad: true,
+    };
+    let encoded = base64::encode(data, config);
     CString::new(encoded).unwrap().into_raw()
 }
 
@@ -172,7 +175,11 @@ pub unsafe extern "C" fn decode_base64(data: *const c_char, is_url: bool) -> CBy
         Ok(input) => input,
         Err(_) => return CByteArrayResult::error(CEncodingCode::InvalidInput),
     };
-    base64::decode(str_slice, is_url)
+    let config = base64::Config {
+        url: is_url,
+        pad: true,
+    };
+    base64::decode(str_slice, config)
         .map(CByteArray::from)
         .map_err(CEncodingCode::from)
         .into()

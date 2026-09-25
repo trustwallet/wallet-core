@@ -11,6 +11,7 @@
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 
+#include <nlohmann/json.hpp>
 #include <cassert>
 #include <chrono>
 
@@ -386,6 +387,10 @@ protocol::Transaction buildTransaction(const Proto::SigningInput& input) noexcep
         *contract->mutable_parameter() = any;
     }
 
+    if (!input.transaction().memo().empty()) {
+        tx.mutable_raw_data()->set_data(input.transaction().memo());
+    }
+
     tx.mutable_raw_data()->set_timestamp(input.transaction().timestamp());
     tx.mutable_raw_data()->set_expiration(input.transaction().expiration());
     tx.mutable_raw_data()->set_fee_limit(input.transaction().fee_limit());
@@ -394,24 +399,41 @@ protocol::Transaction buildTransaction(const Proto::SigningInput& input) noexcep
     return tx;
 }
 
-Data serialize(const protocol::Transaction& tx) noexcept {
-    const auto serialized = tx.raw_data().SerializeAsString();
-    return Data(serialized.begin(), serialized.end());
-}
-
 Proto::SigningOutput signDirect(const Proto::SigningInput& input) {
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto hash = parse_hex(input.txid());
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
     auto output = Proto::SigningOutput();
+
+    Data hash;
+    if (!input.txid().empty()) {
+        hash = parse_hex(input.txid());
+    } else if (!input.raw_json().empty()) {
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                hash = parse_hex(parsed["txID"].get<std::string>());
+            } else {
+                // If txID is not present, return an error
+                output.set_error(Common::Proto::Error_invalid_params);
+                output.set_error_message("No txID found in raw JSON");
+                return output;
+            }
+        } catch (const std::exception& e) {
+            // If parsing fails, return an error
+            output.set_error(Common::Proto::Error_invalid_params);
+            output.set_error_message(e.what());
+            return output;
+        }
+    }
+
+    const auto signature = key.sign(hash);
     output.set_signature(signature.data(), signature.size());
     output.set_id(input.txid());
     output.set_id(hash.data(), hash.size());
     return output;
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    if (!input.txid().empty()) {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
+    if (!input.txid().empty() || !input.raw_json().empty()) {
         return signDirect(input);
     }
 
@@ -435,10 +457,10 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     output.set_ref_block_bytes(tx.raw_data().ref_block_bytes());
     output.set_ref_block_hash(tx.raw_data().ref_block_hash());
 
-    const auto hash = Hash::sha256(serialize(tx));
+    const auto hash = Hash::sha256(serializeTxRawData(tx));
 
-    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto signature = key.sign(hash, TWCurveSECP256k1);
+    const auto key = PrivateKey(input.private_key(), TWCurveSECP256k1);
+    const auto signature = key.sign(hash);
 
     const auto json = transactionJSON(tx, hash, signature).dump();
 
@@ -451,6 +473,26 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
 Proto::SigningOutput Signer::compile(const Data& signature) const {
     Proto::SigningOutput output;
+    if (!input.raw_json().empty()) {
+        // If raw JSON is provided, we use it directly
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            // Add signature to JSON and set to output
+            parsed["signature"] = nlohmann::json::array({hex(signature)});
+            output.set_json(parsed.dump());
+            output.set_signature(signature.data(), signature.size());
+            // Extract txID and set to output
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                auto txID = parse_hex(parsed["txID"].get<std::string>());
+                output.set_id(txID.data(), txID.size());
+            }
+            return output;
+        } catch (const std::exception& e) {
+            output.set_error(Common::Proto::Error_invalid_params);
+            output.set_error_message(e.what());
+            return output;
+        }
+    }
     auto preImage = signaturePreimage();
     auto hash = Hash::sha256(preImage);
     auto transaction = buildTransaction(input);
@@ -464,7 +506,40 @@ Proto::SigningOutput Signer::compile(const Data& signature) const {
 }
 
 Data Signer::signaturePreimage() const {
-    return serialize(buildTransaction(input));
+    if (!input.raw_json().empty()) {
+        // If raw JSON is provided, we use raw_data_hex directly
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("raw_data_hex") && parsed["raw_data_hex"].is_string()) {
+                return parse_hex(parsed["raw_data_hex"].get<std::string>());
+            }
+            // If raw_data_hex is not present, return an empty Data
+            return {};
+        } catch (...) {
+            // Ignore parsing errors, return an empty Data
+            return {};
+        }
+    }
+    return serializeTxRawData(buildTransaction(input));
+}
+
+Data Signer::signaturePreimageHash() const {
+    if (!input.raw_json().empty()) {
+        // If raw JSON is provided, we use txID directly
+        try {
+            auto parsed = nlohmann::json::parse(input.raw_json());
+            if (parsed.contains("txID") && parsed["txID"].is_string()) {
+                return parse_hex(parsed["txID"].get<std::string>());
+            }
+            // If txID is not present, return an empty Data
+            return {};
+        } catch (...) {
+            // Ignore parsing errors, return an empty Data
+            return {};
+        }
+    }
+    auto preImage = signaturePreimage();
+    return Hash::sha256(preImage);
 }
 
 } // namespace TW::Tron

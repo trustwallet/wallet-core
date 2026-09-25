@@ -46,7 +46,7 @@ TEST(ZenSigner, Sign) {
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
     utxo0->set_amount(17600);
 
-    auto utxoKey0 = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"));
+    auto utxoKey0 = PrivateKey(parse_hex("3a8e0a528f62f4ca2c77744c8a571def2845079b50105a9f7ef6b1b823def67a"), TWCoinTypeCurve(TWCoinTypeZen));
     auto utxoAddr0 = TW::deriveAddress(TWCoinTypeZen, utxoKey0);
     ASSERT_EQ(utxoAddr0, "znk19H1wcARcCa7TM6zgmJUbWoWWtZ8k5cg");
     auto script0 = Bitcoin::Script::lockScriptForAddress(utxoAddr0, TWCoinTypeZen, blockHash, blockHeight);

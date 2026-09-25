@@ -1,0 +1,16 @@
+[package]
+name = "tw_ton"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lazy_static = "1.4.0"
+tw_coin_entry = { path = "../../tw_coin_entry" }
+tw_encoding = { path = "../../tw_encoding" }
+tw_hash = { path = "../../tw_hash" }
+tw_keypair = { path = "../../tw_keypair" }
+tw_memory = { path = "../../tw_memory" }
+tw_number = { path = "../../tw_number" }
+tw_misc = { path = "../../tw_misc" }
+tw_proto = { path = "../../tw_proto" }
+tw_ton_sdk = { path = "../../frameworks/tw_ton_sdk" }

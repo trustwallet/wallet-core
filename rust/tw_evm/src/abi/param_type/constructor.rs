@@ -6,6 +6,7 @@ use crate::abi::non_empty_array::NonZeroLen;
 use crate::abi::param_type::ParamType;
 use crate::abi::uint::UintBits;
 use crate::abi::{AbiError, AbiErrorKind, AbiResult};
+use tw_coin_entry::error::prelude::*;
 
 pub trait TypeConstructor: Sized {
     fn address() -> Self;
@@ -99,7 +100,8 @@ impl TypeConstructor for ParamType {
         })
     }
 
-    fn custom(_s: &str) -> AbiResult<Self> {
-        Err(AbiError(AbiErrorKind::Error_invalid_param_type))
+    fn custom(s: &str) -> AbiResult<Self> {
+        AbiError::err(AbiErrorKind::Error_invalid_param_type)
+            .with_context(|| format!("`ParamType` doesn't support custom types like '{s}'"))
     }
 }

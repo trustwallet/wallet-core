@@ -12,7 +12,7 @@ plugins {
 kotlin {
     targetHierarchy.default()
 
-    android {
+    androidTarget {
         publishLibraryVariants = listOf("release")
     }
 
@@ -23,6 +23,7 @@ kotlin {
             }
         }
     }
+    jvmToolchain(17)
 
     val nativeTargets =
         listOf(
@@ -58,7 +59,7 @@ kotlin {
             }
         }
 
-        getByName("commonTest") {
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
             }
@@ -85,6 +86,13 @@ kotlin {
                 implementation(npm(name = "webpack", version = "5.89.0"))
             }
         }
+
+        getByName("androidInstrumentedTest") {
+            dependsOn(commonTest)
+            dependencies {
+                implementation(libs.androidx.test.runner)
+            }
+        }
     }
 
     nativeTargets.forEach { nativeTarget ->
@@ -92,9 +100,17 @@ kotlin {
             val main by compilations.getting
             main.cinterops.create("WalletCore") {
                 packageName = "com.trustwallet.core"
+                includeDirs(
+                    rootDir.parentFile.resolve("include"),
+                    rootDir.parentFile.resolve("include/TrustWalletCore"),
+                )
                 headers(rootDir.parentFile.resolve("include/TrustWalletCore").listFiles()!!)
             }
         }
+    }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 
@@ -119,6 +135,8 @@ android {
                 arguments += listOf("-DCMAKE_BUILD_TYPE=Release", "-DKOTLIN=True", "-DTW_UNITY_BUILD=ON")
             }
         }
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -130,12 +148,6 @@ android {
         resValues = false
         shaders = false
         viewBinding = false
-    }
-
-    androidComponents {
-        beforeVariants {
-            it.enable = it.name == "release"
-        }
     }
 
     externalNativeBuild {

@@ -3,8 +3,9 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Address.h"
+#include "Base58.h"
 
-#include "../Base58.h"
+#include <algorithm>
 #include <TrezorCrypto/ecdsa.h>
 
 namespace TW::Groestlcoin {

@@ -9,7 +9,7 @@ use tw_cosmos_sdk::context::StandardCosmosContext;
 use tw_cosmos_sdk::modules::tx_builder::TxBuilder;
 use tw_cosmos_sdk::test_utils::proto_utils::{make_amount, make_fee, make_message};
 use tw_cosmos_sdk::test_utils::sign_utils::{test_sign_json, test_sign_protobuf, TestInput};
-use tw_encoding::base64;
+use tw_encoding::base64::{self, STANDARD};
 use tw_encoding::hex::DecodeHex;
 use tw_keypair::tw::PublicKeyType;
 use tw_number::U256;
@@ -191,7 +191,7 @@ fn test_terra_wasm_send() {
         .with_public_key_type(PublicKeyType::Secp256k1)
         .with_hrp("terra");
 
-    let encoded_msg = base64::encode(r#"{"some_message":{}}"#.as_bytes(), false);
+    let encoded_msg = base64::encode(r#"{"some_message":{}}"#.as_bytes(), STANDARD);
     assert_eq!(encoded_msg, "eyJzb21lX21lc3NhZ2UiOnt9fQ==");
 
     let send = Proto::mod_Message::WasmTerraExecuteContractSend {

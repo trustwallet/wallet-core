@@ -2,7 +2,7 @@
 
 set -e
 
-if [[ `uname` == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]]; then
     export BOOST_ROOT=$(brew --prefix boost)
 fi
 

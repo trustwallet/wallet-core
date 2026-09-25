@@ -80,6 +80,35 @@ class MultiversXTests: XCTestCase {
         XCTAssertEqual(output.signature, expectedSignature)
         XCTAssertEqual(output.encoded, expectedEncoded)
     }
+
+    func testSignGenericActionWithRelayer() {
+        let privateKey = PrivateKey(data: Data(hexString: aliceSeedHex)!)!
+
+        let input = MultiversXSigningInput.with {
+            $0.genericAction = MultiversXGenericAction.with {
+                $0.accounts = MultiversXAccounts.with {
+                    $0.senderNonce = 42
+                    $0.sender = aliceBech32
+                    $0.receiver = bobBech32
+                    $0.relayer = carolBech32
+                }
+                $0.value = "1000000000000000000"
+                $0.data = ""
+                $0.version = 2
+            }
+            $0.gasPrice = 1000000000
+            $0.gasLimit = 100000
+            $0.chainID = "1"
+            $0.privateKey = privateKey.data
+        }
+
+        let output: MultiversXSigningOutput = AnySigner.sign(input: input, coin: .multiversX)
+        let expectedSignature = "f0137ce0303a33814691975598dab3b82bb91b017aa251640a48827edc48048aa0f916dd3e7915dd3be27db3304fc238a719123b6ae2285731ab24b794665003"
+        let expectedEncoded = #"{"nonce":42,"value":"1000000000000000000","receiver":"\#(bobBech32)","sender":"\#(aliceBech32)","gasPrice":1000000000,"gasLimit":100000,"chainID":"1","version":2,"signature":"\#(expectedSignature)","relayer":"\#(carolBech32)"}"#
+
+        XCTAssertEqual(output.signature, expectedSignature)
+        XCTAssertEqual(output.encoded, expectedEncoded)
+    }
     
     func testSignGenericActionUndelegate() {
         // Successfully broadcasted https://explorer.multiversx.com/transactions/3301ae5a6a77f0ab9ceb5125258f12539a113b0c6787de76a5c5867f2c515d65

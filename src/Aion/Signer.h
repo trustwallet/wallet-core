@@ -22,18 +22,18 @@ class Signer {
     Signer() = delete;
     
     /// Signs a Proto::SigningInput transaction
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
 
     /// Signs the given transaction.
-    static void sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+    static void sign(const PrivateKey& privateKey, Transaction& transaction);
 
     /// Get transaction data to be signed
-    static TW::Data signaturePreimage(const Proto::SigningInput& input) noexcept;
-    static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input) noexcept;
+    static TW::Data signaturePreimage(const Proto::SigningInput& input);
+    static Proto::SigningOutput compile(const Data& signature, const PublicKey& publicKey, const Proto::SigningInput& input);
 
   private:
     /// Builds an Aion transaction from the given `Proto::SigningInput`.
-    static Transaction buildTransaction(const Proto::SigningInput& input) noexcept;
+    static Transaction buildTransaction(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Aion

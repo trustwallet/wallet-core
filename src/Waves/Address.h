@@ -22,7 +22,9 @@ class Address : public Base58Address<26> {
     static const signed char testnet = 'T';
 
     template <typename T>
-    static Data secureHash(const T &data);
+    static Data secureHash(const T &data) {
+        return Hash::keccak256(Hash::blake2b(data, 32));
+    }
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);

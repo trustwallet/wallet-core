@@ -1,7 +1,7 @@
 <%  less = locals[:less] -%>
 <%  equal = locals[:equal] -%>
 <%  compareMethod = KotlinJniHelper.compareMethod(entity) -%>
-<%= render('kotlin_jni/method_prototype.erb', { method: compareMethod }) %> {
+<%= render('kotlin_jni/method_prototype.erb', { method: compareMethod, maybe_unused: false }) %> {
 <%= render('kotlin_jni/instance_access.erb', { entity: entity }) %>
 <%= render('kotlin_jni/parameter_access.erb', { method: compareMethod }) -%>
 <%  if entity.struct? -%>

@@ -4,7 +4,7 @@
 
 use serde::{Deserialize, Serialize, Serializer};
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::Binance::Proto::{self, mod_SigningInput::OneOforder_oneof as BinanceMessageProto};
 
@@ -14,7 +14,7 @@ pub mod side_chain_delegate;
 pub mod time_lock_order;
 pub mod token_order;
 pub mod trade_order;
-pub mod tranfer_out_order;
+pub mod transfer_out_order;
 
 pub trait BinanceMessage {
     fn to_amino_protobuf(&self) -> SigningResult<Data>;
@@ -29,7 +29,7 @@ pub trait TWBinanceProto: Sized {
     fn to_tw_proto(&self) -> Self::Proto<'static>;
 }
 
-/// Please note that some of the fields are typped such as `SideDelegateOrder`.
+/// Please note that some of the fields are typed such as `SideDelegateOrder`.
 #[derive(Deserialize, Serialize)]
 #[serde(untagged)]
 pub enum BinanceMessageEnum {
@@ -41,6 +41,7 @@ pub enum BinanceMessageEnum {
     SideDelegateOrder(side_chain_delegate::SideDelegateOrder),
     SideRedelegateOrder(side_chain_delegate::SideRedelegateOrder),
     SideUndelegateOrder(side_chain_delegate::SideUndelegateOrder),
+    StakeMigrationOrder(side_chain_delegate::StakeMigrationOrder),
     TimeLockOrder(time_lock_order::TimeLockOrder),
     TimeRelockOrder(time_lock_order::TimeRelockOrder),
     TimeUnlockOrder(time_lock_order::TimeUnlockOrder),
@@ -51,7 +52,7 @@ pub enum BinanceMessageEnum {
     TokenBurnOrder(token_order::TokenBurnOrder),
     NewTradeOrder(trade_order::NewTradeOrder),
     CancelTradeOrder(trade_order::CancelTradeOrder),
-    TransferOutOrder(tranfer_out_order::TransferOutOrder),
+    TransferOutOrder(transfer_out_order::TransferOutOrder),
 }
 
 impl TWBinanceProto for BinanceMessageEnum {
@@ -106,7 +107,7 @@ impl TWBinanceProto for BinanceMessageEnum {
                     .map(BinanceMessageEnum::TokenBurnOrder)
             },
             BinanceMessageProto::transfer_out_order(ref order) => {
-                tranfer_out_order::TransferOutOrder::from_tw_proto(coin, order)
+                transfer_out_order::TransferOutOrder::from_tw_proto(coin, order)
                     .map(BinanceMessageEnum::TransferOutOrder)
             },
             BinanceMessageProto::side_delegate_order(ref order) => {
@@ -133,7 +134,11 @@ impl TWBinanceProto for BinanceMessageEnum {
                 time_lock_order::TimeUnlockOrder::from_tw_proto(coin, order)
                     .map(BinanceMessageEnum::TimeUnlockOrder)
             },
-            BinanceMessageProto::None => Err(SigningError(SigningErrorType::Error_invalid_params)),
+            BinanceMessageProto::side_stake_migration_order(ref order) => {
+                side_chain_delegate::StakeMigrationOrder::from_tw_proto(coin, order)
+                    .map(BinanceMessageEnum::StakeMigrationOrder)
+            },
+            BinanceMessageProto::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }
     }
 
@@ -158,6 +163,9 @@ impl TWBinanceProto for BinanceMessageEnum {
             },
             BinanceMessageEnum::SideUndelegateOrder(m) => {
                 BinanceMessageProto::side_undelegate_order(m.to_tw_proto())
+            },
+            BinanceMessageEnum::StakeMigrationOrder(m) => {
+                BinanceMessageProto::side_stake_migration_order(m.to_tw_proto())
             },
             BinanceMessageEnum::TimeLockOrder(m) => {
                 BinanceMessageProto::time_lock_order(m.to_tw_proto())
@@ -207,6 +215,7 @@ impl<'a> AsRef<dyn BinanceMessage + 'a> for BinanceMessageEnum {
             BinanceMessageEnum::SideDelegateOrder(m) => m,
             BinanceMessageEnum::SideRedelegateOrder(m) => m,
             BinanceMessageEnum::SideUndelegateOrder(m) => m,
+            BinanceMessageEnum::StakeMigrationOrder(m) => m,
             BinanceMessageEnum::TimeLockOrder(m) => m,
             BinanceMessageEnum::TimeRelockOrder(m) => m,
             BinanceMessageEnum::TimeUnlockOrder(m) => m,

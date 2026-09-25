@@ -15,7 +15,7 @@ using namespace TW;
 namespace TW::Algorand::tests {
 
 TEST(TWAnySignerAlgorand, SignAssetNFTTransfer) {
-    // Successfully broadcasted: https://algoexplorer.io/tx/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
+    // Successfully broadcasted: https://allo.info/tx/FFLUH4QKZHG744RIQ2AZNWZUSIIH262KZ4MEWSY4RXMWN5NMOOJA
     auto privateKey = parse_hex("dc6051ffc7b3ec601bde432f6dea34d40fe3855e4181afa0f0524c42194a6da7");
     Data note = Base64::decode("VFdUIFRPIFRIRSBNT09O");
     auto genesisHash = Base64::decode("wGHE2Pwdvd7S12BL5FaOP20EGYesN73ktiC1qzkkit8=");

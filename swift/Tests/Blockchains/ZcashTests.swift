@@ -72,6 +72,61 @@ class ZcashTests: XCTestCase {
         XCTAssertEqual(output.error, TW_Common_Proto_SigningError.ok)
         XCTAssertEqual(output.encoded.hexString, "0400008085202f890153685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a000000006b483045022100ca0be9f37a4975432a52bb65b25e483f6f93d577955290bb7fb0060a93bfc92002203e0627dff004d3c72a957dc9f8e4e0e696e69d125e4d8e275d119001924d3b48012103b243171fae5516d1dc15f9178cfcc5fdc67b0a883055c117b01ba8af29b953f6ffffffff0140720700000000001976a91449964a736f3713d64283fd0018626ba50091c7e988ac00000000000000000000000000000000000000")
     }
+    
+    func testSignV2() throws {
+        // Successfully broadcasted: https://explorer.zcha.in/transactions/ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256
+        let privateKeyData = Data(hexString: "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559")!
+        let dustAmount = 546 as Int64
+        let txId = Data.reverse(hexString: "3a19dd44032dfed61bfca5ba5751aab8a107b30609cbd5d70dc5ef09885b6853")
+        let sapplingBranchId = Data(hexString: "bb09b876")!
+
+        let privateKey = PrivateKey(data: privateKeyData)!
+
+        let utxo0 = BitcoinV2Input.with {
+            $0.outPoint = UtxoOutPoint.with {
+                $0.hash = txId
+                $0.vout = 0
+            }
+            $0.value = 494_000
+            $0.sighashType = BitcoinSigHashType.all.rawValue
+            $0.receiverAddress = "t1gWVE2uyrET2CxSmCaBiKzmWxQdHhnvMSz"
+        }
+
+        let out0 = BitcoinV2Output.with {
+            $0.value = 488_000
+            $0.toAddress = "t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS"
+        }
+
+        let signingInput = BitcoinV2SigningInput.with {
+            $0.builder = BitcoinV2TransactionBuilder.with {
+                $0.version = .useDefault
+                $0.inputs = [utxo0]
+                $0.outputs = [out0]
+                $0.inputSelector = .useAll
+                $0.fixedDustThreshold = dustAmount
+                $0.zcashExtraData = ZcashTransactionBuilderExtraData.with {
+                    $0.branchID = sapplingBranchId
+                }
+            }
+            $0.privateKeys = [privateKeyData]
+            $0.chainInfo = BitcoinV2ChainInfo.with {
+                $0.p2PkhPrefix = 184
+                $0.p2ShPrefix = 189
+            }
+        }
+
+        let legacySigningInput = BitcoinSigningInput.with {
+            $0.signingV2 = signingInput
+            $0.coinType = CoinType.zcash.rawValue
+        }
+
+        let output: BitcoinSigningOutput = AnySigner.sign(input: legacySigningInput, coin: .zcash)
+        XCTAssertEqual(output.error, .ok)
+        let outputV2 = output.signingResultV2
+        XCTAssertEqual(outputV2.error, .ok)
+        XCTAssertEqual(outputV2.encoded.hexString, "0400008085202f890153685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a000000006b483045022100ca0be9f37a4975432a52bb65b25e483f6f93d577955290bb7fb0060a93bfc92002203e0627dff004d3c72a957dc9f8e4e0e696e69d125e4d8e275d119001924d3b48012103b243171fae5516d1dc15f9178cfcc5fdc67b0a883055c117b01ba8af29b953f6ffffffff0140720700000000001976a91449964a736f3713d64283fd0018626ba50091c7e988ac00000000000000000000000000000000000000");
+        XCTAssertEqual(outputV2.txid.hexString, "ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256")
+    }
 
     func testLockScript() {
         let script = BitcoinScript.lockScriptForAddress(address: "t1NsqaL1G2XD6xWfVmeAi9gLUVFct59zJu4", coin: .zcash)

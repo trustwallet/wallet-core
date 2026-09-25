@@ -17,6 +17,7 @@ namespace TW::Zcash {
 
 extern const std::array<byte, 4> SaplingBranchID;
 extern const std::array<byte, 4> BlossomBranchID;
+extern const std::array<byte, 4> Nu6BranchID;
 
 /// Only supports transparent transaction right now
 /// See also https://github.com/zcash/zips/blob/master/zip-0243.rst

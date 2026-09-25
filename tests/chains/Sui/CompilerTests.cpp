@@ -2,9 +2,10 @@
 //
 // Copyright © 2017 Trust Wallet.
 
-#include "Sui/Signer.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "proto/Sui.pb.h"
+#include "proto/TransactionCompiler.pb.h"
 #include "PublicKey.h"
 #include "TransactionCompiler.h"
 

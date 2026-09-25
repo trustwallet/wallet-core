@@ -8,6 +8,9 @@ external interface Js<%= entity.name %> {
 <%- entity.properties.each do |property| -%>
     fun <%= KotlinHelper.fix_name(WasmCppHelper.format_name(property.name)) %>()<%= KotlinHelper.js_return_type(property.return_type) %>
 <%- end -%>
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
+    fun delete()
+<% end -%>
 <% entity.methods.each do |method| -%>
 <%   next if method.name == "Delete" -%>
     fun <%= KotlinHelper.fix_name(WasmCppHelper.format_name(method.name)) %>(<%= KotlinHelper.js_parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.js_return_type(method.return_type) %>

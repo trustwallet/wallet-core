@@ -6,7 +6,7 @@ use crate::transaction::message::{BinanceMessageEnum, TWBinanceProto};
 use crate::transaction::UnsignedTransaction;
 use std::borrow::Cow;
 use tw_coin_entry::coin_context::CoinContext;
-use tw_coin_entry::error::{SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::*;
 use tw_proto::Binance::Proto;
 
 pub struct TxBuilder;
@@ -32,7 +32,8 @@ impl TxBuilder {
         unsigned: &UnsignedTransaction,
     ) -> SigningResult<Proto::SigningInput<'static>> {
         if unsigned.msgs.len() != 1 {
-            return Err(SigningError(SigningErrorType::Error_invalid_params));
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Expected exactly one Transaction Message");
         }
         let msg = unsigned
             .msgs

@@ -55,15 +55,22 @@ struct TransactionBuilder {
         }
 
         // Optional OP_RETURN output
-        if (plan.outputOpReturn.size() > 0) {
+        if (!plan.outputOpReturn.empty()) {
             auto lockingScriptOpReturn = Bitcoin::Script::buildOpReturnScript(plan.outputOpReturn);
-            if (lockingScriptOpReturn.bytes.size() == 0) {
+            if (lockingScriptOpReturn.bytes.empty()) {
                 return Result<Transaction, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_memo);
             }
-            tx.outputs.push_back(Bitcoin::TransactionOutput(0, lockingScriptOpReturn));
+
+            auto emplace_at = tx.outputs.end();
+            if (plan.outputOpReturnIndex.has_value()) {
+                emplace_at = tx.outputs.begin();
+                std::advance(emplace_at, plan.outputOpReturnIndex.value());
+            }
+            const int64_t amount = 0;
+            tx.outputs.emplace(emplace_at, amount, lockingScriptOpReturn);
         }
 
-        // extra outputs
+        // extra outputs (always in the end of the outputs list)
         for (auto& o : input.extraOutputs) {
             auto output = prepareOutputWithScript(o.first, o.second, input.coinType, blockHash, blockHeight);
             if (!output.has_value()) { 
@@ -71,7 +78,7 @@ struct TransactionBuilder {
             }
             tx.outputs.push_back(output.value());
         }
-        
+
         return Result<Transaction, Common::Proto::SigningError>(tx);
     }
 

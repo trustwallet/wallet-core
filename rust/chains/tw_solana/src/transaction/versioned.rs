@@ -4,13 +4,17 @@
 
 //! Source code: https://github.com/solana-labs/solana/blob/a16f982169eb197fad0eb8c58c307fb069f69d8f/sdk/program/src/message/versions/mod.rs
 
-use crate::transaction::{
-    legacy, short_vec, v0, CompiledInstruction, MessageHeader, Pubkey, Signature,
-};
+use crate::address::SolanaAddress;
+use crate::blockhash::Blockhash;
+use crate::modules::insert_instruction::InsertInstruction;
+use crate::transaction::v0::MessageAddressTableLookup;
+use crate::transaction::{legacy, short_vec, v0, CompiledInstruction, MessageHeader, Signature};
 use serde::de::{SeqAccess, Unexpected, Visitor};
 use serde::ser::SerializeTuple;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
+use tw_encoding::base64::STANDARD;
+use tw_encoding::{base64, EncodingError, EncodingResult};
 use tw_hash::{as_byte_sequence, H256};
 
 /// Bit mask that indicates whether a serialized message is versioned.
@@ -28,10 +32,21 @@ pub struct VersionedTransaction {
 }
 
 impl VersionedTransaction {
-    /// Fill the signatures up with zeroed signatures
-    /// (same number of signatures as [`VersionedTransaction::num_required_signatures`]).
-    pub fn zeroize_signatures(&mut self) {
-        self.signatures = vec![Signature::default(); self.message.num_required_signatures()];
+    pub fn unsigned(message: VersionedMessage) -> VersionedTransaction {
+        VersionedTransaction {
+            signatures: vec![Signature::default(); message.num_required_signatures()],
+            message,
+        }
+    }
+
+    pub fn from_base64(s: &str) -> EncodingResult<VersionedTransaction> {
+        let tx_bytes = base64::decode(s, STANDARD)?;
+        bincode::deserialize(&tx_bytes).map_err(|_| EncodingError::InvalidInput)
+    }
+
+    pub fn to_base64(&self) -> EncodingResult<String> {
+        let tx_bytes = bincode::serialize(self).map_err(|_| EncodingError::InvalidInput)?;
+        Ok(base64::encode(&tx_bytes, STANDARD))
     }
 }
 
@@ -50,6 +65,44 @@ pub enum VersionedMessage {
 }
 
 impl VersionedMessage {
+    pub fn header(&self) -> &MessageHeader {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.header,
+            VersionedMessage::V0(v0) => &v0.header,
+        }
+    }
+
+    pub fn account_keys(&self) -> &[SolanaAddress] {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.account_keys,
+            VersionedMessage::V0(v0) => &v0.account_keys,
+        }
+    }
+
+    pub fn signers(&self) -> impl Iterator<Item = &SolanaAddress> {
+        let signatures_count = self.num_required_signatures();
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.account_keys,
+            VersionedMessage::V0(v0) => &v0.account_keys,
+        }
+        .iter()
+        .take(signatures_count)
+    }
+
+    pub fn recent_blockhash(&self) -> Blockhash {
+        match self {
+            VersionedMessage::Legacy(legacy) => Blockhash::with_bytes(legacy.recent_blockhash),
+            VersionedMessage::V0(v0) => Blockhash::with_bytes(v0.recent_blockhash),
+        }
+    }
+
+    pub fn instructions(&self) -> &[CompiledInstruction] {
+        match self {
+            VersionedMessage::Legacy(legacy) => &legacy.instructions,
+            VersionedMessage::V0(v0) => &v0.instructions,
+        }
+    }
+
     pub fn num_required_signatures(&self) -> usize {
         match self {
             VersionedMessage::Legacy(legacy) => legacy.header.num_required_signatures as usize,
@@ -57,12 +110,12 @@ impl VersionedMessage {
         }
     }
 
-    pub fn get_account_index(&self, account_pubkey: Pubkey) -> Option<usize> {
+    pub fn get_account_index(&self, account: SolanaAddress) -> Option<usize> {
         let account_keys = match self {
             VersionedMessage::Legacy(legacy) => &legacy.account_keys,
             VersionedMessage::V0(v0) => &v0.account_keys,
         };
-        account_keys.iter().position(|pk| *pk == account_pubkey)
+        account_keys.iter().position(|pk| *pk == account)
     }
 
     pub fn set_recent_blockhash(&mut self, recent_blockhash: H256) {
@@ -94,6 +147,36 @@ impl Serialize for VersionedMessage {
     }
 }
 
+impl InsertInstruction for VersionedMessage {
+    fn address_table_lookups(&self) -> Option<&[MessageAddressTableLookup]> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.address_table_lookups(),
+            VersionedMessage::V0(v0) => v0.address_table_lookups(),
+        }
+    }
+
+    fn account_keys_mut(&mut self) -> &mut Vec<SolanaAddress> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.account_keys_mut(),
+            VersionedMessage::V0(v0) => v0.account_keys_mut(),
+        }
+    }
+
+    fn message_header_mut(&mut self) -> &mut MessageHeader {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.message_header_mut(),
+            VersionedMessage::V0(v0) => v0.message_header_mut(),
+        }
+    }
+
+    fn instructions_mut(&mut self) -> &mut Vec<CompiledInstruction> {
+        match self {
+            VersionedMessage::Legacy(legacy) => legacy.instructions_mut(),
+            VersionedMessage::V0(v0) => v0.instructions_mut(),
+        }
+    }
+}
+
 enum MessagePrefix {
     Legacy(u8),
     Versioned(u8),
@@ -106,7 +189,7 @@ impl<'de> Deserialize<'de> for MessagePrefix {
     {
         struct PrefixVisitor;
 
-        impl<'de> Visitor<'de> for PrefixVisitor {
+        impl Visitor<'_> for PrefixVisitor {
             type Value = MessagePrefix;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -165,7 +248,7 @@ impl<'de> Deserialize<'de> for VersionedMessage {
                             pub num_readonly_signed_accounts: u8,
                             pub num_readonly_unsigned_accounts: u8,
                             #[serde(with = "short_vec")]
-                            pub account_keys: Vec<Pubkey>,
+                            pub account_keys: Vec<SolanaAddress>,
                             #[serde(with = "as_byte_sequence")]
                             pub recent_blockhash: H256,
                             #[serde(with = "short_vec")]

@@ -10,8 +10,8 @@ MichelsonValue::MichelsonVariant FA12ParameterToMichelson(const Proto::FA12Param
     MichelsonValue::MichelsonVariant address = StringValue{.string = data.from()};
     MichelsonValue::MichelsonVariant to = StringValue{.string = data.to()};
     MichelsonValue::MichelsonVariant amount = IntValue{._int = data.value()};
-    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{to}, {amount}}};
-    return PrimValue{.prim = "Pair", .args{{address}, {primTransferInfos}}};
+    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{to}, {amount}}, .anots{}};
+    return PrimValue{.prim = "Pair", .args{{address}, {primTransferInfos}}, .anots{}};
 }
 
 MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const Proto::FA2Parameters& data) {
@@ -20,10 +20,10 @@ MichelsonValue::MichelsonVariant FA2ParameterToMichelson(const Proto::FA2Paramet
     auto& txTransferInfos = txObj.txs(0);
     MichelsonValue::MichelsonVariant tokenId = IntValue{._int = txTransferInfos.token_id()};
     MichelsonValue::MichelsonVariant amount = IntValue{._int = txTransferInfos.amount()};
-    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{tokenId}, {amount}}};
+    auto primTransferInfos = PrimValue{.prim = "Pair", .args{{tokenId}, {amount}}, .anots{}};
     MichelsonValue::MichelsonVariant to = StringValue{.string = txTransferInfos.to()};
-    MichelsonValue::MichelsonVariant txs = MichelsonValue::MichelsonArray{PrimValue{.prim = "Pair", .args{{to}, {primTransferInfos}}}};
-    auto primTxs = PrimValue{.prim = "Pair", .args{{from}, {txs}}};
+    MichelsonValue::MichelsonVariant txs = MichelsonValue::MichelsonArray{PrimValue{.prim = "Pair", .args{{to}, {primTransferInfos}}, .anots{}}};
+    auto primTxs = PrimValue{.prim = "Pair", .args{{from}, {txs}}, .anots{}};
     return MichelsonValue::MichelsonArray{primTxs};
 }
 

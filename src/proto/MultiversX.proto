@@ -92,6 +92,9 @@ message Accounts {
 
     // Guardian address
     string      guardian = 6;
+
+    // Relayer address
+    string      relayer = 7;
 }
 
 // Input data necessary to create a signed transaction.
