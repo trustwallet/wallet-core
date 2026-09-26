@@ -4,7 +4,7 @@
 
 use crate::address::SolanaAddress;
 use crate::compiler::SolanaCompiler;
-use crate::modules::offchain_message_signer::OffchainMessageSigner;
+use crate::modules::message_signer::SolanaMessageSigner;
 use crate::modules::transaction_decoder::SolanaTransactionDecoder;
 use crate::modules::transaction_util::SolanaTransactionUtil;
 use crate::modules::wallet_connect::connector::SolanaWalletConnector;
@@ -32,7 +32,7 @@ impl CoinEntry for SolanaEntry {
     // Optional modules:
     type JsonSigner = NoJsonSigner;
     type PlanBuilder = NoPlanBuilder;
-    type MessageSigner = OffchainMessageSigner;
+    type MessageSigner = SolanaMessageSigner;
     type WalletConnector = SolanaWalletConnector;
     type TransactionDecoder = SolanaTransactionDecoder;
     type TransactionUtil = SolanaTransactionUtil;
@@ -90,7 +90,7 @@ impl CoinEntry for SolanaEntry {
 
     #[inline]
     fn message_signer(&self) -> Option<Self::MessageSigner> {
-        Some(OffchainMessageSigner)
+        Some(SolanaMessageSigner)
     }
 
     #[inline]

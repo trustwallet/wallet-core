@@ -10,11 +10,6 @@ on:
   issue_comment:
     types: [ created, edited, deleted ]
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
-
 env:
   BC_SIGNOFF_MIN_CHARS: 60
 
@@ -22,6 +17,13 @@ jobs:
   scan-and-flag:
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    permissions:
+      # scan-and-flag only reads the tree and posts a comment on the PR. Commenting on a
+      # pull request needs pull-requests: write — issues: write covers real issues only,
+      # and the API answers 403 for a PR without it.
+      contents: read
+      issues: write
+      pull-requests: write
     outputs:
       flags: ${{ steps.scan.outputs.flags }}
     steps:
@@ -175,6 +177,12 @@ jobs:
   verify-bc-check-comment:
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      # verify-bc-check-comment only reads: pulls.get, issues.listComments,
+      # repos.getCommit. It reports via core.setFailed, not via the API.
+      contents: read
+      issues: read
+      pull-requests: read
     steps:
       - name: Verify sign-off token
         uses: actions/github-script@v7

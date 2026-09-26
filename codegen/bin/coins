@@ -66,7 +66,7 @@ update_derivation_enum(coins)
 FileUtils.mkdir_p File.join('src', 'Generated')
 erbs.each do |erb|
   path = File.expand_path(erb['template'], File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
-  template = ERB.new(File.read(path), nil, '-')
+  template = ERB.new(File.read(path), trim_mode: '-')
   result = template.result(binding)
 
   path = File.join(erb['folder'], erb['file'])

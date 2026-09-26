@@ -9,6 +9,7 @@
 #include "../Data.h"
 
 #include <cassert>
+#include <stdexcept>
 
 using namespace TW;
 namespace TW::BitcoinDiamond {
@@ -126,6 +127,7 @@ Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t ind
     case Bitcoin::WITNESS_V0:
         return getSignatureHashWitnessV0(scriptCode, index, hashType, amount);
     }
+    throw std::invalid_argument("Unknown signature version");
 }
 
 /// Generates the signature hash for Witness version 0 scripts.

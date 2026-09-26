@@ -10,8 +10,8 @@ class ECashTests: XCTestCase {
     func testExtendedKeys() {
         let wallet = HDWallet.test
 
-        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .ecash, version: .xprv)
-        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ecash, version: .xpub)
+        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .ecash, version: .xprv)!
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .ecash, version: .xpub)!
 
         XCTAssertEqual(xprv, "xprv9xjBcTizebJaV61xMkuMJ89vis7saMmwFgTYeF83KwinEksJ4frk7wB4mDiKiwXDCbJmgmh6Bp1FkF8SopNZhbF3B5wyX32cuDVFZtuUDvB")
         XCTAssertEqual(xpub, "xpub6BiY1yFtUxrsha6RTnSMfG6fGtxMypVncuP9SdXetHFm7ZCScDAzfjVYcW32bkNCGJ5DTqawAHSTbJdTBL8wVxqUDGpxnRtukrhhBoS7Wy7")

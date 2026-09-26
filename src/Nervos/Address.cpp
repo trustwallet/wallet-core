@@ -59,7 +59,16 @@ bool Address::decode(const std::string& string, const char* hrp) noexcept {
         codeHashIndex = -1;
         codeHash = Data(decodedPayload.begin() + codeHashOffset,
                         decodedPayload.begin() + codeHashOffset + codeHashSize);
-        hashType = HashType(decodedPayload[hashTypeOffset]);
+        switch (decodedPayload[hashTypeOffset]) {
+        case HashType::Data0:
+        case HashType::Type1:
+        case HashType::Data1:
+        case HashType::Data2:
+            hashType = HashType(decodedPayload[hashTypeOffset]);
+            break;
+        default:
+            return false;
+        }
         args = Data(decodedPayload.begin() + argsOffset, decodedPayload.end());
         break;
     }
@@ -159,17 +168,7 @@ std::string Address::string() const {
 }
 
 std::string Address::hashTypeString() const {
-    switch (hashType) {
-    case HashType::Data0: {
-        return HashTypeString[0];
-    }
-    case HashType::Type1: {
-        return HashTypeString[1];
-    }
-    case HashType::Data1: {
-        return HashTypeString[2];
-    }
-    }
+    return Nervos::hashTypeString(hashType);
 }
 
 } // namespace TW::Nervos

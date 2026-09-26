@@ -7,7 +7,7 @@ import { assert } from "chai";
 import { KeyStore } from "../dist";
 import { ChromeStorageMock } from "./mock";
 
-describe("KeyStore", async () => {
+describe("KeyStore", () => {
   it("test ExtensionStorage", async () => {
     const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;
     const mnemonic = globalThis.mnemonic as string;

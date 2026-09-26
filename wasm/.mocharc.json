@@ -1,7 +1,10 @@
 {
   "require": "ts-node/register",
-  "extensions": ["ts", "tsx"],
-  "spec":[
+  "extension": [
+    "ts",
+    "tsx"
+  ],
+  "spec": [
     "tests/*.test.ts",
     "tests/**/*.test.*"
   ]

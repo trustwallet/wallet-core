@@ -88,7 +88,7 @@ class PolkadotTests: XCTestCase {
 
     func testSigningBondAndNominate() {
         // real key in 1p test
-        let key = HDWallet.test.getKeyForCoin(coin: .polkadot)
+        let key = HDWallet.test.getKeyForCoin(coin: .polkadot)!
 
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash
@@ -116,7 +116,7 @@ class PolkadotTests: XCTestCase {
 
     func testSigningBondExtra() {
         // real key in 1p test
-        let key = HDWallet.test.getKeyForCoin(coin: .polkadot)
+        let key = HDWallet.test.getKeyForCoin(coin: .polkadot)!
 
         let input = PolkadotSigningInput.with {
             $0.genesisHash = genesisHash

@@ -5100,7 +5100,7 @@
     "chainId": "4663",
     "addressHasher": "keccak256",
     "explorer": {
-      "url": "https://robinhoodchain.blockscout.com",
+      "url": "https://robin.etherscan.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9",
@@ -5110,6 +5110,35 @@
       "url": "https://robinhood.com",
       "rpc": "https://rpc.mainnet.chain.robinhood.com",
       "documentation": "https://docs.robinhood.com/chain/"
+    }
+  },
+  {
+    "id": "arc",
+    "name": "Arc",
+    "displayName": "Arc",
+    "nativeTokenName": "USDC",
+    "coinId": 10005042,
+    "symbol": "USDC",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "derivation": [
+      {
+        "path": "m/44'/60'/0'/0/0"
+      }
+    ],
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "chainId": "5042",
+    "addressHasher": "keccak256",
+    "explorer": {
+      "url": "https://explorer.arc.io",
+      "txPath": "/tx/",
+      "accountPath": "/address/"
+    },
+    "info": {
+      "url": "https://www.arc.io",
+      "rpc": "",
+      "documentation": "https://docs.arc.io"
     }
   }
 ]

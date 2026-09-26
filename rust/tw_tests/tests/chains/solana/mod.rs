@@ -6,6 +6,7 @@ mod solana_address;
 mod solana_address_ffi;
 mod solana_compile;
 mod solana_message_sign;
+mod solana_offchain_message_sign;
 mod solana_sign;
 mod solana_transaction;
 mod solana_transaction_ffi;

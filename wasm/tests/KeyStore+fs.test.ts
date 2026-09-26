@@ -7,7 +7,7 @@ import { assert } from "chai";
 import * as fs from "fs";
 import { KeyStore } from "../dist";
 
-describe("KeyStore", async () => {
+describe("KeyStore", () => {
   it("test FileSystemStorage", async () => {
     const { CoinType, HexCoding, StoredKeyEncryption } = globalThis.core;
     const mnemonic = globalThis.mnemonic as string;
