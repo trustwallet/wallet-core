@@ -80,7 +80,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
     }
 
     pub fn sign_psbt(
-        _coin: &dyn CoinContext,
+        coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<Proto::SigningOutput<'static>> {
@@ -88,7 +88,7 @@ impl<Context: BitcoinSigningContext> BitcoinSigner<Context> {
             mut psbt,
             unsigned_tx,
             ..
-        } = Context::PsbtRequestHandler::parse_request(input, psbt_input)?;
+        } = Context::PsbtRequestHandler::parse_request(coin, input, psbt_input)?;
 
         let fee = unsigned_tx.fee()?;
 
