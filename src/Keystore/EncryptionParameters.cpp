@@ -102,10 +102,21 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         throw std::invalid_argument(ss.str());
     }
 
+    // `desiredKeyLength` sizes the buffer that the AES key schedule and `computeMAC` read with fixed
+    // offsets of up to 32 bytes. It is a public field and can bypass `validate()`, so it is enforced
+    // here, at the point of allocation, independently of the parse-time check.
+    if (scryptParams.desiredKeyLength != ScryptParameters::defaultDesiredKeyLength) {
+        throw std::invalid_argument("Invalid scrypt params: dklen must be 32");
+    }
+
     auto derivedKey = Data(scryptParams.desiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
-           scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
-           scryptParams.desiredKeyLength);
+    // On failure scrypt returns non-zero and leaves `derivedKey` untouched, i.e. all zeros.
+    // Proceeding would encrypt the payload under an all-zero key.
+    if (scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
+               scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
+               scryptParams.desiredKeyLength) != 0) {
+        throw std::runtime_error("scrypt key derivation failed");
+    }
 
     aes_encrypt_ctx ctx;
     auto result = 0;
@@ -159,9 +170,11 @@ Data EncryptedPayload::decrypt(const Data& password) const {
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
         derivedKey.resize(scryptParams->defaultDesiredKeyLength);
-        scrypt(password.data(), password.size(), scryptParams->salt.data(),
-               scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
-               scryptParams->defaultDesiredKeyLength);
+        if (scrypt(password.data(), password.size(), scryptParams->salt.data(),
+                   scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
+                   scryptParams->defaultDesiredKeyLength) != 0) {
+            throw DecryptionError::derivationFailed;
+        }
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
         derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);

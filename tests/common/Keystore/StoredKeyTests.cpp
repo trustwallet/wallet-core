@@ -1125,4 +1125,53 @@ TEST(StoredKey, ParseMissingFields) {
     }
 }
 
+
+TEST(StoredKey, EncryptRejectsNonDefaultDkLen) {
+    // `ScryptParameters::desiredKeyLength` is a public field, so it can hold a value that never
+    // passed `validate()`. The encrypting constructor sizes `derivedKey` from it and then hands the
+    // buffer to the AES key schedule and `computeMAC`, both of which read fixed offsets of up to
+    // 32 bytes. Anything but 32 must be refused before the allocation. On the unfixed code this
+    // loop is a heap-buffer-overflow under ASAN (and a null read for dkLen == 0).
+    const auto plaintext = TW::data(string("secret"));
+    const vector<TWStoredKeyEncryption> ciphers = {
+        TWStoredKeyEncryptionAes128Ctr, TWStoredKeyEncryptionAes192Ctr, TWStoredKeyEncryptionAes256Ctr};
+    // Includes lengths that would NOT overflow for a given cipher (16 for aes-128, 24 for aes-192)
+    // and lengths above 32, to pin the rule as "exactly 32", not merely "at least keylen".
+    const vector<size_t> badLengths = {0, 1, 15, 16, 24, 31, 33, 64};
+
+    for (const auto cipher : ciphers) {
+        const auto cipherParams = AESParameters::AESParametersFromEncryption(cipher);
+        for (const auto dkLen : badLengths) {
+            SCOPED_TRACE("cipher=" + to_string(static_cast<int>(cipher)) + " dkLen=" + to_string(dkLen));
+            auto scryptParams = ScryptParameters::minimal();
+            scryptParams.desiredKeyLength = dkLen; // bypasses validate()
+            EXPECT_THROW({ EncryptedPayload p(gPassword, plaintext, cipherParams, scryptParams); },
+                         std::invalid_argument);
+        }
+
+        // The default length is still accepted and round-trips.
+        const auto payload = EncryptedPayload(gPassword, plaintext, cipherParams, ScryptParameters::minimal());
+        EXPECT_EQ(payload.decrypt(gPassword), plaintext);
+    }
+}
+
+TEST(StoredKey, FixEncryptionRejectsNonDefaultDkLen) {
+    // End-to-end regression for the reported path: a keystore declaring `dklen: 1` with a short
+    // salt, imported from JSON and then passed to `fixEncryption`. `decrypt()` never reads `dklen`,
+    // so mutating the field on a valid fixture keeps its MAC valid and the payload decryptable;
+    // `shouldFix()` then triggers on the short salt and re-encryption reaches the guarded
+    // constructor. On the unfixed code this is the out-of-bounds read; now it must throw, and the
+    // two-phase `fixEncryption` must leave the original payload untouched.
+    auto json = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+    json["crypto"]["kdfparams"]["dklen"] = 1;
+
+    auto key = StoredKey::createWithJson(json);
+    ASSERT_TRUE(key.payload.params.shouldFix());
+    ASSERT_NO_THROW(key.payload.decrypt(gPassword)); // MAC still valid: decrypt ignores dklen
+    const auto jsonBefore = key.json();
+
+    EXPECT_THROW(key.fixEncryption(gPassword), std::invalid_argument);
+    EXPECT_EQ(key.json(), jsonBefore);
+}
+
 } // namespace TW::Keystore
