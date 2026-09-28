@@ -11,6 +11,10 @@
 #include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/scrypt.h>
 #include <cassert>
+#include <cerrno>
+#include <sstream>
+#include <stdexcept>
+#include <system_error>
 
 using namespace TW;
 
@@ -102,10 +106,34 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         throw std::invalid_argument(ss.str());
     }
 
-    auto derivedKey = Data(scryptParams.desiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
-           scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
-           scryptParams.desiredKeyLength);
+    // The `ScryptParameters` fields are public, so a caller can pass values that never went through
+    // `validate()`: only the value constructor and the JSON constructor enforce it, a plain copy or
+    // assignment does not. Re-validate here, before the derived-key buffer is allocated. This is
+    // what refuses a `desiredKeyLength` other than 32, which used to undersize the buffer that the
+    // AES key schedule and `computeMAC` read with fixed offsets of up to 32 bytes, and it reports a
+    // bad `n`, `r` or `p` as an invalid argument instead of letting it reach scrypt(), where the
+    // same failure would be indistinguishable from an allocation failure.
+    if (const auto error = scryptParams.validate(); error.has_value()) {
+        std::stringstream ss;
+        ss << "Invalid scrypt params: " << toString(*error);
+        throw std::invalid_argument(ss.str());
+    }
+
+    // Derive exactly `defaultDesiredKeyLength` bytes, the same constant `decrypt()` uses, so that the
+    // buffer size never depends on caller-controlled state.
+    auto derivedKey = Data(ScryptParameters::defaultDesiredKeyLength);
+    // scrypt() returns non-zero (with errno set) on a parameter or allocation failure, leaving the
+    // buffer all zeros; proceeding would encrypt the payload under an all-zero key. On one late path
+    // (munmap failing after derivation) the buffer already holds the real key, so wipe it either way
+    // before the throw frees it. Parameters were validated above, so what remains is a resource
+    // failure; it is thrown as std::system_error carrying errno.
+    if (scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
+               scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
+               ScryptParameters::defaultDesiredKeyLength) != 0) {
+        const auto scryptErrno = errno;
+        memzero(derivedKey.data(), derivedKey.size());
+        throw std::system_error(scryptErrno, std::generic_category(), "scrypt key derivation failed");
+    }
 
     aes_encrypt_ctx ctx;
     auto result = 0;
@@ -158,16 +186,21 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     auto mac = Data();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
-        derivedKey.resize(scryptParams->defaultDesiredKeyLength);
-        scrypt(password.data(), password.size(), scryptParams->salt.data(),
-               scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
-               scryptParams->defaultDesiredKeyLength);
+        derivedKey.resize(ScryptParameters::defaultDesiredKeyLength);
+        if (scrypt(password.data(), password.size(), scryptParams->salt.data(),
+                   scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
+                   ScryptParameters::defaultDesiredKeyLength) != 0) {
+            // Usually nothing was derived, but on one late path (munmap failing after derivation)
+            // the buffer already holds the real key. Wipe it either way before the throw frees it.
+            memzero(derivedKey.data(), derivedKey.size());
+            throw DecryptionError::derivationFailed;
+        }
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else if (auto* pbkdf2Params = std::get_if<PBKDF2Parameters>(&params.kdfParams); pbkdf2Params) {
-        derivedKey.resize(pbkdf2Params->defaultDesiredKeyLength);
+        derivedKey.resize(PBKDF2Parameters::defaultDesiredKeyLength);
         pbkdf2_hmac_sha256(password.data(), static_cast<int>(password.size()), pbkdf2Params->salt.data(),
                            static_cast<int>(pbkdf2Params->salt.size()), pbkdf2Params->iterations, derivedKey.data(),
-                           pbkdf2Params->defaultDesiredKeyLength);
+                           PBKDF2Parameters::defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
     } else {
         throw DecryptionError::unsupportedKDF;

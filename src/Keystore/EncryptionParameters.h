@@ -65,6 +65,7 @@ enum class DecryptionError {
     invalidKeyFile,
     invalidCipher,
     invalidPassword,
+    derivationFailed,
 };
 
 /// An encrypted payload data
