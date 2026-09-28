@@ -1177,7 +1177,28 @@ TEST(StoredKey, ValidateScryptMemoryCap) {
     expectValidationError(2, 1, 33554431, ScryptValidationError::scryptMemoryTooLarge);
 
     EXPECT_EQ(toString(ScryptValidationError::scryptMemoryTooLarge),
-              "Parameters would require too much memory (128 * r * (n + p) exceeds the limit)");
+              "Parameters would require too much scrypt memory (V + B + XY exceeds the limit)");
+}
+
+TEST(StoredKey, ValidateScryptWorkCap) {
+    // CPU time is proportional to n * r * p; the memory cap does not bound it because p multiplies
+    // the work while adding only 128*r bytes each. Cap: 16x the Standard preset (2^21 -> 2^25).
+    EXPECT_EQ(ScryptParameters::maxScryptWork, 1ull << 25);
+    EXPECT_FALSE(validationErrorOf(1u << 18, 8, 1).has_value()); // Standard, 2^21
+    EXPECT_FALSE(validationErrorOf(1u << 18, 1, 8).has_value()); // legacy geth shape, also 2^21
+
+    // Boundary on the p axis (the N axis at r=8 hits the memory cap first): exactly 2^25 passes,
+    // one more p is rejected. Both are ~256 MiB, so memory is not what decides here.
+    EXPECT_FALSE(validationErrorOf(1u << 18, 8, 16).has_value());
+    expectValidationError(1u << 18, 8, 17, ScryptValidationError::scryptWorkTooLarge);
+
+    // The case from review: passes 19r, passes the memory cap at ~508 MiB, ~500,000x Standard.
+    expectValidationError(1u << 18, 1, 3900000, ScryptValidationError::scryptWorkTooLarge);
+    // And the p-heavy shape just under the memory cap: ~1,000,000x Standard.
+    expectValidationError(1u << 20, 2, 1048573, ScryptValidationError::scryptWorkTooLarge);
+
+    EXPECT_EQ(toString(ScryptValidationError::scryptWorkTooLarge),
+              "Parameters would require too much CPU time (n * r * p exceeds the limit)");
 }
 
 TEST(StoredKey, ParseRejectsExcessiveScryptParams) {
@@ -1186,7 +1207,8 @@ TEST(StoredKey, ParseRejectsExcessiveScryptParams) {
     struct Params { uint32_t n, r, p; const char* why; };
     for (const auto& c : {Params{1u << 19, 1, 8, "log2(n) >= 19r"},
                           Params{1u << 21, 8, 1, "2 GiB via N"},
-                          Params{2, 1, 33554431, "4 GiB via p"}}) {
+                          Params{2, 1, 33554431, "4 GiB via p"},
+                          Params{1u << 18, 1, 3900000, "~500,000x Standard CPU, under the memory cap"}}) {
         SCOPED_TRACE(c.why);
         auto j = baseJson;
         j["crypto"]["kdfparams"]["n"] = c.n;

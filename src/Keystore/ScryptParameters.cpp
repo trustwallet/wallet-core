@@ -38,7 +38,9 @@ std::string toString(const ScryptValidationError error) {
     case ScryptValidationError::invalidCostFactorForR:
             return "Cost factor n is too large for block size r (log2(n) must be less than 19 * r)";
     case ScryptValidationError::scryptMemoryTooLarge:
-            return "Parameters would require too much memory (128 * r * (n + p) exceeds the limit)";
+            return "Parameters would require too much scrypt memory (V + B + XY exceeds the limit)";
+    case ScryptValidationError::scryptWorkTooLarge:
+            return "Parameters would require too much CPU time (n * r * p exceeds the limit)";
     default:
             return "Unknown error";
     }
@@ -111,6 +113,14 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     const uint64_t scryptMemory = 128 * r64 * n64 + 128 * r64 * p64 + 256 * r64 + 64;
     if (scryptMemory > maxScryptMemory) {
         return ScryptValidationError::scryptMemoryTooLarge;
+    }
+
+    // The memory cap does not bound CPU: scrypt's work is proportional to n * r * p (smix runs p
+    // times, each 2n block-mixes of r blocks), while p adds only 128*r bytes each. n=262144, r=1,
+    // p=3900000 passes every check above at ~508 MiB yet costs ~500,000x the Standard preset.
+    // r*p < 2^30 and n < 2^32 here, so the product fits in uint64_t.
+    if (n64 * r64 * p64 > maxScryptWork) {
+        return ScryptValidationError::scryptWorkTooLarge;
     }
     return {};
 }
