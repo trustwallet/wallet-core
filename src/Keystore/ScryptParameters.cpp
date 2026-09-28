@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "ScryptParameters.h"
+#include "JsonParsing.h"
 
 #include <TrezorCrypto/rand.h>
 #include <limits>
@@ -24,19 +25,7 @@ Data randomSalt() {
 
 namespace {
 
-/// Reads a scrypt parameter that must be a JSON unsigned integer fitting in `uint32_t`.
-/// Floats (`16384.0`), negatives and non-numeric values are rejected outright, and nothing is ever
-/// narrowed from a floating type, so no out-of-range conversion can occur.
-uint32_t parseU32(const nlohmann::json& j, const char* name) {
-    if (!j.is_number_unsigned()) {
-        throw std::invalid_argument(std::string("Invalid scrypt parameters: ") + name + " must be an unsigned integer");
-    }
-    const auto value = j.get<std::uint64_t>();
-    if (value > std::numeric_limits<uint32_t>::max()) {
-        throw std::invalid_argument(std::string("Invalid scrypt parameters: ") + name + " is out of range");
-    }
-    return static_cast<uint32_t>(value);
-}
+const auto* const kErrorPrefix = "Invalid scrypt parameters: ";
 
 } // namespace
 
@@ -156,22 +145,18 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
         salt = res.payload();
     }
 
-    // `dklen` is checked for format only, since the derived length is fixed (see `validate()`).
-    // It must be the unsigned integer 32. Floats (`32.0`, `32.7`), negatives and non-numeric values
-    // are all rejected, and nothing is ever cast from a float, which would be UB when out of range.
-    const auto& dkLen = json[CodingKeys::SP::desiredKeyLength];
-    if (!dkLen.is_number_unsigned() || dkLen.get<std::uint64_t>() != static_cast<std::uint64_t>(defaultDesiredKeyLength)) {
-        throw std::invalid_argument("Invalid scrypt parameters: dklen must be 32");
-    }
-    desiredKeyLength = defaultDesiredKeyLength;
-    n = parseU32(json[CodingKeys::SP::n], "n");
-    p = parseU32(json[CodingKeys::SP::p], "p");
-    r = parseU32(json[CodingKeys::SP::r], "r");
+    // Each field must be a JSON integer: floats (`32.0`, `16384.0`), negatives and non-numeric values
+    // are rejected, and nothing is ever cast from a float, which would be UB when out of range.
+    // `dklen` is only read here; `validate()` below is the single place that requires it to be 32.
+    desiredKeyLength = static_cast<std::size_t>(internal::parseUnsigned(
+        json[CodingKeys::SP::desiredKeyLength], kErrorPrefix, CodingKeys::SP::desiredKeyLength,
+        std::numeric_limits<std::size_t>::max()));
+    n = internal::parseU32(json[CodingKeys::SP::n], kErrorPrefix, CodingKeys::SP::n);
+    p = internal::parseU32(json[CodingKeys::SP::p], kErrorPrefix, CodingKeys::SP::p);
+    r = internal::parseU32(json[CodingKeys::SP::r], kErrorPrefix, CodingKeys::SP::r);
 
     if (const auto error = validate()) {
-        std::stringstream ss;
-        ss << "Invalid scrypt parameters: " << toString(*error);
-        throw std::invalid_argument(ss.str());
+        throw std::invalid_argument(kErrorPrefix + toString(*error));
     }
 }
 

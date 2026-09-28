@@ -1235,9 +1235,9 @@ TEST(StoredKey, ScryptParametersCtorRejectsZeroRAndP) {
         SCOPED_TRACE("r=" + to_string(r) + " p=" + to_string(p));
         try {
             ScryptParameters params(salt, ScryptParameters::minimalN, r, p, ScryptParameters::defaultDesiredKeyLength);
-            FAIL() << "Missing expected ScryptValidationError";
-        } catch (const ScryptValidationError& error) {
-            EXPECT_EQ(error, ScryptValidationError::zeroBlockSizeOrParallelization);
+            FAIL() << "Missing expected std::invalid_argument";
+        } catch (const std::invalid_argument& e) {
+            EXPECT_NE(string(e.what()).find("must be greater than 0"), string::npos) << e.what();
         }
     }
 }
@@ -1262,11 +1262,20 @@ TEST(StoredKey, ParseRejectsNonDefaultDkLen) {
 TEST(StoredKey, ParseDkLenNumericForms) {
     const auto baseJson = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
 
-    // Only the unsigned integer 32 is accepted.
+    // Only the integer 32 is accepted, in either nlohmann storage type: `number_unsigned`, which the
+    // parser produces for a non-negative integer in a file, and `number_integer`, which an in-memory
+    // assignment from a signed literal produces.
     {
         auto j = baseJson;
         j["crypto"]["kdfparams"]["dklen"] = 32u;
         ASSERT_TRUE(j["crypto"]["kdfparams"]["dklen"].is_number_unsigned());
+        EXPECT_NO_THROW(StoredKey::createWithJson(j));
+    }
+    {
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["dklen"] = 32;
+        ASSERT_FALSE(j["crypto"]["kdfparams"]["dklen"].is_number_unsigned());
+        ASSERT_TRUE(j["crypto"]["kdfparams"]["dklen"].is_number_integer());
         EXPECT_NO_THROW(StoredKey::createWithJson(j));
     }
 
@@ -1287,14 +1296,19 @@ TEST(StoredKey, ParseDkLenNumericForms) {
 
 TEST(StoredKey, ScryptParametersCtorRejectsNonDefaultDkLen) {
     // The five-argument constructor runs validate() too; the presets pass 32 and must still work.
+    // It throws std::invalid_argument with the same message as the JSON path, not the bare
+    // ScryptValidationError enum, so a `catch (const std::exception&)` sees it.
     const auto salt = Data(32, 0x01);
     EXPECT_NO_THROW({ ScryptParameters p(salt, ScryptParameters::minimalN, ScryptParameters::defaultR, ScryptParameters::minimalP, 32); });
     for (const std::size_t dkLen : {std::size_t(1), std::size_t(16), std::size_t(64)}) {
         SCOPED_TRACE(dkLen);
-        EXPECT_THROW({ ScryptParameters p(salt, ScryptParameters::minimalN, ScryptParameters::defaultR, ScryptParameters::minimalP, dkLen); },
-                     ScryptValidationError);
+        try {
+            ScryptParameters p(salt, ScryptParameters::minimalN, ScryptParameters::defaultR, ScryptParameters::minimalP, dkLen);
+            FAIL() << "Missing expected std::invalid_argument";
+        } catch (const std::exception& e) {
+            EXPECT_EQ(string(e.what()), "Invalid scrypt parameters: Desired key length must be 32");
+        }
     }
-    EXPECT_EQ(toString(ScryptValidationError::invalidDesiredKeyLength), "Desired key length must be 32");
 }
 
 
@@ -1317,6 +1331,15 @@ TEST(StoredKey, ParseNprNumericForms) {
             j["crypto"]["kdfparams"][c.field] = value;
             EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
         }
+        // The valid value assigned from a signed literal is stored as number_integer, not
+        // number_unsigned, and must load like the parsed form.
+        {
+            SCOPED_TRACE(string(c.field) + " as signed-literal storage");
+            auto j = baseJson;
+            j["crypto"]["kdfparams"][c.field] = static_cast<int>(c.validFloat.get<double>());
+            ASSERT_FALSE(j["crypto"]["kdfparams"][c.field].is_number_unsigned());
+            EXPECT_NO_THROW(StoredKey::createWithJson(j));
+        }
     }
     // Unchanged fixture still loads, so the rejections above are due to the type/range checks alone.
     EXPECT_NO_THROW(StoredKey::createWithJson(baseJson));
@@ -1331,18 +1354,38 @@ TEST(StoredKey, ParseRejectsZeroRAndP) {
     for (const char* field : {"p", "r"}) {
         SCOPED_TRACE(field);
         auto j = baseJson;
+        // An in-memory `0` literal is stored as number_integer; the parser accepts that storage
+        // type too, so the value reaches validate() and the zero check is the one firing.
         j["crypto"]["kdfparams"][field] = 0;
-        // Route through the real parser: nlohmann stores an in-memory `int` literal as
-        // number_integer, but parses the text `0` as number_unsigned — which is what a keystore
-        // file yields, and what must reach validate() for the zero check to be the one firing.
-        j = nlohmann::json::parse(j.dump());
-        ASSERT_TRUE(j["crypto"]["kdfparams"][field].is_number_unsigned());
         try {
             StoredKey::createWithJson(j);
             FAIL() << "expected std::invalid_argument";
         } catch (const std::invalid_argument& e) {
             EXPECT_NE(string(e.what()).find("must be greater than 0"), string::npos) << e.what();
         }
+    }
+}
+
+TEST(StoredKey, ParsePbkdf2IterationsRange) {
+    // `c` used to be assigned straight into uint32_t after a type check only, so 4294967296 wrapped
+    // to zero iterations. It now goes through the shared range-checked parser, like scrypt's n/p/r.
+    const auto baseJson = StoredKey::load(testDataPath("pbkdf2-empty-salt.json")).json();
+    ASSERT_EQ(baseJson["crypto"]["kdf"], "pbkdf2");
+    ASSERT_EQ(baseJson["crypto"]["kdfparams"]["c"], 262144);
+
+    const vector<nlohmann::json> rejected = {4294967296ull, 262144.0, -1, "262144", true, nullptr};
+    for (const auto& value : rejected) {
+        SCOPED_TRACE(value.dump());
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["c"] = value;
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    // Both integer storage types load, and UINT32_MAX is the inclusive upper bound.
+    for (const nlohmann::json value : {nlohmann::json(262144), nlohmann::json(262144u), nlohmann::json(4294967295ull)}) {
+        SCOPED_TRACE(value.dump());
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["c"] = value;
+        EXPECT_NO_THROW(StoredKey::createWithJson(j));
     }
 }
 
