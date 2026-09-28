@@ -1156,22 +1156,98 @@ TEST(StoredKey, EncryptRejectsNonDefaultDkLen) {
 }
 
 TEST(StoredKey, FixEncryptionRejectsNonDefaultDkLen) {
-    // End-to-end regression for the reported path: a keystore declaring `dklen: 1` with a short
-    // salt, imported from JSON and then passed to `fixEncryption`. `decrypt()` never reads `dklen`,
-    // so mutating the field on a valid fixture keeps its MAC valid and the payload decryptable;
-    // `shouldFix()` then triggers on the short salt and re-encryption reaches the guarded
-    // constructor. On the unfixed code this is the out-of-bounds read; now it must throw, and the
-    // two-phase `fixEncryption` must leave the original payload untouched.
-    auto json = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
-    json["crypto"]["kdfparams"]["dklen"] = 1;
-
-    auto key = StoredKey::createWithJson(json);
+    // End-to-end regression for the reported path: a keystore with a short salt whose scrypt params
+    // carry `dklen: 1`, passed to `fixEncryption`. The field is set on the loaded key rather than in
+    // the JSON so that the test keeps exercising shouldFix() -> regenerateWithRecommendedParams() ->
+    // the guarded constructor once parse-time validation rejects such a file outright.
+    // `decrypt()` never reads `dklen`, so the MAC stays valid and the payload decryptable;
+    // `shouldFix()` triggers on the short salt and re-encryption reaches the guarded constructor.
+    // On the unfixed code this is the out-of-bounds read; now it must throw, and the two-phase
+    // `fixEncryption` must leave the original payload untouched.
+    auto key = StoredKey::load(testDataPath("scrypt-empty-salt.json"));
+    std::get<ScryptParameters>(key.payload.params.kdfParams).desiredKeyLength = 1;
     ASSERT_TRUE(key.payload.params.shouldFix());
     ASSERT_NO_THROW(key.payload.decrypt(gPassword)); // MAC still valid: decrypt ignores dklen
     const auto jsonBefore = key.json();
 
     EXPECT_THROW(key.fixEncryption(gPassword), std::invalid_argument);
     EXPECT_EQ(key.json(), jsonBefore);
+}
+
+TEST(StoredKey, EncryptRejectsInvalidScryptParams) {
+    // The constructor re-runs `validate()` on the (public, hence mutable) scrypt fields, so a bad
+    // `n`, `r` or `p` is reported as an invalid argument and never reaches scrypt(), where the same
+    // failure would be indistinguishable from an allocation failure.
+    const auto plaintext = TW::data(string("secret"));
+    const auto cipherParams = AESParameters::AESParametersFromEncryption(TWStoredKeyEncryptionAes128Ctr);
+
+    const auto expectInvalid = [&](const char* what, const ScryptParameters& params) {
+        SCOPED_TRACE(what);
+        EXPECT_THROW({ EncryptedPayload p(gPassword, plaintext, cipherParams, params); }, std::invalid_argument);
+    };
+
+    auto params = ScryptParameters::minimal();
+    params.n = 3;
+    expectInvalid("n not a power of two", params);
+
+    params = ScryptParameters::minimal();
+    params.n = 1;
+    expectInvalid("n below 2", params);
+
+    params = ScryptParameters::minimal();
+    params.p = 0;
+    expectInvalid("p == 0", params);
+
+    params = ScryptParameters::minimal();
+    params.r = 0;
+    expectInvalid("r == 0", params);
+
+    params = ScryptParameters::minimal();
+    params.r = 1u << 15;
+    params.p = 1u << 15;
+    expectInvalid("r * p >= 2^30", params);
+
+    // Unmodified presets still pass.
+    EXPECT_NO_THROW({ EncryptedPayload p(gPassword, plaintext, cipherParams, ScryptParameters::minimal()); });
+}
+
+TEST(StoredKey, DecryptReportsDerivationFailure) {
+    // `decrypt()` checks scrypt()'s return value. Force a failure through the public field with a
+    // cost factor scrypt rejects (EINVAL) on an otherwise valid key. Before the check, the all-zero
+    // derived key failed the MAC comparison and the failure was reported as a wrong password.
+    auto key = StoredKey::load(testDataPath("scrypt-empty-salt.json"));
+    ASSERT_NO_THROW(key.payload.decrypt(gPassword));
+    std::get<ScryptParameters>(key.payload.params.kdfParams).n = 3;
+    try {
+        key.payload.decrypt(gPassword);
+        FAIL() << "Missing expected DecryptionError::derivationFailed";
+    } catch (const DecryptionError& error) {
+        EXPECT_EQ(error, DecryptionError::derivationFailed);
+    }
+}
+
+TEST(StoredKey, ScryptParamsRejectZeroBlockSizeOrParallelization) {
+    // `validate()` divides by `p` and by `r` in its overflow check. Zero for either was an integer
+    // division by zero (SIGFPE on x86-64), reachable from keystore JSON; now it is a validation error
+    // raised before that division.
+    const auto salt = Data(32, 0x01);
+    for (const auto [r, p] : {std::pair<uint32_t, uint32_t>{0, 1}, std::pair<uint32_t, uint32_t>{8, 0}, std::pair<uint32_t, uint32_t>{0, 0}}) {
+        SCOPED_TRACE("r=" + to_string(r) + " p=" + to_string(p));
+        try {
+            ScryptParameters params(salt, ScryptParameters::minimalN, r, p, ScryptParameters::defaultDesiredKeyLength);
+            FAIL() << "Missing expected ScryptValidationError";
+        } catch (const ScryptValidationError& error) {
+            EXPECT_EQ(error, ScryptValidationError::zeroBlockSizeOrParallelization);
+        }
+    }
+
+    // The same values in a keystore file are rejected at parse time.
+    for (const auto* param : {"r", "p"}) {
+        SCOPED_TRACE(param);
+        auto json = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+        json["crypto"]["kdfparams"][param] = 0;
+        EXPECT_THROW(StoredKey::createWithJson(json), std::invalid_argument);
+    }
 }
 
 } // namespace TW::Keystore

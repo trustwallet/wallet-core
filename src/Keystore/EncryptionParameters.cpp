@@ -11,6 +11,10 @@
 #include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/scrypt.h>
 #include <cassert>
+#include <cerrno>
+#include <cstring>
+#include <sstream>
+#include <stdexcept>
 
 using namespace TW;
 
@@ -102,20 +106,38 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
         throw std::invalid_argument(ss.str());
     }
 
+    // The `ScryptParameters` fields are public, so a caller can pass values that never went through
+    // `validate()`: only the value constructor and the JSON constructor enforce it, a plain copy or
+    // assignment does not. Re-validate here so that a bad `n`, `r` or `p` is reported as an invalid
+    // argument instead of reaching scrypt(), where the same failure would be indistinguishable from
+    // an allocation failure.
+    if (const auto error = scryptParams.validate(); error.has_value()) {
+        std::stringstream ss;
+        ss << "Invalid scrypt params: " << toString(*error);
+        throw std::invalid_argument(ss.str());
+    }
+
     // `desiredKeyLength` sizes the buffer that the AES key schedule and `computeMAC` read with fixed
-    // offsets of up to 32 bytes. It is a public field and can bypass `validate()`, so it is enforced
-    // here, at the point of allocation, independently of the parse-time check.
+    // offsets of up to 32 bytes. `validate()` does not enforce it yet, so it is checked separately,
+    // before the allocation.
     if (scryptParams.desiredKeyLength != ScryptParameters::defaultDesiredKeyLength) {
         throw std::invalid_argument("Invalid scrypt params: dklen must be 32");
     }
 
-    auto derivedKey = Data(scryptParams.desiredKeyLength);
-    // On failure scrypt returns non-zero and leaves `derivedKey` untouched, i.e. all zeros.
-    // Proceeding would encrypt the payload under an all-zero key.
+    // Derive exactly `defaultDesiredKeyLength` bytes, the same constant `decrypt()` uses, so that the
+    // buffer size never depends on caller-controlled state.
+    auto derivedKey = Data(ScryptParameters::defaultDesiredKeyLength);
+    // scrypt() returns non-zero (with errno set) on a parameter or allocation failure, leaving the
+    // buffer all zeros; proceeding would encrypt the payload under an all-zero key. On one late path
+    // (munmap failing after derivation) the buffer already holds the real key, so wipe it either way
+    // before the throw frees it. Parameters were validated above, so what remains is a resource
+    // failure; errno is kept in the message to tell the cases apart.
     if (scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
                scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
-               scryptParams.desiredKeyLength) != 0) {
-        throw std::runtime_error("scrypt key derivation failed");
+               ScryptParameters::defaultDesiredKeyLength) != 0) {
+        const auto scryptErrno = errno;
+        memzero(derivedKey.data(), derivedKey.size());
+        throw std::runtime_error(std::string("scrypt key derivation failed: ") + std::strerror(scryptErrno));
     }
 
     aes_encrypt_ctx ctx;
@@ -173,6 +195,9 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         if (scrypt(password.data(), password.size(), scryptParams->salt.data(),
                    scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
                    scryptParams->defaultDesiredKeyLength) != 0) {
+            // Usually nothing was derived, but on one late path (munmap failing after derivation)
+            // the buffer already holds the real key. Wipe it either way before the throw frees it.
+            memzero(derivedKey.data(), derivedKey.size());
             throw DecryptionError::derivationFailed;
         }
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);

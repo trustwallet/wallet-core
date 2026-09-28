@@ -28,6 +28,8 @@ std::string toString(const ScryptValidationError error) {
             return "Desired key length is too large";
     case ScryptValidationError::invalidSaltLength:
         return "Salt length is invalid";
+    case ScryptValidationError::zeroBlockSizeOrParallelization:
+            return "Block size r and parallelization p must be greater than 0";
     case ScryptValidationError::blockSizeTooLarge:
             return "Block size (r * p) is too large";
     case ScryptValidationError::invalidCostFactor:
@@ -77,6 +79,11 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     // For backward compatibility with existing keys, we allow empty and less than 16 bytes salt.
     if (salt.size() > maxSaltLength) {
         return ScryptValidationError::invalidSaltLength;
+    }
+    // Must precede the overflow check below, which divides by `p` and by `r`. With either at zero
+    // that division is undefined behaviour (SIGFPE on x86-64). scrypt itself rejects r == 0 || p == 0.
+    if (r == 0 || p == 0) {
+        return ScryptValidationError::zeroBlockSizeOrParallelization;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {
         return ScryptValidationError::blockSizeTooLarge;
