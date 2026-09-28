@@ -19,6 +19,8 @@ enum class ScryptValidationError {
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,
+    invalidCostFactorForR,
+    scryptMemoryTooLarge,
 };
 
 std::string toString(ScryptValidationError error);
@@ -48,6 +50,10 @@ struct ScryptParameters {
     /// https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
     static const std::size_t minSaltLength = 16;
     static const std::size_t maxSaltLength = 1024;
+
+    /// Upper bound on scrypt's total working memory (V + B + XY) implied by a keystore's parameters.
+    /// Twice the Standard preset (256 MiB); an imported file could otherwise demand up to ~4 GiB.
+    static const std::uint64_t maxScryptMemory = 512ull * 1024 * 1024;
 
     /// Random salt.
     Data salt;

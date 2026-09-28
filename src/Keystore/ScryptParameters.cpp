@@ -5,6 +5,7 @@
 #include "ScryptParameters.h"
 
 #include <TrezorCrypto/rand.h>
+#include <bit>
 #include <limits>
 #include <sstream>
 
@@ -34,6 +35,10 @@ std::string toString(const ScryptValidationError error) {
             return "Cost factor n must be a power of 2 greater than 1";
     case ScryptValidationError::overflow:
             return "Parameters are too large and may cause overflow";
+    case ScryptValidationError::invalidCostFactorForR:
+            return "Cost factor n is too large for block size r (log2(n) must be less than 19 * r)";
+    case ScryptValidationError::scryptMemoryTooLarge:
+            return "Parameters would require too much memory (128 * r * (n + p) exceeds the limit)";
     default:
             return "Unknown error";
     }
@@ -87,6 +92,25 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     if ((r > std::numeric_limits<uint32_t>::max() / 128 / p) ||
         (n > std::numeric_limits<uint32_t>::max() / 128 / r)) {
         return ScryptValidationError::overflow;
+    }
+
+    // RFC 7914 requires N < 2^(128 * r / 8), i.e. log2(n) < 16r, for ROMix to index V uniformly.
+    // Legacy geth-style wallets (N=262144, r=1) violate the strict bound, so it is relaxed to 19r,
+    // matching tw_crypto's Rust scrypt (#4463). `n` is a power of two here, so countr_zero == log2.
+    // Placed after the overflow check, which bounds r, so `r * 19` cannot overflow.
+    const auto logN = static_cast<uint64_t>(std::countr_zero(n));
+    if (logN >= static_cast<uint64_t>(r) * 19) {
+        return ScryptValidationError::invalidCostFactorForR;
+    }
+
+    // scrypt allocates V = 128*r*N, B = 128*r*p and XY = 256*r + 64 (trezor-crypto scrypt.c).
+    // Bound the total, not V alone: n=2, r=1, p=33554431 passes every check above with a 256-byte V
+    // while B is 4 GiB. The overflow check already bounds 128*r*n and 128*r*p by UINT32_MAX each,
+    // so this uint64_t sum cannot overflow. 512 MiB is twice the Standard preset (N=262144, r=8, p=1).
+    const uint64_t r64 = r, n64 = n, p64 = p;
+    const uint64_t scryptMemory = 128 * r64 * n64 + 128 * r64 * p64 + 256 * r64 + 64;
+    if (scryptMemory > maxScryptMemory) {
+        return ScryptValidationError::scryptMemoryTooLarge;
     }
     return {};
 }
