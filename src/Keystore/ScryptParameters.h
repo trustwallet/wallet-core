@@ -14,8 +14,9 @@
 namespace TW::Keystore {
 
 enum class ScryptValidationError {
-    desiredKeyLengthTooLarge,
+    invalidDesiredKeyLength,
     invalidSaltLength,
+    zeroBlockSizeOrParallelization,
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,
@@ -52,7 +53,8 @@ struct ScryptParameters {
     /// Random salt.
     Data salt;
 
-    /// Desired key length in bytes.
+    /// Desired key length in bytes. Must equal `defaultDesiredKeyLength`: wallet-core derives exactly
+    /// that many bytes on both the encrypt and decrypt paths, and `validate()` rejects any other value.
     std::size_t desiredKeyLength = defaultDesiredKeyLength;
 
     /// CPU/Memory cost factor.
