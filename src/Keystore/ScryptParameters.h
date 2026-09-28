@@ -19,6 +19,9 @@ enum class ScryptValidationError {
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,
+    invalidCostFactorForR,
+    scryptMemoryTooLarge,
+    scryptWorkTooLarge,
 };
 
 std::string toString(ScryptValidationError error);
@@ -48,6 +51,16 @@ struct ScryptParameters {
     /// https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
     static const std::size_t minSaltLength = 16;
     static const std::size_t maxSaltLength = 1024;
+
+    /// Upper bound on scrypt's total working memory (V + B + XY) implied by a keystore's parameters.
+    /// Twice the Standard preset (256 MiB); an imported file could otherwise demand up to ~4 GiB.
+    static constexpr std::uint64_t maxScryptMemory = 512ull * 1024 * 1024;
+
+    /// Upper bound on scrypt's work factor n * r * p, to which CPU time is proportional. The memory
+    /// cap alone does not bound it: `p` multiplies the work but adds only 128*r bytes each. 16x the
+    /// Standard preset (2^21, ~1 s), so at most ~16 s to open; a crafted file could otherwise take
+    /// hours while staying under `maxScryptMemory`.
+    static constexpr std::uint64_t maxScryptWork = 16ull * standardN * defaultR * standardP;
 
     /// Random salt.
     Data salt;

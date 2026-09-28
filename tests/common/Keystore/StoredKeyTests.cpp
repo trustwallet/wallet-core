@@ -1125,4 +1125,98 @@ TEST(StoredKey, ParseMissingFields) {
     }
 }
 
+
+namespace {
+
+std::optional<ScryptValidationError> validationErrorOf(uint32_t n, uint32_t r, uint32_t p) {
+    ScryptParameters params; // random salt, dklen 32
+    params.n = n;
+    params.r = r;
+    params.p = p;
+    return params.validate();
+}
+
+void expectValidationError(uint32_t n, uint32_t r, uint32_t p, ScryptValidationError expected) {
+    const auto err = validationErrorOf(n, r, p);
+    ASSERT_TRUE(err.has_value()) << "n=" << n << " r=" << r << " p=" << p << " unexpectedly valid";
+    EXPECT_EQ(static_cast<int>(*err), static_cast<int>(expected)) << "got: " << toString(*err);
+}
+
+} // namespace
+
+TEST(StoredKey, ValidateLogNAgainstR) {
+    // RFC 7914 requires log2(n) < 16r. Legacy geth-style wallets (N=262144, r=1 → log2(n)=18) violate
+    // it, so the bound is relaxed to 19r, mirroring tw_crypto's Rust scrypt (#4463), which the C++
+    // keystore never reaches because it calls trezor-crypto directly.
+    EXPECT_FALSE(validationErrorOf(1u << 18, 1, 8).has_value()); // the legacy shape: 18 < 19
+    expectValidationError(1u << 19, 1, 8, ScryptValidationError::invalidCostFactorForR); // 19 >= 19
+    expectValidationError(1u << 20, 1, 1, ScryptValidationError::invalidCostFactorForR);
+    // At r=8 the bound is 152 and never binds; memory binds first (see ValidateScryptMemoryCap).
+
+    // The four fixtures that carry the legacy shape must keep loading.
+    for (const char* fixture : {"key.json", "key_bitcoin.json", "empty-accounts.json", "legacy-private-key.json"}) {
+        SCOPED_TRACE(fixture);
+        EXPECT_NO_THROW(StoredKey::load(testDataPath(fixture)));
+    }
+    EXPECT_EQ(toString(ScryptValidationError::invalidCostFactorForR),
+              "Cost factor n is too large for block size r (log2(n) must be less than 19 * r)");
+}
+
+TEST(StoredKey, ValidateScryptMemoryCap) {
+    // scrypt allocates V = 128*r*N, B = 128*r*p and XY = 256*r + 64; the cap is on the total.
+    // Standard preset (N=262144, r=8, p=1) is 256 MiB and must pass; livepeer.json is exactly that.
+    EXPECT_FALSE(validationErrorOf(1u << 18, 8, 1).has_value());
+    EXPECT_NO_THROW(StoredKey::load(testDataPath("livepeer.json")));
+
+    // N axis: previously admitted by the overflow check alone, at 2 GiB.
+    expectValidationError(1u << 21, 8, 1, ScryptValidationError::scryptMemoryTooLarge);
+    // 2^19 at r=8 is exactly 512 MiB in V; with B and XY it is just over the cap.
+    expectValidationError(1u << 19, 8, 1, ScryptValidationError::scryptMemoryTooLarge);
+    // p axis: passes every other check with a 256-byte V while B alone is 4 GiB. This is the
+    // regression test for capping V alone, which would have let it through.
+    expectValidationError(2, 1, 33554431, ScryptValidationError::scryptMemoryTooLarge);
+
+    EXPECT_EQ(toString(ScryptValidationError::scryptMemoryTooLarge),
+              "Parameters would require too much scrypt memory (V + B + XY exceeds the limit)");
+}
+
+TEST(StoredKey, ValidateScryptWorkCap) {
+    // CPU time is proportional to n * r * p; the memory cap does not bound it because p multiplies
+    // the work while adding only 128*r bytes each. Cap: 16x the Standard preset (2^21 -> 2^25).
+    EXPECT_EQ(ScryptParameters::maxScryptWork, 1ull << 25);
+    EXPECT_FALSE(validationErrorOf(1u << 18, 8, 1).has_value()); // Standard, 2^21
+    EXPECT_FALSE(validationErrorOf(1u << 18, 1, 8).has_value()); // legacy geth shape, also 2^21
+
+    // Boundary on the p axis (the N axis at r=8 hits the memory cap first): exactly 2^25 passes,
+    // one more p is rejected. Both are ~256 MiB, so memory is not what decides here.
+    EXPECT_FALSE(validationErrorOf(1u << 18, 8, 16).has_value());
+    expectValidationError(1u << 18, 8, 17, ScryptValidationError::scryptWorkTooLarge);
+
+    // The case from review: passes 19r, passes the memory cap at ~508 MiB, ~500,000x Standard.
+    expectValidationError(1u << 18, 1, 3900000, ScryptValidationError::scryptWorkTooLarge);
+    // And the p-heavy shape just under the memory cap: ~1,000,000x Standard.
+    expectValidationError(1u << 20, 2, 1048573, ScryptValidationError::scryptWorkTooLarge);
+
+    EXPECT_EQ(toString(ScryptValidationError::scryptWorkTooLarge),
+              "Parameters would require too much CPU time (n * r * p exceeds the limit)");
+}
+
+TEST(StoredKey, ParseRejectsExcessiveScryptParams) {
+    // The same bounds, reached through the JSON import path.
+    const auto baseJson = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+    struct Params { uint32_t n, r, p; const char* why; };
+    for (const auto& c : {Params{1u << 19, 1, 8, "log2(n) >= 19r"},
+                          Params{1u << 21, 8, 1, "2 GiB via N"},
+                          Params{2, 1, 33554431, "4 GiB via p"},
+                          Params{1u << 18, 1, 3900000, "~500,000x Standard CPU, under the memory cap"}}) {
+        SCOPED_TRACE(c.why);
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["n"] = c.n;
+        j["crypto"]["kdfparams"]["r"] = c.r;
+        j["crypto"]["kdfparams"]["p"] = c.p;
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+    EXPECT_NO_THROW(StoredKey::createWithJson(baseJson));
+}
+
 } // namespace TW::Keystore
