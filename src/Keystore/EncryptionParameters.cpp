@@ -108,20 +108,15 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     // The `ScryptParameters` fields are public, so a caller can pass values that never went through
     // `validate()`: only the value constructor and the JSON constructor enforce it, a plain copy or
-    // assignment does not. Re-validate here so that a bad `n`, `r` or `p` is reported as an invalid
-    // argument instead of reaching scrypt(), where the same failure would be indistinguishable from
-    // an allocation failure.
+    // assignment does not. Re-validate here, before the derived-key buffer is allocated. This is
+    // what refuses a `desiredKeyLength` other than 32, which used to undersize the buffer that the
+    // AES key schedule and `computeMAC` read with fixed offsets of up to 32 bytes, and it reports a
+    // bad `n`, `r` or `p` as an invalid argument instead of letting it reach scrypt(), where the
+    // same failure would be indistinguishable from an allocation failure.
     if (const auto error = scryptParams.validate(); error.has_value()) {
         std::stringstream ss;
         ss << "Invalid scrypt params: " << toString(*error);
         throw std::invalid_argument(ss.str());
-    }
-
-    // `desiredKeyLength` sizes the buffer that the AES key schedule and `computeMAC` read with fixed
-    // offsets of up to 32 bytes. `validate()` does not enforce it yet, so it is checked separately,
-    // before the allocation.
-    if (scryptParams.desiredKeyLength != ScryptParameters::defaultDesiredKeyLength) {
-        throw std::invalid_argument("Invalid scrypt params: dklen must be 32");
     }
 
     // Derive exactly `defaultDesiredKeyLength` bytes, the same constant `decrypt()` uses, so that the

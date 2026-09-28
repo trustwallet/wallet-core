@@ -1128,10 +1128,10 @@ TEST(StoredKey, ParseMissingFields) {
 
 TEST(StoredKey, EncryptRejectsNonDefaultDkLen) {
     // `ScryptParameters::desiredKeyLength` is a public field, so it can hold a value that never
-    // passed `validate()`. The encrypting constructor sizes `derivedKey` from it and then hands the
-    // buffer to the AES key schedule and `computeMAC`, both of which read fixed offsets of up to
-    // 32 bytes. Anything but 32 must be refused before the allocation. On the unfixed code this
-    // loop is a heap-buffer-overflow under ASAN (and a null read for dkLen == 0).
+    // passed `validate()`. The encrypting constructor used to size `derivedKey` from it and then
+    // hand the buffer to the AES key schedule and `computeMAC`, both of which read fixed offsets of
+    // up to 32 bytes. Anything but 32 must be refused before the allocation. On the unfixed code
+    // this loop is a heap-buffer-overflow under ASAN (and a null read for dkLen == 0).
     const auto plaintext = TW::data(string("secret"));
     const vector<TWStoredKeyEncryption> ciphers = {
         TWStoredKeyEncryptionAes128Ctr, TWStoredKeyEncryptionAes192Ctr, TWStoredKeyEncryptionAes256Ctr};
@@ -1158,8 +1158,8 @@ TEST(StoredKey, EncryptRejectsNonDefaultDkLen) {
 TEST(StoredKey, FixEncryptionRejectsNonDefaultDkLen) {
     // End-to-end regression for the reported path: a keystore with a short salt whose scrypt params
     // carry `dklen: 1`, passed to `fixEncryption`. The field is set on the loaded key rather than in
-    // the JSON so that the test keeps exercising shouldFix() -> regenerateWithRecommendedParams() ->
-    // the guarded constructor once parse-time validation rejects such a file outright.
+    // the JSON, since parse-time validation rejects such a file outright; this way the test still
+    // exercises shouldFix() -> regenerateWithRecommendedParams() -> the guarded constructor.
     // `decrypt()` never reads `dklen`, so the MAC stays valid and the payload decryptable;
     // `shouldFix()` triggers on the short salt and re-encryption reaches the guarded constructor.
     // On the unfixed code this is the out-of-bounds read; now it must throw, and the two-phase
@@ -1226,10 +1226,10 @@ TEST(StoredKey, DecryptReportsDerivationFailure) {
     }
 }
 
-TEST(StoredKey, ScryptParamsRejectZeroBlockSizeOrParallelization) {
+TEST(StoredKey, ScryptParametersCtorRejectsZeroRAndP) {
     // `validate()` divides by `p` and by `r` in its overflow check. Zero for either was an integer
-    // division by zero (SIGFPE on x86-64), reachable from keystore JSON; now it is a validation error
-    // raised before that division.
+    // division by zero (SIGFPE on x86-64); now it is a validation error raised before that division.
+    // The JSON path is covered by ParseRejectsZeroRAndP; this pins the value constructor.
     const auto salt = Data(32, 0x01);
     for (const auto [r, p] : {std::pair<uint32_t, uint32_t>{0, 1}, std::pair<uint32_t, uint32_t>{8, 0}, std::pair<uint32_t, uint32_t>{0, 0}}) {
         SCOPED_TRACE("r=" + to_string(r) + " p=" + to_string(p));
@@ -1240,13 +1240,109 @@ TEST(StoredKey, ScryptParamsRejectZeroBlockSizeOrParallelization) {
             EXPECT_EQ(error, ScryptValidationError::zeroBlockSizeOrParallelization);
         }
     }
+}
 
-    // The same values in a keystore file are rejected at parse time.
-    for (const auto* param : {"r", "p"}) {
-        SCOPED_TRACE(param);
-        auto json = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
-        json["crypto"]["kdfparams"][param] = 0;
-        EXPECT_THROW(StoredKey::createWithJson(json), std::invalid_argument);
+TEST(StoredKey, ParseRejectsNonDefaultDkLen) {
+    // wallet-core derives exactly 32 bytes on both the encrypt and decrypt paths, so `dklen` is a
+    // format field: anything but 32 is rejected at parse. This closes, at the trust boundary, the
+    // heap OOB read from a short dklen undersizing the derived-key buffer, and the oversized
+    // allocation from a huge one. The fixture is otherwise valid, so dklen is the only reason to
+    // reject. 137438953440 == ((1ULL << 32) - 1) * 32 was the old (inclusive) upper bound.
+    const auto baseJson = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+    ASSERT_EQ(baseJson["crypto"]["kdfparams"]["dklen"], 32);
+
+    for (const auto dkLen : {0ull, 1ull, 16ull, 24ull, 31ull, 33ull, 64ull, 137438953440ull}) {
+        SCOPED_TRACE(dkLen);
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["dklen"] = dkLen;
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+}
+
+TEST(StoredKey, ParseDkLenNumericForms) {
+    const auto baseJson = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+
+    // Only the unsigned integer 32 is accepted.
+    {
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["dklen"] = 32u;
+        ASSERT_TRUE(j["crypto"]["kdfparams"]["dklen"].is_number_unsigned());
+        EXPECT_NO_THROW(StoredKey::createWithJson(j));
+    }
+
+    // Everything else is rejected with std::invalid_argument. `32.0` is a JSON float that nlohmann
+    // silently converted before this change, so it loaded; rejecting it is deliberate — dklen is an
+    // integer field, and accepting floats would mean casting from double. `"32"` was rejected before
+    // too, but via nlohmann::type_error; asserting invalid_argument makes this a real check of the
+    // new guard rather than a no-op.
+    ASSERT_TRUE(nlohmann::json(32.0).is_number_float());
+    const vector<nlohmann::json> rejected = {32.0, 32.7, 1e300, -4, "32", true, nullptr};
+    for (const auto& value : rejected) {
+        SCOPED_TRACE(value.dump());
+        auto j = baseJson;
+        j["crypto"]["kdfparams"]["dklen"] = value;
+        EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+    }
+}
+
+TEST(StoredKey, ScryptParametersCtorRejectsNonDefaultDkLen) {
+    // The five-argument constructor runs validate() too; the presets pass 32 and must still work.
+    const auto salt = Data(32, 0x01);
+    EXPECT_NO_THROW({ ScryptParameters p(salt, ScryptParameters::minimalN, ScryptParameters::defaultR, ScryptParameters::minimalP, 32); });
+    for (const std::size_t dkLen : {std::size_t(1), std::size_t(16), std::size_t(64)}) {
+        SCOPED_TRACE(dkLen);
+        EXPECT_THROW({ ScryptParameters p(salt, ScryptParameters::minimalN, ScryptParameters::defaultR, ScryptParameters::minimalP, dkLen); },
+                     ScryptValidationError);
+    }
+    EXPECT_EQ(toString(ScryptValidationError::invalidDesiredKeyLength), "Desired key length must be 32");
+}
+
+
+TEST(StoredKey, ParseNprNumericForms) {
+    // n, p and r must be JSON unsigned integers fitting in uint32_t. Before this change they were
+    // converted implicitly: a float was truncated, a negative wrapped, and a value above UINT32_MAX
+    // was narrowed. The fixture holds n=16384, p=4, r=8; the float form of each valid value is the
+    // key case, since it loaded before and is rejected now by decision.
+    const auto baseJson = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+    const auto& kdf = baseJson["crypto"]["kdfparams"];
+    ASSERT_EQ(kdf["n"], 16384); ASSERT_EQ(kdf["p"], 4); ASSERT_EQ(kdf["r"], 8);
+
+    struct Case { const char* field; nlohmann::json validFloat; };
+    for (const auto& c : {Case{"n", 16384.0}, Case{"p", 4.0}, Case{"r", 8.0}}) {
+        ASSERT_TRUE(c.validFloat.is_number_float());
+        const vector<nlohmann::json> rejected = {c.validFloat, 0.5, -1, "16384", 4294967296ull, true, nullptr};
+        for (const auto& value : rejected) {
+            SCOPED_TRACE(string(c.field) + " = " + value.dump());
+            auto j = baseJson;
+            j["crypto"]["kdfparams"][c.field] = value;
+            EXPECT_THROW(StoredKey::createWithJson(j), std::invalid_argument);
+        }
+    }
+    // Unchanged fixture still loads, so the rejections above are due to the type/range checks alone.
+    EXPECT_NO_THROW(StoredKey::createWithJson(baseJson));
+}
+
+TEST(StoredKey, ParseRejectsZeroRAndP) {
+    // validate() divides by p and by r in its overflow check. With either at zero that is undefined
+    // behaviour: SIGFPE on x86-64, and on AArch64 a silent 0 that happened to reject via the overflow
+    // branch. Both must now be rejected explicitly, before the division. The message is checked so
+    // this test distinguishes the new zero check from the accidental overflow rejection on ARM.
+    const auto baseJson = StoredKey::load(testDataPath("scrypt-empty-salt.json")).json();
+    for (const char* field : {"p", "r"}) {
+        SCOPED_TRACE(field);
+        auto j = baseJson;
+        j["crypto"]["kdfparams"][field] = 0;
+        // Route through the real parser: nlohmann stores an in-memory `int` literal as
+        // number_integer, but parses the text `0` as number_unsigned — which is what a keystore
+        // file yields, and what must reach validate() for the zero check to be the one firing.
+        j = nlohmann::json::parse(j.dump());
+        ASSERT_TRUE(j["crypto"]["kdfparams"][field].is_number_unsigned());
+        try {
+            StoredKey::createWithJson(j);
+            FAIL() << "expected std::invalid_argument";
+        } catch (const std::invalid_argument& e) {
+            EXPECT_NE(string(e.what()).find("must be greater than 0"), string::npos) << e.what();
+        }
     }
 }
 
