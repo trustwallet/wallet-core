@@ -12,4 +12,4 @@ proc-macro2 = "1.0.93"
 quote = "1.0.38"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9.21"
-syn = { version = "2.0.96", features = ["full"] }
+syn = { version = "3.0.6", features = ["full"] }
