@@ -23,9 +23,9 @@ Dir.glob(File.join(ARGV[0], '*.h')).sort.each do |path|
       entity.public_send(group).each { |function| names << "TW#{entity.name}#{function.name}" }
     end
   end
-  # TWString/TWData and plain extern declarations are not annotated for bindings.
+  # Plain C functions are not annotated for bindings.
   declarations = File.read(path).gsub(%r{/\*.*?\*/|//[^\n]*}m, '')
-  names.concat(declarations.scan(/\b(TW[A-Z][A-Za-z0-9_]+)\s*\([^;{}]*\)\s*(?:TW_VISIBILITY_DEFAULT)?\s*;/m).flatten)
+  names.concat(declarations.scan(/\b(TW[A-Z][A-Za-z0-9_]+|hrpForString|stringForHRP)\s*\([^;{}]*\)\s*(?:TW_VISIBILITY_DEFAULT)?\s*;/m).flatten)
 end
 names = names.uniq.sort
 abort 'No public C API declarations found' if names.empty?

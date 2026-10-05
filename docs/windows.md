@@ -71,8 +71,9 @@ add_custom_command(TARGET mywallet POST_BUILD
 
 Configure with `-DCMAKE_BUILD_TYPE=Release` and
 `-DWalletCore_DIR=C:/path/to/package/lib/cmake/WalletCore`. Both MSVC C/C++
-consumers and dynamic loaders can call the public C functions. Only public
-`TW*` functions are exported; private C++ and Rust symbols are not supported ABI.
+consumers and dynamic loaders can call the public C functions, including the
+legacy `hrpForString` and `stringForHRP` helpers. Private C++ and Rust symbols
+are not supported ABI.
 Continue freeing handles and buffers with the corresponding Wallet Core
 deletion functions.
 

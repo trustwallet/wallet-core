@@ -214,7 +214,7 @@ function Test-Libraries {
     $actualExports = @(Get-Content (Join-Path $Logs 'dll-exports.log') | ForEach-Object {
         if ($_ -match '^\s+\d+\s+[0-9A-F]+\s+[0-9A-F]+\s+(\S+)') { $Matches[1] }
     })
-    $expectedExports = @(Get-Content (Join-Path $Build 'TrustWalletCore.def') | Where-Object { $_ -match '^\s+TW' } | ForEach-Object { $_.Trim() })
+    $expectedExports = @(Get-Content (Join-Path $Build 'TrustWalletCore.def') | Select-Object -Skip 2 | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     if (Compare-Object $expectedExports $actualExports) { throw 'DLL exports differ from the public C API definition' }
     Invoke-Tool 'dll-dependencies' 'dumpbin.exe' @('/dependents', $dll)
     $dependencies = @(Get-Content (Join-Path $Logs 'dll-dependencies.log') | Where-Object { $_ -match '^\s+[\w.-]+\.dll\s*$' } | ForEach-Object { $_.Trim() })

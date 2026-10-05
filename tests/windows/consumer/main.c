@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWString.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +16,8 @@ static struct TWHDWallet* (*wallet_create)(TWString*, TWString*);
 static struct TWHDWallet* (*wallet_random)(int, TWString*);
 static TWString* (*wallet_address)(struct TWHDWallet*, enum TWCoinType);
 static void (*wallet_delete)(struct TWHDWallet*);
+static const char* (*hrp_string)(enum TWHRP);
+static enum TWHRP (*hrp_from_string)(const char*);
 #define TWStringCreateWithUTF8Bytes string_create
 #define TWStringUTF8Bytes string_bytes
 #define TWStringDelete string_delete
@@ -22,6 +25,8 @@ static void (*wallet_delete)(struct TWHDWallet*);
 #define TWHDWalletCreate wallet_random
 #define TWHDWalletGetAddressForCoin wallet_address
 #define TWHDWalletDelete wallet_delete
+#define stringForHRP hrp_string
+#define hrpForString hrp_from_string
 #endif
 
 static void require(int ok, const char* message) {
@@ -49,10 +54,14 @@ int main(int argc, char** argv) {
     RESOLVE(wallet_random, "TWHDWalletCreate");
     RESOLVE(wallet_address, "TWHDWalletGetAddressForCoin");
     RESOLVE(wallet_delete, "TWHDWalletDelete");
+    RESOLVE(hrp_string, "stringForHRP");
+    RESOLVE(hrp_from_string, "hrpForString");
 #else
     (void)argc;
     (void)argv;
 #endif
+    require(strcmp(stringForHRP(TWHRPBitcoin), "bc") == 0, "Wrong Bitcoin HRP string");
+    require(hrpForString("bc") == TWHRPBitcoin, "Wrong Bitcoin HRP enum");
     TWString* mnemonic = TWStringCreateWithUTF8Bytes("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
     TWString* passphrase = TWStringCreateWithUTF8Bytes("");
     require(mnemonic != NULL && passphrase != NULL, "String allocation failed");

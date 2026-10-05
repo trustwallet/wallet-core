@@ -20,11 +20,13 @@ class WindowsExportsTest < Test::Unit::TestCase
         const char* _Nonnull TWStringUTF8Bytes(
             TWString* _Nonnull string) TW_VISIBILITY_DEFAULT;
         void TWDataDelete(TWData* _Nonnull data) TW_VISIBILITY_DEFAULT;
+        const char* _Nullable stringForHRP(enum TWHRP hrp);
+        enum TWHRP hrpForString(const char* _Nonnull string);
       HEADER
       definition = File.join(directory, 'exports.def')
       _, error, status = Open3.capture3(RbConfig.ruby, File.expand_path('../../tools/windows-exports.rb', __dir__), directory, definition)
       assert_predicate(status, :success?, error)
-      assert_equal(["LIBRARY TrustWalletCore", "EXPORTS", "    TWAnySignerSupportsJSON", "    TWDataDelete", "    TWExampleCreate", "    TWExampleDelete", "    TWStringUTF8Bytes"], File.readlines(definition, chomp: true))
+      assert_equal(["LIBRARY TrustWalletCore", "EXPORTS", "    TWAnySignerSupportsJSON", "    TWDataDelete", "    TWExampleCreate", "    TWExampleDelete", "    TWStringUTF8Bytes", "    hrpForString", "    stringForHRP"], File.readlines(definition, chomp: true))
     end
   end
 end
