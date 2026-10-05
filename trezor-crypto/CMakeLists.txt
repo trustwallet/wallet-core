@@ -65,12 +65,20 @@ if (EMSCRIPTEN)
     message(STATUS "Skip building trezor-crypto/tests")
     set(TW_WARNING_FLAGS ${TW_WARNING_FLAGS} -Wno-bitwise-instead-of-logical)
 else ()
-    if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_JAVA AND NOT FLUTTER)
+    if(NOT WIN32 AND NOT ANDROID AND NOT IOS_PLATFORM AND NOT TW_COMPILE_JAVA AND NOT FLUTTER)
         add_subdirectory(crypto/tests)
     endif()
 endif()
 
-target_compile_options(TrezorCrypto PRIVATE ${TW_WARNING_FLAGS} -Werror PUBLIC -Wno-deprecated-volatile)
+if (WIN32 AND MSVC)
+    list(APPEND TW_WARNING_FLAGS -Werror -Wno-deprecated-volatile)
+    list(TRANSFORM TW_WARNING_FLAGS PREPEND "/clang:")
+    target_compile_options(TrezorCrypto PRIVATE ${TW_WARNING_FLAGS} /utf-8)
+    target_compile_definitions(TrezorCrypto PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)
+    target_link_libraries(TrezorCrypto PRIVATE bcrypt)
+else ()
+    target_compile_options(TrezorCrypto PRIVATE ${TW_WARNING_FLAGS} -Werror PUBLIC -Wno-deprecated-volatile)
+endif ()
 
 target_include_directories(TrezorCrypto
     PUBLIC
