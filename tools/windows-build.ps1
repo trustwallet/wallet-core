@@ -48,6 +48,17 @@ function Get-Archive([string]$Url, [string]$Destination) {
     }
 }
 
+$versions = @{}
+Get-Content (Join-Path $Root 'tools\dependencies-version') | ForEach-Object {
+    if ($_ -match '^export (\w+)=([\d.]+)$') { $versions[$Matches[1]] = $Matches[2] }
+}
+foreach ($dependency in @('GTEST_VERSION', 'JSON_VERSION', 'PROTOBUF_VERSION')) {
+    if (!$versions[$dependency]) { throw "Missing dependency version: $dependency" }
+}
+$protoVersion = $versions.PROTOBUF_VERSION
+$gtestVersion = $versions.GTEST_VERSION
+$jsonVersion = $versions.JSON_VERSION
+
 function Prepare {
     Invoke-Tool 'rust-toolchain' $Rustup @('toolchain', 'install', $Nightly, '--profile', 'minimal')
     Invoke-Tool 'rust-target' $Rustup @('target', 'add', $Target, '--toolchain', $Nightly)
@@ -65,16 +76,6 @@ function Prepare {
     })
     Set-Content -Encoding ASCII (Join-Path $Build 'native-libraries.cmake') ("set(TW_WINDOWS_NATIVE_LIBRARIES " + ($nativeLibraries -join ' ') + ')')
 
-    $versions = @{}
-    Get-Content (Join-Path $Root 'tools\dependencies-version') | ForEach-Object {
-        if ($_ -match '^export (\w+)=([\d.]+)$') { $versions[$Matches[1]] = $Matches[2] }
-    }
-    foreach ($dependency in @('GTEST_VERSION', 'JSON_VERSION', 'PROTOBUF_VERSION')) {
-        if (!$versions[$dependency]) { throw "Missing dependency version: $dependency" }
-    }
-    $protoVersion = $versions.PROTOBUF_VERSION
-    $gtestVersion = $versions.GTEST_VERSION
-    $jsonVersion = $versions.JSON_VERSION
     $protoDirectory = Join-Path $Prefix "src\protobuf\protobuf-$protoVersion"
     $protoArchive = Join-Path $Prefix "src\protobuf\protobuf-java-$protoVersion.tar.gz"
     $gtestDirectory = Join-Path $Prefix "src\gtest\googletest-$gtestVersion"
@@ -139,7 +140,7 @@ function Package-Libraries {
     Copy-Item -LiteralPath "$sharedStage\bin\TrustWalletCore.dll" -Destination "$Package\shared\bin"
     Copy-Item -LiteralPath "$StaticBuild\WalletCoreConfig.cmake" -Destination "$Package\lib\cmake\WalletCore"
     Copy-Item -LiteralPath "$Root\LICENSE" -Destination "$Package\licenses\WalletCore.txt"
-    Copy-Item -LiteralPath "$Prefix\src\protobuf\protobuf-3.20.3\LICENSE" -Destination "$Package\licenses\Protobuf.txt"
+    Copy-Item -LiteralPath "$Prefix\src\protobuf\protobuf-$protoVersion\LICENSE" -Destination "$Package\licenses\Protobuf.txt"
     Copy-Item -LiteralPath "$Root\trezor-crypto\crypto\LICENSE" -Destination "$Package\licenses\TrezorCrypto.txt"
     Copy-Item -LiteralPath "$Build\boost_1_83_0\LICENSE_1_0.txt" -Destination "$Package\licenses\Boost.txt"
     Copy-Item -LiteralPath "$Root\docs\windows.md" -Destination "$Package\README.md"
@@ -164,6 +165,15 @@ function Package-Libraries {
 }
 
 function Test-Libraries {
+    # CTest must work without the wrapper's directory overrides.
+    $env:TEST_TMPDIR = $null
+    $env:TW_TESTS_ROOT = $null
+    $filterBefore = $env:GTEST_FILTER
+    $env:GTEST_FILTER = 'StoredKey.BackwardCompatibility:TWStoredKey.storeWithTemporaryFileSuccess'
+    try {
+        Invoke-Tool 'ctest-default-paths' (Join-Path (Split-Path $CMake) 'ctest.exe') @('--test-dir', "$StaticBuild\tests", '-R', '^example_test$', '--no-tests=error', '-VV')
+    } finally { $env:GTEST_FILTER = $filterBefore }
+    & (Join-Path $Root 'tests\windows\exports.ps1')
     # Exercise paths with spaces and non-ASCII characters even in an ASCII checkout.
     $unicode = [string][char]0x4E2D + [char]0x6587
     $env:TEST_TMPDIR = Join-Path $Build "test-temp $unicode"
@@ -216,6 +226,7 @@ function Test-Libraries {
     })
     $expectedExports = @(Get-Content (Join-Path $Build 'TrustWalletCore.def') | Select-Object -Skip 2 | ForEach-Object { $_.Trim() } | Where-Object { $_ })
     if (Compare-Object $expectedExports $actualExports) { throw 'DLL exports differ from the public C API definition' }
+    & (Join-Path $PSScriptRoot 'windows-check-exports.ps1') -Exports $actualExports
     Invoke-Tool 'dll-dependencies' 'dumpbin.exe' @('/dependents', $dll)
     $dependencies = @(Get-Content (Join-Path $Logs 'dll-dependencies.log') | Where-Object { $_ -match '^\s+[\w.-]+\.dll\s*$' } | ForEach-Object { $_.Trim() })
     foreach ($dependency in $dependencies) {

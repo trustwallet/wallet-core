@@ -57,6 +57,7 @@ endif()
 add_test(NAME example_test COMMAND tests)
 
 if (WIN32)
+    set_tests_properties(example_test PROPERTIES ENVIRONMENT "TW_TESTS_ROOT=${CMAKE_CURRENT_SOURCE_DIR}")
     add_executable(WindowsRandomTests windows/rand.c)
     target_include_directories(WindowsRandomTests PRIVATE ${CMAKE_SOURCE_DIR}/trezor-crypto/include)
     target_compile_definitions(WindowsRandomTests PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)

@@ -16,10 +16,9 @@ string getTestTempDir(void) {
     // In general, tests should not use hardcoded "/tmp", but TEST_TMPDIR env var.
 #ifdef _WIN32
     const auto* fromEnvironment = _wgetenv(L"TEST_TMPDIR");
-    if (fromEnvironment == nullptr || fromEnvironment[0] == L'\0') {
-        return "/tmp";
-    }
-    const auto path = std::filesystem::path(fromEnvironment).u8string();
+    const auto path = (fromEnvironment == nullptr || fromEnvironment[0] == L'\0'
+        ? std::filesystem::temp_directory_path()
+        : std::filesystem::path(fromEnvironment)).u8string();
     return string(path.begin(), path.end());
 #else
     const char* fromEnvironment = getenv("TEST_TMPDIR");
