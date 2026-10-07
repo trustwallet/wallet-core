@@ -1418,7 +1418,7 @@
     "publicKeyHasher": "sha256ripemd",
     "base58Hasher": "sha256d",
     "explorer": {
-      "url": "https://kmdexplorer.io/",
+      "url": "https://kmdexplorer.io",
       "txPath": "/tx/",
       "accountPath": "/address/",
       "sampleTx": "f53bd1a5c0f5dc4b60ba9a1882742ea96faa996e1b870795812a29604dd7829e",
