@@ -26,6 +26,6 @@ TEST(TWRobinhoodChainCoinType, TWCoinType) {
     ASSERT_EQ(TWCoinTypeP2pkhPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeP2shPrefix(coin), 0);
     ASSERT_EQ(TWCoinTypeStaticPrefix(coin), 0);
-    assertStringsEqual(txUrl, "https://robinhoodchain.blockscout.com/tx/0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9");
-    assertStringsEqual(accUrl, "https://robinhoodchain.blockscout.com/address/0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73");
+    assertStringsEqual(txUrl, "https://robin.etherscan.io/tx/0x60f2d8e8ca8d64da9d3ded83a759a123ea28aca9f51a8f9b62cf34835b770cf9");
+    assertStringsEqual(accUrl, "https://robin.etherscan.io/address/0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73");
 }
