@@ -1183,7 +1183,7 @@ TEST(StoredKey, ValidateScryptMemoryCap) {
 TEST(StoredKey, ValidateScryptWorkCap) {
     // CPU time is proportional to n * r * p; the memory cap does not bound it because p multiplies
     // the work while adding only 128*r bytes each. Cap: 16x the Standard preset (2^21 -> 2^25).
-    EXPECT_EQ(ScryptParameters::maxScryptWork, 1ull << 25);
+    EXPECT_EQ(ScryptParameters::maxScryptWork, 1ULL << 25);
     EXPECT_FALSE(validationErrorOf(1u << 18, 8, 1).has_value()); // Standard, 2^21
     EXPECT_FALSE(validationErrorOf(1u << 18, 1, 8).has_value()); // legacy geth shape, also 2^21
 

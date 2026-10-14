@@ -115,8 +115,7 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     // Legacy geth-style wallets (N=262144, r=1) violate the strict bound, so it is relaxed to 19r,
     // matching tw_crypto's Rust scrypt (#4463). `n` is a power of two here, so countr_zero == log2.
     // Placed after the overflow check, which bounds r, so `r * 19` cannot overflow.
-    const auto logN = static_cast<uint64_t>(std::countr_zero(n));
-    if (logN >= static_cast<uint64_t>(r) * 19) {
+    if (const auto logN = static_cast<uint64_t>(std::countr_zero(n)); logN >= static_cast<uint64_t>(r) * 19) {
         return ScryptValidationError::invalidCostFactorForR;
     }
 
@@ -124,9 +123,10 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     // Bound the total, not V alone: n=2, r=1, p=33554431 passes every check above with a 256-byte V
     // while B is 4 GiB. The overflow check already bounds 128*r*n and 128*r*p by UINT32_MAX each,
     // so this uint64_t sum cannot overflow. 512 MiB is twice the Standard preset (N=262144, r=8, p=1).
-    const uint64_t r64 = r, n64 = n, p64 = p;
-    const uint64_t scryptMemory = 128 * r64 * n64 + 128 * r64 * p64 + 256 * r64 + 64;
-    if (scryptMemory > maxScryptMemory) {
+    const uint64_t r64 = r;
+    const uint64_t n64 = n;
+    const uint64_t p64 = p;
+    if (const uint64_t scryptMemory = 128 * r64 * n64 + 128 * r64 * p64 + 256 * r64 + 64; scryptMemory > maxScryptMemory) {
         return ScryptValidationError::scryptMemoryTooLarge;
     }
 
