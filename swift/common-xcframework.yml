@@ -2,10 +2,11 @@ name: WalletCoreCommon
 options:
   bundleIdPrefix: com.trustwallet
   createIntermediateGroups: true
-  platform: [iOS, macOS]
+  platform: [iOS, macOS, watchOS]
   deploymentTarget:
     iOS: 12.0
     macOS: 10.14
+    watchOS: 10.0
 settings:
   base:
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/crypto
@@ -16,10 +17,11 @@ settings:
 targets:
   WalletCoreCommon:
     type: framework.static
-    platform: [iOS, macOS]
+    platform: [iOS, macOS, watchOS]
     deploymentTarget: 
       iOS: 12.0
       macOS: 10.14
+      watchOS: 10.0
     groups:
       - ${platform}
     sources:
@@ -46,6 +48,8 @@ targets:
     settings:
       SKIP_INSTALL: false
       SUPPORTS_MACCATALYST: true
+      # The Rust watchOS simulator slice is arm64-only.
+      EXCLUDED_ARCHS[sdk=watchsimulator*]: x86_64
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
       CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: $(inherited) false
@@ -53,10 +57,11 @@ targets:
 
   trezor-crypto:
     type: library.static
-    platform: [iOS, macOS]
+    platform: [iOS, macOS, watchOS]
     deploymentTarget:
       iOS: 12.0
       macOS: 10.14
+      watchOS: 10.0
     sources:
       - trezor-crypto/crypto/bignum.c
       - trezor-crypto/crypto/ecdsa.c
@@ -121,10 +126,11 @@ targets:
 
   protobuf:
     type: library.static
-    platform: [iOS, macOS]
+    platform: [iOS, macOS, watchOS]
     deploymentTarget:
       iOS: 12.0
       macOS: 10.14
+      watchOS: 10.0
     sources:
       - protobuf/google/protobuf/any.cc
       - protobuf/google/protobuf/any.pb.cc

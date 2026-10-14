@@ -17,6 +17,16 @@ built_dir=${base_dir}/../build/ios-frameworks
 version=$(wc_read_version $1)
 echo "release version ${version}"
 
+# The Types subspec depends on the published WalletCoreSwiftProtobuf pod, and
+# pod trunk push validates every declared platform against it, so the version
+# in the repo podspec has to be on trunk before anything is uploaded.
+protobuf_version=$(pod ipc spec ${src_dir}/WalletCoreSwiftProtobuf.podspec | ruby -rjson -e 'puts JSON.parse(STDIN.read)["version"]')
+if ! pod trunk info WalletCoreSwiftProtobuf | grep -F -- "- ${protobuf_version} (" > /dev/null; then
+  echo "WalletCoreSwiftProtobuf ${protobuf_version} is not on CocoaPods trunk yet. Publish it first:"
+  echo "  pod trunk push --allow-warnings WalletCoreSwiftProtobuf.podspec"
+  exit 1
+fi
+
 pushd ${built_dir}
 # archive headers, swift code and xcframework
 
@@ -54,6 +64,7 @@ Pod::Spec.new do |s|
   s.module_name  = 'WalletCore'
   s.ios.deployment_target = '12.0'
   s.osx.deployment_target = '10.14'
+  s.watchos.deployment_target = '10.0'
   s.swift_version = '5.1'
   s.source = {
     http: '${download_url}'
@@ -64,7 +75,7 @@ Pod::Spec.new do |s|
       'Sources/Types/*.swift',
       'Sources/Generated/Enums/*.swift',
       'Sources/Generated/Protobuf/*.swift'
-    ss.dependency 'WalletCoreSwiftProtobuf'
+    ss.dependency 'WalletCoreSwiftProtobuf', '>= ${protobuf_version}'
   end
   s.subspec 'Core' do |ss|
     ss.vendored_frameworks = '*.xcframework'

@@ -10,23 +10,55 @@ platform :ios do
 
   desc "create wallet core xcframework"
   lane :core_xcframework do
-    create_xcframework(
-      workspace: 'TrustWalletCore.xcworkspace',
-      scheme: 'WalletCore',
-      destinations: ['iOS'],
-      xcframework_output_directory: 'build',
-      enable_bitcode: false
+    multiplatform_xcframework(
+      product_name: 'WalletCore',
+      schemes: { 'iOS' => 'WalletCore', 'watchOS' => 'WalletCore-watchOS' }
     )
   end
 
   desc "create swift protobuf xcframework"
   lane :swift_protobuf_xcframework do
+    multiplatform_xcframework(
+      product_name: 'WalletCoreSwiftProtobuf',
+      schemes: { 'iOS' => 'WalletCoreSwiftProtobuf', 'watchOS' => 'WalletCoreSwiftProtobuf-watchOS' }
+    )
+  end
+end
+
+# iOS and watchOS are separate schemes, and create_xcframework archives a single
+# scheme, so each platform is archived on its own and the slices merged into
+# build/<product>.xcframework and build/<product>.dSYMs.
+def multiplatform_xcframework(product_name:, schemes:)
+  build_dir = File.expand_path('../build', __dir__)
+
+  schemes.each do |destination, scheme|
+    FileUtils.rm_rf("#{build_dir}/#{destination}")
     create_xcframework(
       workspace: 'TrustWalletCore.xcworkspace',
-      scheme: 'WalletCoreSwiftProtobuf',
-      destinations: ['iOS'],
-      xcframework_output_directory: 'build',
-      enable_bitcode: false
+      scheme: scheme,
+      product_name: product_name,
+      destinations: [destination],
+      xcframework_output_directory: "build/#{destination}",
+      enable_bitcode: false,
+      remove_xcarchives: false
     )
+  end
+
+  xcframework = "#{build_dir}/#{product_name}.xcframework"
+  dsyms = "#{build_dir}/#{product_name}.dSYMs"
+  FileUtils.rm_rf([xcframework, dsyms])
+  FileUtils.mkdir_p(dsyms)
+
+  slices = schemes.keys.flat_map do |destination|
+    Dir.glob("#{build_dir}/#{destination}/archives/*_#{product_name}.xcarchive").sort.map do |archive|
+      "-framework #{archive}/Products/Library/Frameworks/#{product_name}.framework " \
+        "-debug-symbols #{archive}/dSYMs/#{product_name}.framework.dSYM"
+    end
+  end
+  sh("xcodebuild -create-xcframework #{slices.join(' ')} -output #{xcframework}")
+
+  schemes.each_key do |destination|
+    FileUtils.cp_r(Dir.glob("#{build_dir}/#{destination}/#{product_name}.dSYMs/*"), dsyms)
+    FileUtils.rm_rf("#{build_dir}/#{destination}")
   end
 end

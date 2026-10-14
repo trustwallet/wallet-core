@@ -38,6 +38,14 @@ build_ios_mac_catalyst() {
     build "${FRAMEWORK}_iOS" "platform=macOS,arch=x86_64,variant=Mac Catalyst" "ios-x86_64_arm64-maccatalyst"
 }
 
+build_watchos_arm64() {
+    build "${FRAMEWORK}_watchOS" "generic/platform=watchOS" "watchos-arm64_arm64_32"
+}
+
+build_watchos_simulator() {
+    build "${FRAMEWORK}_watchOS" "generic/platform=watchOS Simulator" "watchos-simulator"
+}
+
 build_mac_x64_arm64() {
     build "${FRAMEWORK}_macOS" "generic/platform=macOS" "macos-arm64_x86_64"
 }
@@ -48,7 +56,9 @@ create_xc_framework() {
                -framework $BUILD_FOLDER/ios-arm64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
                -framework $BUILD_FOLDER/ios-arm64_x86_64-simulator.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
                -framework $BUILD_FOLDER/ios-x86_64_arm64-maccatalyst.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
-               -framework $BUILD_FOLDER/macos-arm64_x86_64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
+               -framework $BUILD_FOLDER/macos-arm64_x86_64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/watchos-arm64_arm64_32.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/watchos-simulator.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
 }
 
 main() {
@@ -56,6 +66,7 @@ main() {
     build_mac_x64_arm64
     build_ios_mac_catalyst
     build_ios_arm64 && build_ios_simulator
+    build_watchos_arm64 && build_watchos_simulator
     create_xc_framework
 }
 
