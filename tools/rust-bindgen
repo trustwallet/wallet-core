@@ -30,7 +30,11 @@ cd rust
 
 if isTargetSpecified "native"; then
   echo "Generating Native target"
-  cargo build --release --lib
+  if [[ -n "${TW_RUST_NATIVE_TARGET:-}" ]]; then
+    cargo build --locked --release --lib -p "$CRATE" --target "$TW_RUST_NATIVE_TARGET"
+  else
+    cargo build --release --lib
+  fi
 fi
 
 export RUSTFLAGS="-Zlocation-detail=none"
@@ -70,7 +74,11 @@ fi
 
 cbindgen --crate $CRATE --output ../src/rust/bindgen/$HEADER_NAME
 cd -
-[[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
+if [[ "${TW_RUST_NATIVE_TARGET:-}" == "x86_64-pc-windows-msvc" ]]; then
+  cp "rust/target/$TW_RUST_NATIVE_TARGET/release/wallet_core_rs.lib" build/local/lib/
+else
+  [[ -e rust/target/release/${TARGET_NAME} ]] && cp rust/target/release/${TARGET_NAME} build/local/lib/
+fi
 
 echo "Generating C++ files..."
 pushd codegen-v2 && cargo run -- cpp && popd
