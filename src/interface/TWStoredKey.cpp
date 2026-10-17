@@ -8,6 +8,7 @@
 #include "Data.h"
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
+#include "../Keystore/SealedSigner.h"
 #include "../HexCoding.h"
 #include <stdexcept>
 #include <cassert>
@@ -277,6 +278,20 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         return new TWPrivateKey{ key->impl.privateKey(coin, passwordData) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password, TWData* _Nonnull input) {
+    try {
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto inputData = TW::data(TWDataBytes(input), TWDataSize(input));
+        const auto output = TW::Keystore::sealedSign(key->impl, coin, passwordData, inputData);
+        if (output.empty()) {
+            return nullptr;
+        }
+        return TWDataCreateWithBytes(output.data(), output.size());
     } catch (...) {
         return nullptr;
     }
