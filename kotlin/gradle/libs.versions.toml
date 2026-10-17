@@ -5,9 +5,9 @@ android-sdk-compile = "35"
 android-cmake = "3.22.1"
 android-ndk = "28.0.12674087"
 
-kotlin = "2.1.0"
+kotlin = "2.2.21"
 agp = "8.8.0"
-wire = "4.5.6"
+wire = "6.4.5"
 
 androidx-test-runner = "1.5.2"
 
