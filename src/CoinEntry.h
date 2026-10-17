@@ -78,7 +78,13 @@ public:
 template <typename Signer, typename Input, typename Output>
 void signTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
-    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    if (!input.ParseFromArray(dataIn.data(), (int)dataIn.size())) {
+        Output output;
+        output.set_error(Common::Proto::Error_input_parse);
+        const auto serializedOut = output.SerializeAsString();
+        dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
+        return;
+    }
     try {
         const auto serializedOut = Signer::sign(input).SerializeAsString();
         dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
