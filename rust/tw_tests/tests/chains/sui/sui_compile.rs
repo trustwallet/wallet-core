@@ -114,6 +114,65 @@ fn test_sui_compile_raw_json() {
     });
 }
 
+/// The version 2 format emitted by `Transaction.toJSON()` of the `@mysten/sui` 2.x SDK
+/// must produce exactly the same transaction as its version 1 counterpart.
+/// The fixture is verbatim SDK output, generated with `@mysten/sui` 2.22.1.
+#[test]
+fn test_sui_compile_raw_json_v2() {
+    let raw_json = Cow::Borrowed(include_str!("fixtures/aftermath_tx_1_v2.json"));
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::raw_json(raw_json),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let expected_json = include_str!("./fixtures/aftermath_tx_1_serialized.json"); // Generated via aftermath-sdk
+    let expected: serde_json::Value = serde_json::from_str(expected_json).unwrap();
+    let expected_unsigned_tx_data = expected["serializedTransaction"].as_str().unwrap();
+    test_sui_compile_impl(SuiCompileArgs {
+        input,
+        private_key: PRIVATE_KEY_54E80D76,
+        tx_hash: "75fe8ed844ab7e84c18051e808693b22c63a7e291d66b2e3a9336cc20730ac0e",
+        unsigned_tx_data: expected_unsigned_tx_data,
+        signature: "ABl18CtTKml1sbI+HC1ciDlew7NiizEUK2KYfOgEDFVvrCcYbV2TSQI6lBkT710s+L+HrASGVvxVj/igpgB+dAyF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g=="
+    });
+}
+
+/// Unresolved inputs require a network lookup, so they cannot be signed offline.
+#[test]
+fn test_sui_raw_json_v2_rejects_unresolved_input() {
+    let raw_json = r#"{
+        "version": 2,
+        "sender": "0xfc3af6dd6dc614cc6ee17974033d76116843536f9b3e0524b4d48c54bfb9472d",
+        "expiration": null,
+        "gasData": {
+            "budget": "28457880",
+            "price": "750",
+            "owner": null,
+            "payment": [
+                {
+                    "objectId": "0x0794be3f3016c73e67612032e88397dfc43798ba20b1c0f66769a74455a54947",
+                    "version": "486126455",
+                    "digest": "J9bKhGatNhtjoXvUnt28kCWV9kRsN3aToGi4MEXam9D4"
+                }
+            ]
+        },
+        "inputs": [{ "UnresolvedPure": { "value": 1000 } }],
+        "commands": []
+    }"#;
+
+    let input = Proto::SigningInput {
+        transaction_payload: TransactionType::raw_json(raw_json.into()),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, input);
+
+    assert_eq!(output.error, SigningError::Error_invalid_params);
+}
+
 #[test]
 fn test_sui_raw_json_rejects_empty_gas_payment() {
     let raw_json = r#"{

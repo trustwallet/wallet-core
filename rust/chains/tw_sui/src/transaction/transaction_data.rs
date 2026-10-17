@@ -27,12 +27,36 @@ impl TransactionData {
         gas_price: u64,
         expiration: Option<TransactionExpiration>,
     ) -> Self {
+        Self::new_allow_sponsor(
+            kind,
+            sender,
+            gas_payment,
+            gas_budget,
+            gas_price,
+            sender,
+            expiration,
+        )
+    }
+
+    /// Same as [`TransactionData::new`], but the gas is paid by `gas_sponsor` that can differ
+    /// from the `sender`.
+    #[inline]
+    #[allow(clippy::too_many_arguments)]
+    pub fn new_allow_sponsor(
+        kind: TransactionKind,
+        sender: SuiAddress,
+        gas_payment: Vec<ObjectRef>,
+        gas_budget: u64,
+        gas_price: u64,
+        gas_sponsor: SuiAddress,
+        expiration: Option<TransactionExpiration>,
+    ) -> Self {
         TransactionData::V1(TransactionDataV1 {
             kind,
             sender,
             gas_data: GasData {
                 price: gas_price,
-                owner: sender,
+                owner: gas_sponsor,
                 payment: gas_payment,
                 budget: gas_budget,
             },
