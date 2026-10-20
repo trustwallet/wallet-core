@@ -353,24 +353,28 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
 TW_EXPORT_METHOD
 struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password);
 
-/// Sealed signing: signs a transaction inside the keystore.  Derives the key from the stored key,
-/// signs the given serialized SigningInput, and wipes the key — the private key never leaves the
-/// library (the caller receives only the signature).
+/// Sealed signing: signs a transaction inside the keystore.  Derives the key of the account
+/// identified by `coin` and `address`, signs the given serialized SigningInput, and wipes the key —
+/// the private key never leaves the library (the caller receives only the signed output).
+///
+/// Supported coins and their input contract:
+/// - Ethereum: serialized `Ethereum.Proto.SigningInput` with an empty `private_key`.
+/// - Bitcoin, Litecoin, Dogecoin: serialized `Bitcoin.Proto.SigningInput` with `signing_v2` set,
+///   `coin_type` equal to `coin`, and no keys in `private_key` or `signing_v2.private_keys`.
 ///
 /// \param key Non-null pointer to a stored key
 /// \param coin Coin type to sign for
+/// \param address Non-null string, address of the stored account to sign with, exactly as stored
+///        in the account (selects e.g. the SegWit vs Taproot Bitcoin account)
 /// \param password Non-null block of data, password of the stored key
 /// \param input Non-null block of data, serialized SigningInput protobuf (without a private key)
 /// \note Returned object needs to be deleted with \TWDataDelete
-/// \note LIMITATION (S2.1): only the coin's DEFAULT derivation is supported. For mnemonic keys, signing
-///       fails (returns null) unless the stored key holds exactly one account for the coin and it is the
-///       default-derivation account — a custom path or multi-account wallet is rejected rather than
-///       signed with a mismatched key. Passing the derivation/path through is a planned follow-up.
-/// \note Does not modify the stored key.
-/// \return Null pointer on failure, if the coin is not supported by the sealed path, or if the account
-///         is not the default one; serialized SigningOutput otherwise
+/// \note The account's derivation path is used only if the key derived from it reproduces `address`;
+///       otherwise signing fails. Does not modify the stored key.
+/// \return Null pointer on failure (unsupported coin, input contract violated, no matching account,
+///         wrong password); serialized SigningOutput otherwise
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password, TWData* _Nonnull input);
+TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input);
 
 /// Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 ///

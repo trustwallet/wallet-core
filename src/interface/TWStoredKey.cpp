@@ -283,11 +283,12 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
     }
 }
 
-TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password, TWData* _Nonnull input) {
+TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input) {
     try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         const auto inputData = TW::data(TWDataBytes(input), TWDataSize(input));
-        const auto output = TW::Keystore::sealedSign(key->impl, coin, passwordData, inputData);
+        const auto output = TW::Keystore::sealedSign(key->impl, coin, addressString, passwordData, inputData);
         if (output.empty()) {
             return nullptr;
         }

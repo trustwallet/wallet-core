@@ -12,6 +12,7 @@
 #include "proto/Common.pb.h"
 #include "proto/Ethereum.pb.h"
 
+#include <TrustWalletCore/TWAccount.h>
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWStoredKey.h>
@@ -49,7 +50,10 @@ TEST(TWStoredKeySign, EthereumEndToEndByteIdentical) {
     const auto input = WRAPD(TWDataCreateWithBytes(inputBytes.data(), inputBytes.size()));
 
     // Sealed path over the C ABI.
-    const auto sealed = WRAPD(TWStoredKeySign(key.get(), TWCoinTypeEthereum, password.get(), input.get()));
+    const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, nullptr));
+    ASSERT_NE(account.get(), nullptr);
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+    const auto sealed = WRAPD(TWStoredKeySign(key.get(), TWCoinTypeEthereum, address.get(), password.get(), input.get()));
     ASSERT_NE(sealed.get(), nullptr);
     const auto sealedData = data(TWDataBytes(sealed.get()), TWDataSize(sealed.get()));
 
@@ -72,15 +76,16 @@ TEST(TWStoredKeySign, EthereumEndToEndByteIdentical) {
     EXPECT_FALSE(out.encoded().empty());
 }
 
-TEST(TWStoredKeySign, UnsupportedCoinReturnsNull) {
+TEST(TWStoredKeySign, NoMatchingAccountReturnsNull) {
     const auto mnemonic = STRING("team engine square letter hero song dizzy scrub tornado fabric divert saddle");
     const auto name = STRING("name");
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
     const auto key = WRAP(TWStoredKey, TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), TWCoinTypeEthereum));
 
     const auto input = DATA("00");
-    // Bitcoin is not yet wired into the sealed path -> null (caller falls back).
-    TWData* out = TWStoredKeySign(key.get(), TWCoinTypeBitcoin, password.get(), input.get());
+    // No Bitcoin account in this keystore (and the input is not a SigningInput) -> null.
+    const auto address = STRING("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    TWData* out = TWStoredKeySign(key.get(), TWCoinTypeBitcoin, address.get(), password.get(), input.get());
     EXPECT_EQ(out, nullptr);
     if (out != nullptr) {
         TWDataDelete(out);
