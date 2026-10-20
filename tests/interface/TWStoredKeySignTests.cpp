@@ -21,7 +21,7 @@
 
 using namespace TW;
 
-static Data ethTransferNoKey() {
+static Data sealedEthTransferInput() {
     Ethereum::Proto::SigningInput in;
     auto chainId = store(uint256_t(1));
     in.set_chain_id(chainId.data(), chainId.size());
@@ -45,7 +45,7 @@ TEST(TWStoredKeySign, EthereumEndToEndByteIdentical) {
     const auto key = WRAP(TWStoredKey, TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), TWCoinTypeEthereum));
     ASSERT_NE(key.get(), nullptr);
 
-    const auto inputBytes = ethTransferNoKey();
+    const auto inputBytes = sealedEthTransferInput();
     const auto input = WRAPD(TWDataCreateWithBytes(inputBytes.data(), inputBytes.size()));
 
     // Sealed path over the C ABI.
