@@ -10,12 +10,15 @@
 
 #include <nlohmann/json.hpp>
 #include <optional>
+#include <stdexcept>
+#include <string>
 
 namespace TW::Keystore {
 
 enum class ScryptValidationError {
-    desiredKeyLengthTooLarge,
+    invalidDesiredKeyLength,
     invalidSaltLength,
+    zeroBlockSizeOrParallelization,
     blockSizeTooLarge,
     invalidCostFactor,
     overflow,
@@ -52,7 +55,8 @@ struct ScryptParameters {
     /// Random salt.
     Data salt;
 
-    /// Desired key length in bytes.
+    /// Desired key length in bytes. Must equal `defaultDesiredKeyLength`: wallet-core derives exactly
+    /// that many bytes on both the encrypt and decrypt paths, and `validate()` rejects any other value.
     std::size_t desiredKeyLength = defaultDesiredKeyLength;
 
     /// CPU/Memory cost factor.
@@ -79,12 +83,13 @@ struct ScryptParameters {
 
     /// Initializes `ScryptParameters` with all values.
     ///
-    /// @throws ScryptValidationError if the parameters are invalid.
+    /// @throws std::invalid_argument if the parameters are invalid, with the same message the JSON
+    /// constructor produces. (This used to throw the bare `ScryptValidationError` enum, which does
+    /// not derive from `std::exception` and so escaped any `catch (const std::exception&)`.)
     ScryptParameters(Data salt, uint32_t n, uint32_t r, uint32_t p, std::size_t desiredKeyLength)
         : salt(std::move(salt)), desiredKeyLength(desiredKeyLength), n(n), p(p), r(r) {
-        auto error = validate();
-        if (error) {
-            throw *error;
+        if (const auto error = validate()) {
+            throw std::invalid_argument("Invalid scrypt parameters: " + toString(*error));
         }
     }
 
