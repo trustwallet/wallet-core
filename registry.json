@@ -4,7 +4,7 @@
     "name": "Bitcoin",
     "coinId": 0,
     "symbol": "BTC",
-    "decimals": 8,
+    "decimal": 9,
     "blockchain": "Bitcoin",
     "derivation": [
       {
