@@ -358,7 +358,9 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 /// the private key never leaves the library (the caller receives only the signed output).
 ///
 /// Supported coins and their input contract:
-/// - Ethereum: serialized `Ethereum.Proto.SigningInput` with an empty `private_key`.
+/// - EVM coins (Ethereum, Smart Chain, Polygon, Ethereum Classic, …): serialized
+///   `Ethereum.Proto.SigningInput` with an empty `private_key`. Pass the account's own coin and address;
+///   the transaction is signed under Ethereum, with the chain selected by `chain_id`.
 /// - Bitcoin, Litecoin, Dogecoin: serialized `Bitcoin.Proto.SigningInput` with `signing_v2` set,
 ///   `coin_type` equal to `coin`, and no keys in `private_key` or `signing_v2.private_keys`.
 ///

@@ -24,6 +24,9 @@
 
 #include <gtest/gtest.h>
 
+#include <utility>
+#include <vector>
+
 namespace TW::Keystore::tests {
 
 static const auto gSealedPassword = TW::data(std::string("password"));
@@ -114,6 +117,81 @@ TEST(SealedSigner, PrivateKeyKeystoreByteIdentical) {
 // ---------------------------------------------------------------------------------------------
 // Fail-closed cases
 // ---------------------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------
+// Other EVM chains: key from the chain's own account, signed under Ethereum (as the app does)
+// ---------------------------------------------------------------------------------------------
+
+static Ethereum::Proto::SigningInput sealedEvmTransferNoKey(uint64_t chainId, bool eip1559) {
+    auto in = sealedEthTransferNoKey();
+    auto id = store(uint256_t(chainId));
+    in.set_chain_id(id.data(), id.size());
+    if (eip1559) {
+        in.set_tx_mode(Ethereum::Proto::Enveloped);
+        auto tip = store(uint256_t(2000000000ULL));
+        in.set_max_inclusion_fee_per_gas(tip.data(), tip.size());
+        auto maxFee = store(uint256_t(30000000000ULL));
+        in.set_max_fee_per_gas(maxFee.data(), maxFee.size());
+    }
+    return in;
+}
+
+static Data sealedEvmBaseline(Ethereum::Proto::SigningInput in, const Data& keyBytes) {
+    in.set_private_key(keyBytes.data(), keyBytes.size());
+    Data out;
+    anyCoinSign(TWCoinTypeEthereum, sealedSerialize(in), out);
+    return out;
+}
+
+// Chains on Ethereum's derivation path, both legacy and EIP-1559 transactions.
+TEST(SealedSigner, EvmSharedDerivationChainsByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto wallet = key.wallet(gSealedPassword);
+    const std::vector<std::pair<TWCoinType, uint64_t>> chains = {
+        {TWCoinTypeSmartChain, 56}, {TWCoinTypePolygon, 137}, {TWCoinTypeArbitrum, 42161}};
+    for (const auto& [coin, chainId] : chains) {
+        const auto account = key.account(coin, &wallet);
+        ASSERT_TRUE(account.has_value());
+        const auto pk = wallet.getKey(coin, account->derivationPath);
+        for (const bool eip1559 : {false, true}) {
+            const auto input = sealedEvmTransferNoKey(chainId, eip1559);
+            const auto sealed = sealedSign(key, coin, account->address, gSealedPassword, sealedSerialize(input));
+            ASSERT_FALSE(sealed.empty()) << coin << " eip1559=" << eip1559;
+            EXPECT_EQ(sealed, sealedEvmBaseline(input, pk.bytes)) << coin << " eip1559=" << eip1559;
+        }
+    }
+}
+
+// A chain on its own derivation path (Ethereum Classic, m/44'/61') signs with its own key, never
+// Ethereum's; and its account cannot be reached through Ethereum's address.
+TEST(SealedSigner, EvmOwnDerivationChainByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto wallet = key.wallet(gSealedPassword);
+    const auto ethAccount = sealedOnlyAccount(key, TWCoinTypeEthereum);
+    const auto account = key.account(TWCoinTypeEthereumClassic, &wallet);
+    ASSERT_TRUE(account.has_value());
+    ASSERT_NE(account->address, ethAccount.address);
+    const auto pk = wallet.getKey(TWCoinTypeEthereumClassic, account->derivationPath);
+    const auto ethPk = wallet.getKey(TWCoinTypeEthereum, ethAccount.derivationPath);
+
+    const auto input = sealedEvmTransferNoKey(61, false);
+    const auto sealed = sealedSign(key, TWCoinTypeEthereumClassic, account->address, gSealedPassword, sealedSerialize(input));
+    EXPECT_EQ(sealed, sealedEvmBaseline(input, pk.bytes));
+    EXPECT_NE(sealed, sealedEvmBaseline(input, ethPk.bytes));
+
+    EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereumClassic, ethAccount.address, gSealedPassword, sealedSerialize(input)).empty());
+}
+
+// A private-key keystore that holds only a Smart Chain account (no Ethereum account) still signs.
+TEST(SealedSigner, EvmPrivateKeyKeystoreWithoutEthereumAccount) {
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeSmartChain, gSealedRawKey);
+    ASSERT_TRUE(key.getAccounts(TWCoinTypeEthereum).empty());
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSmartChain);
+    const auto input = sealedEvmTransferNoKey(56, true);
+    const auto sealed = sealedSign(key, TWCoinTypeSmartChain, account.address, gSealedPassword, sealedSerialize(input));
+    ASSERT_FALSE(sealed.empty());
+    EXPECT_EQ(sealed, sealedEvmBaseline(input, gSealedRawKey));
+}
 
 TEST(SealedSigner, UnsupportedCoinReturnsEmpty) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);

@@ -78,7 +78,10 @@ static Data serializeAndSign(TWCoinType coin, const Input& in) {
     return output;
 }
 
-// EVM chains share the Ethereum SigningInput, which carries a singular `private_key` field.
+// EVM chains share the Ethereum SigningInput, which carries a singular `private_key` field. The key
+// comes from the account of `coin` itself (e.g. Smart Chain, or Ethereum Classic on its own path),
+// but signing always runs under Ethereum, exactly like the app does today (the chain is selected by
+// the input's `chain_id`, not by the coin).
 static Data signEthereum(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& signingInput) {
     Ethereum::Proto::SigningInput in;
     if (!in.ParseFromArray(signingInput.data(), static_cast<int>(signingInput.size())) || !in.private_key().empty()) {
@@ -89,7 +92,7 @@ static Data signEthereum(const StoredKey& storedKey, TWCoinType coin, const std:
         return {};
     }
     in.set_private_key(key->bytes.data(), key->bytes.size());
-    auto output = serializeAndSign(coin, in);
+    auto output = serializeAndSign(TWCoinTypeEthereum, in);
     wipe(*in.mutable_private_key()); // clear_* alone does not zero memory
     return output;
 }
@@ -125,9 +128,10 @@ Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& 
     // The PrivateKey and HDWallet destructors zero their own buffers; the serialized input and the
     // proto's copy of the key are wiped by the per-family signers above.
     // (Copies made inside the per-coin signer itself are a later hardening step.)
-    switch (coin) {
-    case TWCoinTypeEthereum:
+    if (TWCoinTypeBlockchain(coin) == TWBlockchainEthereum) {
         return signEthereum(storedKey, coin, address, password, signingInput);
+    }
+    switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeDogecoin:

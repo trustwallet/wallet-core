@@ -20,7 +20,9 @@ namespace TW::Keystore {
 /// and wiped entirely inside the library — it is NEVER returned to the caller.
 ///
 /// Supported coins and their input contract:
-/// - Ethereum: `Ethereum.Proto.SigningInput` with an empty `private_key`.
+/// - EVM coins (every coin whose blockchain is Ethereum, e.g. Ethereum, Smart Chain, Polygon, Ethereum
+///   Classic): `Ethereum.Proto.SigningInput` with an empty `private_key`. The key is taken from the
+///   account of `coin`; the transaction is always signed under Ethereum (chain selected by `chain_id`).
 /// - Bitcoin, Litecoin, Dogecoin: `Bitcoin.Proto.SigningInput` with `signing_v2` set, `coin_type == coin`,
 ///   and no keys in either `private_key` or `signing_v2.private_keys`.
 ///
