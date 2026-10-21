@@ -17,6 +17,7 @@
 #include "proto/Bitcoin.pb.h"
 #include "proto/BitcoinV2.pb.h"
 #include "proto/Common.pb.h"
+#include "proto/Decred.pb.h"
 #include "proto/Ethereum.pb.h"
 
 #include <TrustWalletCore/TWCoinType.h>
@@ -268,6 +269,7 @@ struct SealedChainInfo {
     uint32_t p2pkh;
     uint32_t p2sh;
     const char* hrp;
+    uint32_t sighash = 1; // SIGHASH_ALL; Bitcoin Cash uses ALL | FORKID (0x41)
 };
 
 static Bitcoin::Proto::SigningInput sealedUtxoTransferNoKey(TWCoinType coin, const Account& account, const SealedChainInfo& chain, const std::string& toAddress) {
@@ -285,6 +287,10 @@ static Bitcoin::Proto::SigningInput sealedUtxoTransferNoKey(TWCoinType coin, con
     builder.set_input_selector(BitcoinV2::Proto::InputSelector::SelectDescending);
     builder.set_fee_per_vb(10);
     builder.set_fixed_dust_threshold(546);
+    if (coin == TWCoinTypeZcash || coin == TWCoinTypeZelcash) {
+        const auto nu6BranchId = parse_hex("5510e7c8");
+        builder.mutable_zcash_extra_data()->set_branch_id(nu6BranchId.data(), nu6BranchId.size());
+    }
 
     // Two UTXOs at the account's address — a multi-input transaction signed by the one account key.
     const char* txIds[] = {
@@ -298,7 +304,7 @@ static Bitcoin::Proto::SigningInput sealedUtxoTransferNoKey(TWCoinType coin, con
         in.mutable_out_point()->set_hash(txId.data(), txId.size());
         in.mutable_out_point()->set_vout(static_cast<uint32_t>(i));
         in.set_value(values[i]);
-        in.set_sighash_type(1);
+        in.set_sighash_type(chain.sighash);
         in.mutable_sequence()->set_sequence(0xffffffff);
         in.set_receiver_address(account.address);
     }
@@ -330,12 +336,23 @@ static void expectUtxoByteIdentical(StoredKey& key, TWCoinType coin, const Accou
 
     const auto sealed = sealedSign(key, coin, account.address, gSealedPassword, sealedSerialize(input));
 
-    Bitcoin::Proto::SigningOutput sealedOut;
-    ASSERT_TRUE(sealedOut.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
-    EXPECT_EQ(sealedOut.error(), Common::Proto::OK);
-    ASSERT_TRUE(sealedOut.has_signing_result_v2());
-    EXPECT_EQ(sealedOut.signing_result_v2().error(), Common::Proto::OK) << sealedOut.signing_result_v2().error_message();
-    EXPECT_FALSE(sealedOut.signing_result_v2().encoded().empty());
+    // Decred wraps the V2 result in its own SigningOutput; every other coin uses Bitcoin's.
+    BitcoinV2::Proto::SigningOutput result;
+    if (coin == TWCoinTypeDecred) {
+        Decred::Proto::SigningOutput sealedOut;
+        ASSERT_TRUE(sealedOut.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
+        EXPECT_EQ(sealedOut.error(), Common::Proto::OK);
+        ASSERT_TRUE(sealedOut.has_signing_result_v2());
+        result = sealedOut.signing_result_v2();
+    } else {
+        Bitcoin::Proto::SigningOutput sealedOut;
+        ASSERT_TRUE(sealedOut.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
+        EXPECT_EQ(sealedOut.error(), Common::Proto::OK);
+        ASSERT_TRUE(sealedOut.has_signing_result_v2());
+        result = sealedOut.signing_result_v2();
+    }
+    EXPECT_EQ(result.error(), Common::Proto::OK) << result.error_message();
+    EXPECT_FALSE(result.encoded().empty());
     EXPECT_EQ(hex(sealed), hex(baseline));
 }
 
@@ -366,6 +383,30 @@ TEST(SealedSigner, DogecoinByteIdentical) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeDogecoin);
     expectUtxoByteIdentical(key, TWCoinTypeDogecoin, sealedOnlyAccount(key, TWCoinTypeDogecoin), {30, 22, ""},
                             "DLSSSUS3ex7YNDACJDxMER1ZMW579Vy8Zy");
+}
+
+// The remaining BitcoinV2 coins the app signs, with the app's chain info (`chainInfoForCoin`).
+// Each sends to the account's own address, so no per-coin destination fixture is needed.
+TEST(SealedSigner, OtherUtxoCoinsByteIdentical) {
+    const std::vector<std::pair<TWCoinType, SealedChainInfo>> coins = {
+        {TWCoinTypeBitcoinCash, {0, 5, "bitcoincash", 0x41}},
+        {TWCoinTypeDash, {76, 16, ""}},
+        {TWCoinTypeViacoin, {71, 33, "via"}},
+        {TWCoinTypeDigiByte, {30, 63, "dgb"}},
+        {TWCoinTypeRavencoin, {60, 122, ""}},
+        {TWCoinTypeFiro, {82, 7, ""}},
+        {TWCoinTypeQtum, {58, 50, ""}},
+        {TWCoinTypeZcash, {184, 189, ""}},
+        {TWCoinTypeZelcash, {184, 189, ""}},
+        {TWCoinTypeGroestlcoin, {36, 5, "grs"}},
+        {TWCoinTypeDecred, {63, 26, ""}},
+    };
+    for (const auto& [coin, chain] : coins) {
+        SCOPED_TRACE(coin);
+        auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, coin);
+        const auto account = sealedOnlyAccount(key, coin);
+        expectUtxoByteIdentical(key, coin, account, chain, account.address);
+    }
 }
 
 // coin_type must name the coin being signed — a Bitcoin input signed as Litecoin is rejected

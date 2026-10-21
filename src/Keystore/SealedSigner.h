@@ -23,7 +23,8 @@ namespace TW::Keystore {
 /// - EVM coins (every coin whose blockchain is Ethereum, e.g. Ethereum, Smart Chain, Polygon, Ethereum
 ///   Classic): `Ethereum.Proto.SigningInput` with an empty `private_key`. The key is taken from the
 ///   account of `coin`; the transaction is always signed under Ethereum (chain selected by `chain_id`).
-/// - Bitcoin, Litecoin, Dogecoin: `Bitcoin.Proto.SigningInput` with `signing_v2` set, `coin_type == coin`,
+/// - UTXO coins (Bitcoin, Litecoin, Dogecoin, Bitcoin Cash, Dash, Viacoin, DigiByte, Ravencoin, Firo, Qtum,
+///   Zcash, Flux, Groestlcoin, Decred): `Bitcoin.Proto.SigningInput` with `signing_v2` set, `coin_type == coin`,
 ///   and no keys in either `private_key` or `signing_v2.private_keys`.
 ///
 /// Returns the serialized SigningOutput, or an empty `Data` if `coin` is not supported by the sealed

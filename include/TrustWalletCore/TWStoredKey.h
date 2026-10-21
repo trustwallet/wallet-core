@@ -361,7 +361,8 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 /// - EVM coins (Ethereum, Smart Chain, Polygon, Ethereum Classic, …): serialized
 ///   `Ethereum.Proto.SigningInput` with an empty `private_key`. Pass the account's own coin and address;
 ///   the transaction is signed under Ethereum, with the chain selected by `chain_id`.
-/// - Bitcoin, Litecoin, Dogecoin: serialized `Bitcoin.Proto.SigningInput` with `signing_v2` set,
+/// - UTXO coins (Bitcoin, Litecoin, Dogecoin, Bitcoin Cash, Dash, Viacoin, DigiByte, Ravencoin, Firo,
+///   Qtum, Zcash, Flux, Groestlcoin, Decred): serialized `Bitcoin.Proto.SigningInput` with `signing_v2` set,
 ///   `coin_type` equal to `coin`, and no keys in `private_key` or `signing_v2.private_keys`.
 ///
 /// \param key Non-null pointer to a stored key

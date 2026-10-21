@@ -135,6 +135,17 @@ Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& 
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeDogecoin:
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeDigiByte:
+    case TWCoinTypeRavencoin:
+    case TWCoinTypeFiro:
+    case TWCoinTypeQtum:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
+    case TWCoinTypeGroestlcoin:
+    case TWCoinTypeDecred:
         return signUtxo(storedKey, coin, address, password, signingInput);
     default:
         return {}; // not yet supported by sealed signing
