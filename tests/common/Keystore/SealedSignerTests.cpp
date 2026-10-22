@@ -465,6 +465,35 @@ TEST(SealedSigner, OtherUtxoCoinsByteIdentical) {
     }
 }
 
+// PSBT (swap), as the app's `signPsbt` builds it: V1 envelope, `signing_v2.psbt`, Bitcoin chain info,
+// the account's public key. Fixture: the THORChain swap PSBT from TWBitcoinPsbtTests, whose input
+// belongs to the default SegWit address of this private key.
+TEST(SealedSigner, BitcoinPsbtByteIdentical) {
+    const auto psbtKey = parse_hex("f00ffbe44c5c2838c13d2778854ac66b75e04eb6054f0241989e223223ad5e55");
+    const auto psbt = parse_hex("70736274ff0100bc0200000001147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d000000000001011f6603010000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d00000000");
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeBitcoin, psbtKey);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeBitcoin);
+
+    BitcoinV2::Proto::SigningInput v2;
+    v2.mutable_chain_info()->set_p2pkh_prefix(gBitcoinChain.p2pkh);
+    v2.mutable_chain_info()->set_p2sh_prefix(gBitcoinChain.p2sh);
+    v2.mutable_chain_info()->set_hrp(gBitcoinChain.hrp);
+    const auto publicKey = parse_hex(account.publicKey);
+    ASSERT_FALSE(publicKey.empty());
+    v2.add_public_keys(publicKey.data(), publicKey.size());
+    v2.mutable_psbt()->set_psbt(psbt.data(), psbt.size());
+    Bitcoin::Proto::SigningInput input;
+    input.set_coin_type(TWCoinTypeBitcoin);
+    *input.mutable_signing_v2() = v2;
+
+    const auto sealed = sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(input));
+    Bitcoin::Proto::SigningOutput out;
+    ASSERT_TRUE(out.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
+    ASSERT_EQ(out.signing_result_v2().error(), Common::Proto::OK) << out.signing_result_v2().error_message();
+    EXPECT_EQ(hex(out.signing_result_v2().encoded()), "02000000000101147010db5fbcf619067c1090fec65c131443fbc80fb4aaeebe940e44206098c60000000000ffffffff0360ea000000000000160014f22a703617035ef7f490743d50f26ae08c30d0a70000000000000000426a403d3a474149412e41544f4d3a636f736d6f7331737377797a666d743675396a373437773537753438746778646575393573757a666c6d7175753a303a743a35303e12000000000000160014b139199ec796f36fc42e637f42da8e3e6720aa9d02483045022100b1229a008f20691639767bf925d6b8956ea957ccc633ad6b5de3618733a55e6b02205774d3320489b8a57a6f8de07f561de3e660ff8e587f6ac5422c49020cd4dc9101210306d8c664ea8fd2683eebea1d3114d90e0a5429e5783ba49b80ddabce04ff28f300000000");
+    EXPECT_EQ(sealed, sealedUtxoBaseline(TWCoinTypeBitcoin, input, psbtKey));
+}
+
 // coin_type must name the coin being signed — a Bitcoin input signed as Litecoin is rejected
 // (the class of bug where one coin's key signs another coin's claiming script).
 TEST(SealedSigner, UtxoCoinTypeMismatchRejected) {
