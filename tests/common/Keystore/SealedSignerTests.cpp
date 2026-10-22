@@ -183,6 +183,62 @@ TEST(SealedSigner, EvmOwnDerivationChainByteIdentical) {
     EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereumClassic, ethAccount.address, gSealedPassword, sealedSerialize(input)).empty());
 }
 
+// ERC-4337 UserOperation (v0.7, Biz4337 batch), as the app's `signUserOperation` builds it.
+// The full SigningOutput (UserOp JSON in `encoded`, UserOp hash in `pre_hash`) must match.
+TEST(SealedSigner, EvmUserOperationV07ByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeEthereum, account.derivationPath);
+
+    auto input = sealedEvmTransferNoKey(11155111, true);
+    input.set_tx_mode(Ethereum::Proto::UserOp);
+    input.clear_to_address();
+    auto& batch = *input.mutable_transaction()->mutable_scw_batch();
+    batch.set_wallet_type(Ethereum::Proto::Biz4337);
+    auto& call = *batch.add_calls();
+    call.set_address("0x3535353535353535353535353535353535353535");
+    auto value = store(uint256_t(1000000000000000ULL));
+    call.set_amount(value.data(), value.size());
+    auto& userOp = *input.mutable_user_operation_v0_7();
+    userOp.set_entry_point("0x0000000071727De22E5E9d8BAf0edAc6f37da032");
+    userOp.set_sender(account.address);
+    auto preVerificationGas = store(uint256_t(400000));
+    userOp.set_pre_verification_gas(preVerificationGas.data(), preVerificationGas.size());
+    auto verificationGasLimit = store(uint256_t(1000000));
+    userOp.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
+
+    const auto sealed = sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(input));
+    Ethereum::Proto::SigningOutput out;
+    ASSERT_TRUE(out.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
+    EXPECT_EQ(out.error(), Common::Proto::OK) << out.error_message();
+    EXPECT_FALSE(out.pre_hash().empty());
+    EXPECT_EQ(sealed, sealedEvmBaseline(input, pk.bytes));
+}
+
+// EIP-7702 SetCode transaction whose authorization has no custom signature, as the app's
+// non-delegated SetCode path builds it: the injected key signs BOTH the delegation authorization
+// and the transaction. Same key, same bytes as today.
+TEST(SealedSigner, EvmEip7702SetCodeByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto wallet = key.wallet(gSealedPassword);
+    const auto account = key.account(TWCoinTypeSmartChain, &wallet);
+    ASSERT_TRUE(account.has_value());
+    const auto pk = wallet.getKey(TWCoinTypeSmartChain, account->derivationPath);
+
+    auto input = sealedEvmTransferNoKey(56, true);
+    input.set_tx_mode(Ethereum::Proto::SetCode);
+    input.set_to_address(account->address);
+    input.mutable_eip7702_authorization()->set_address("0x3535353535353535353535353535353535353535");
+
+    const auto sealed = sealedSign(key, TWCoinTypeSmartChain, account->address, gSealedPassword, sealedSerialize(input));
+    Ethereum::Proto::SigningOutput out;
+    ASSERT_TRUE(out.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
+    EXPECT_EQ(out.error(), Common::Proto::OK) << out.error_message();
+    ASSERT_FALSE(out.encoded().empty());
+    EXPECT_EQ(static_cast<uint8_t>(out.encoded()[0]), 0x04); // EIP-7702 transaction type
+    EXPECT_EQ(sealed, sealedEvmBaseline(input, pk.bytes));
+}
+
 // A private-key keystore that holds only a Smart Chain account (no Ethereum account) still signs.
 TEST(SealedSigner, EvmPrivateKeyKeystoreWithoutEthereumAccount) {
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeSmartChain, gSealedRawKey);
