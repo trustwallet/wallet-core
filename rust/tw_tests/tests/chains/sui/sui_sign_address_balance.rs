@@ -8,11 +8,15 @@
 //! the same builders were executed on Sui devnet (see the tsdk `sui-address-balance.devnet.test.ts`).
 
 use crate::chains::sui::test_cases::{PRIVATE_KEY_54E80D76, SENDER_54E80D76};
+use std::str::FromStr;
 use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Sui::Proto::{self, mod_SigningInput::OneOftransaction_payload as TransactionType};
+use tw_sui::address::SuiAddress;
+use tw_sui::transaction::sui_types::{CallArg, Reservation, WithdrawFrom};
+use tw_sui::transaction::transaction_data::{TransactionData, TransactionKind};
 
 const MAINNET_CHAIN: &str = "4btiuiMPvEENsttpZC7CZ53DruC3MAgfznDbASZ7DR6S";
 const RECIPIENT: &str = "0xa7175abdd5ed92ebe3ad390db366c6a706478cdf517cde6cf98630065cda377a";
@@ -98,7 +102,8 @@ fn test_sui_sign_add_stake_from_address_balance() {
 
 #[test]
 fn test_sui_signer_address_is_the_withdrawal_owner() {
-    // The funds come out of the transaction sender's address balance: it has to be the key's address.
+    // The funds come out of the transaction sender's address balance: it has to be the key's address,
+    // it also owns the gas, and the withdrawal reads from the sender.
     let pay_sui = Proto::PaySui {
         recipients: vec![RECIPIENT.into()],
         amounts: vec![1],
@@ -107,15 +112,30 @@ fn test_sui_signer_address_is_the_withdrawal_owner() {
     };
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let output = signer.sign(CoinType::Sui, input(TransactionType::pay_sui(pay_sui)));
-    let tx =
+    let raw =
         tw_encoding::base64::decode(&output.unsigned_tx, tw_encoding::base64::STANDARD).unwrap();
-    let sender = SENDER_54E80D76
-        .trim_start_matches("0x")
-        .decode_hex()
-        .unwrap();
-    // `TransactionData::V1 { kind, sender, .. }`: the sender follows the kind, and appears exactly once.
-    assert_eq!(
-        tx.windows(32).filter(|w| *w == sender.as_slice()).count(),
-        2
-    ); // sender + gas owner
+    let TransactionData::V1(tx) = tw_encoding::bcs::decode(&raw).unwrap();
+
+    let sender = SuiAddress::from_str(SENDER_54E80D76).unwrap();
+    assert_eq!(tx.sender, sender);
+    assert_eq!(tx.gas_data.owner, sender);
+    assert!(
+        tx.gas_data.payment.is_empty(),
+        "gas comes from the address balance"
+    );
+    let TransactionKind::ProgrammableTransaction(ptb) = tx.kind;
+    let withdrawals: Vec<_> = ptb
+        .inputs
+        .iter()
+        .filter_map(|arg| match arg {
+            CallArg::FundsWithdrawal(w) => Some(w),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(withdrawals.len(), 1);
+    assert!(matches!(withdrawals[0].withdraw_from, WithdrawFrom::Sender));
+    assert!(matches!(
+        withdrawals[0].reservation,
+        Reservation::MaxAmountU64(1)
+    ));
 }

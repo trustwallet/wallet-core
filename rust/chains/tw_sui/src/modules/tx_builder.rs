@@ -4,7 +4,8 @@
 
 use crate::address::SuiAddress;
 use crate::transaction::sui_types::{
-    ChainIdentifier, ObjectDigest, ObjectID, ObjectRef, SequenceNumber, TransactionExpiration,
+    sui_coin_type_tag, ChainIdentifier, ObjectDigest, ObjectID, ObjectRef, SequenceNumber,
+    TransactionExpiration,
 };
 use crate::transaction::transaction_builder::{
     AddressBalanceWithdrawal, GasPayment, TransactionBuilder,
@@ -115,12 +116,18 @@ impl<'a> TWTransactionBuilder<'a> {
 
     fn pay_from_proto(&self, pay: &Proto::Pay<'_>) -> SigningResult<TransactionData> {
         let signer = self.signer_address()?;
-        self.check_reservation(pay.address_balance_amount)?;
+        let withdrawal = Self::token_withdrawal(pay)?;
+        // The gas budget is reserved from the SUI address balance: it only adds up with a SUI withdrawal,
+        // not with an amount of some other token.
+        let sui_withdrawn = withdrawal
+            .as_ref()
+            .filter(|w| w.coin_type == sui_coin_type_tag())
+            .map_or(0, |w| w.amount);
+        self.check_reservation(sui_withdrawn)?;
         let input_coins = Self::build_coins(&pay.input_coins)?;
         let recipients = Self::parse_addresses(&pay.recipients)
             .context("Invalid one of the recipients addresses")?;
         let gas = self.gas_payment(&pay.gas)?;
-        let withdrawal = Self::token_withdrawal(pay)?;
 
         TransactionBuilder::pay(
             signer,

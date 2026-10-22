@@ -266,6 +266,35 @@ fn test_pay_sui_rejects_a_zero_total_and_mismatched_lists() {
 }
 
 #[test]
+fn test_pay_sui_rejects_a_recipient_with_a_zero_amount() {
+    // Total and withdrawal agree (5), but BOB would get a zero-amount `redeem_funds`.
+    let err = error_of(input(pay_sui(vec![], 5, &[ALICE, BOB], &[5, 0]), true));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
+    let err = error_of(input(
+        pay_token(vec![], 5, TOKEN, &[ALICE, BOB], &[5, 0], None),
+        true,
+    ));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
+}
+
+#[test]
+fn test_pay_token_gas_reservation_only_adds_up_with_a_sui_withdrawal() {
+    // A huge TOKEN amount does not collide with the SUI gas budget (different balances)...
+    let huge = u64::MAX - 1;
+    let ok = build(input(
+        pay_token(vec![], huge, TOKEN, &[ALICE], &[huge], None),
+        true,
+    ));
+    assert!(ok.is_ok(), "{:?}", ok.err());
+    // ...but the same amount of SUI does: withdrawal + gas budget overflows u64.
+    let err = error_of(input(
+        pay_token(vec![], huge, "0x2::sui::SUI", &[ALICE], &[huge], None),
+        true,
+    ));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
+}
+
+#[test]
 fn test_pay_sui_owned_coins_plus_the_address_balance_keep_the_change_in_the_coin() {
     // 2 SUI coin + 3 SUI withdrawn, 4 SUI sent: the withdrawal is merged into the coin first.
     let actual = built(input(

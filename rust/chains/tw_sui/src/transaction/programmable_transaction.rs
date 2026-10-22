@@ -337,6 +337,11 @@ impl ProgrammableTransactionBuilder {
                 )
             });
         }
+        // A recipient with nothing to receive would get a zero-amount withdrawal, which the chain does not accept.
+        if per_recipient.values().any(|amount| *amount == 0) {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("A recipient has a zero amount: nothing to withdraw for it");
+        }
         for (recipient, amount) in per_recipient {
             let coin = self.redeem_funds(amount, coin_type)?;
             let recipient = self.pure(recipient)?;
