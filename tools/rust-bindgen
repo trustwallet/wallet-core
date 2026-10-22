@@ -57,6 +57,10 @@ fi
 
 if isTargetSpecified "ios" && [[ $(uname -s) == "Darwin" ]]; then
   echo "Generating iOS targets"
+  # Minimum OS of the C code that crates compile (secp256k1-sys). Without it the cc crate falls back to the
+  # newest SDK and the objects in the macOS slice demand that macOS version. Keep in sync with swift/project.yml.
+  export IPHONEOS_DEPLOYMENT_TARGET=15.0
+  export MACOSX_DEPLOYMENT_TARGET=12.0
   cargo build -Z build-std=std,panic_abort --target aarch64-apple-ios --target aarch64-apple-ios-sim --target x86_64-apple-ios --target aarch64-apple-darwin --target x86_64-apple-darwin --target aarch64-apple-ios-macabi --target x86_64-apple-ios-macabi --release --lib &
   wait
   lipo $BUILD_FOLDER/x86_64-apple-ios/release/$TARGET_NAME $BUILD_FOLDER/aarch64-apple-ios-sim/release/$TARGET_NAME -create -output $BUILD_FOLDER/$TARGET_NAME

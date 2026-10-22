@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
     s.source = { :git => 'https://github.com/apple/swift-protobuf.git', :tag => s.version }
 
     s.requires_arc = true
-    s.ios.deployment_target = '11.0'
-    s.osx.deployment_target = '10.13'
+    s.ios.deployment_target = '15.0'
+    s.osx.deployment_target = '12.0'
 
     s.cocoapods_version = '>= 1.13.0'
 
