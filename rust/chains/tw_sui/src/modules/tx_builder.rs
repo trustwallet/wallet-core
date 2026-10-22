@@ -3,14 +3,15 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SuiAddress;
+use crate::constants::MAX_BALANCE_WITHDRAW_RESERVATIONS;
 use crate::transaction::sui_types::{
-    sui_coin_type_tag, ChainIdentifier, ObjectDigest, ObjectID, ObjectRef, SequenceNumber,
+    sui_coin_type_tag, CallArg, ChainIdentifier, ObjectDigest, ObjectID, ObjectRef, SequenceNumber,
     TransactionExpiration,
 };
 use crate::transaction::transaction_builder::{
     AddressBalanceWithdrawal, GasPayment, TransactionBuilder,
 };
-use crate::transaction::transaction_data::TransactionData;
+use crate::transaction::transaction_data::{TransactionData, TransactionKind};
 use move_core_types::language_storage::TypeTag;
 use move_core_types::parser::parse_type_tag;
 use std::borrow::Cow;
@@ -61,10 +62,36 @@ impl<'a> TWTransactionBuilder<'a> {
             TransactionType::transfer_object(ref transfer_obj) => {
                 self.transfer_object_from_proto(transfer_obj)
             },
-            TransactionType::raw_json(ref raw_json) => self.raw_json_from_proto(raw_json),
+            TransactionType::raw_json(ref raw_json) => {
+                return Ok(TWTransaction::Transaction(Box::new(
+                    self.raw_json_from_proto(raw_json)?,
+                )));
+            },
             TransactionType::None => SigningError::err(SigningErrorType::Error_invalid_params),
         }?;
+        Self::check_reservation_count(&tx_data)?;
         Ok(TWTransaction::Transaction(Box::new(tx_data)))
+    }
+
+    /// The node counts every `FundsWithdrawal` input and, when gas is paid from the address balance (empty
+    /// gas payment), one more for the gas budget. Reject here what it would reject after signing.
+    fn check_reservation_count(tx: &TransactionData) -> SigningResult<()> {
+        let TransactionData::V1(tx) = tx;
+        let TransactionKind::ProgrammableTransaction(pt) = &tx.kind;
+        let explicit = pt
+            .inputs
+            .iter()
+            .filter(|arg| matches!(arg, CallArg::FundsWithdrawal(_)))
+            .count();
+        let gas_from_address_balance = usize::from(tx.gas_data.payment.is_empty());
+        if explicit + gas_from_address_balance > MAX_BALANCE_WITHDRAW_RESERVATIONS {
+            return SigningError::err(SigningErrorType::Error_invalid_params).with_context(|| {
+                format!(
+                    "Too many balance withdrawals: {explicit} (one per distinct recipient) plus {gas_from_address_balance} for gas, the network allows {MAX_BALANCE_WITHDRAW_RESERVATIONS}"
+                )
+            });
+        }
+        Ok(())
     }
 
     fn sign_direct_from_proto(&self, sign_direct: &Proto::SignDirect<'_>) -> SigningResult<Data> {

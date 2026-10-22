@@ -294,6 +294,37 @@ fn test_pay_token_gas_reservation_only_adds_up_with_a_sui_withdrawal() {
     assert_eq!(err, SigningErrorType::Error_invalid_params);
 }
 
+fn many_recipients(n: usize) -> Vec<&'static str> {
+    (1..=n)
+        .map(|i| &*Box::leak(format!("0x{i:064x}").into_boxed_str()))
+        .collect()
+}
+
+#[test]
+fn test_the_network_limit_of_ten_withdrawals_counts_one_per_recipient_and_the_gas() {
+    // Gas from the address balance is one reservation: 9 recipients + gas = 10 is the most.
+    let nine = many_recipients(9);
+    let ok = build(input(pay_sui(vec![], 9, &nine, &[1; 9]), true));
+    assert!(ok.is_ok(), "{:?}", ok.err());
+    let ten = many_recipients(10);
+    let err = error_of(input(pay_sui(vec![], 10, &ten, &[1; 10]), true));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
+
+    // With a gas coin there is no implicit reservation: 10 recipients are fine, 11 are not.
+    let gas = Some(proto_ref(GAS_COIN, 9));
+    let ok = build(input(
+        pay_token(vec![], 10, TOKEN, &ten, &[1; 10], gas.clone()),
+        false,
+    ));
+    assert!(ok.is_ok(), "{:?}", ok.err());
+    let eleven = many_recipients(11);
+    let err = error_of(input(
+        pay_token(vec![], 11, TOKEN, &eleven, &[1; 11], gas),
+        false,
+    ));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
+}
+
 #[test]
 fn test_pay_sui_owned_coins_plus_the_address_balance_keep_the_change_in_the_coin() {
     // 2 SUI coin + 3 SUI withdrawn, 4 SUI sent: the withdrawal is merged into the coin first.

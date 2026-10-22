@@ -27,6 +27,11 @@ pub const WITHDRAW_STAKE_FUN_NAME: &IdentStr = ident_str!("request_withdraw_stak
 pub const SUI_FRAMEWORK_ADDRESS: AccountAddress = address_from_single_byte(2);
 pub const SUI_FRAMEWORK_PACKAGE_ID: ObjectID = ObjectID(SUI_FRAMEWORK_ADDRESS);
 
+/// The most balance-withdraw reservations a transaction may carry: its `FundsWithdrawal` inputs plus the
+/// implicit one for gas paid from the address balance. The node rejects more at signing time
+/// (`max_withdraws` in `sui-types` `TransactionData::validity_check`, hard-coded there for now).
+pub const MAX_BALANCE_WITHDRAW_RESERVATIONS: usize = 10;
+
 pub const COIN_MODULE_NAME: &IdentStr = ident_str!("coin");
 /// SIP-58: `redeem_funds<T>(Withdrawal<Balance<T>>): Coin<T>` turns a withdrawal into a coin.
 pub const REDEEM_FUNDS_FUN_NAME: &IdentStr = ident_str!("redeem_funds");
