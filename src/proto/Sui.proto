@@ -57,6 +57,9 @@ message Pay {
     // - With `input_coins`, it is merged into the first coin and the change stays in that coin.
     // - Without `input_coins` it must equal the sum of `amounts` exactly: every recipient is paid
     //   with a coin redeemed for exactly its amount.
+//   Each such coin is one balance-withdraw reservation, and the network allows at most 10 per
+//   transaction (plus one for gas paid from the address balance): more recipients are rejected by
+//   the node, not by wallet-core (the limit is the node's to change).
     // Gas is separate: a gas coin, or the SUI address balance when `SigningInput.valid_during` is set.
     uint64 address_balance_amount = 6;
 }
@@ -101,6 +104,9 @@ message PaySui {
     // - With `input_coins`, it is merged into the first coin and the change stays in that coin.
     // - Without `input_coins` it must equal the sum of `amounts` exactly: every recipient is paid
     //   with a coin redeemed for exactly its amount.
+//   Each such coin is one balance-withdraw reservation, and the network allows at most 10 per
+//   transaction (plus one for gas paid from the address balance): more recipients are rejected by
+//   the node, not by wallet-core (the limit is the node's to change).
     // The caller must make sure the address balance covers this amount plus `gas_budget` (when
     // `SigningInput.valid_during` is set) because the node rejects the transaction otherwise.
     uint64 address_balance_amount = 4;
