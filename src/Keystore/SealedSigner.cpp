@@ -5,12 +5,18 @@
 #include "SealedSigner.h"
 
 #include "Coin.h"
+#include "Ethereum/Address.h"
+#include "Ethereum/MessageSigner.h"
+#include "Hash.h"
+#include "HexCoding.h"
 #include "PrivateKey.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "rust/Wrapper.h"
 
 #include <TrezorCrypto/memzero.h>
 
+#include <algorithm>
 #include <optional>
 
 namespace TW::Keystore {
@@ -150,6 +156,108 @@ Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& 
     default:
         return {}; // not yet supported by sealed signing
     }
+}
+
+// ---------------------------------------------------------------------------------------------
+// EVM message signing
+//
+// Each function computes the digest itself from structured input (never signs a caller-supplied
+// raw hash), so a sealed key can only produce the kind of signature the function is named for.
+// Digests that wallet-core computes in Rust (Biz, EIP-7702) are obtained without the key; the key
+// only ever signs inside C++, where `PrivateKey` wipes itself.
+// ---------------------------------------------------------------------------------------------
+
+static bool isEvm(TWCoinType coin) {
+    return TWCoinTypeBlockchain(coin) == TWBlockchainEthereum;
+}
+
+// Signs a 32-byte digest and returns r || s || v with the Ethereum v offset (27/28).
+static Data signEvmDigest(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& digest) {
+    if (!isEvm(coin) || digest.size() != 32) {
+        return {};
+    }
+    const auto key = deriveSigningKey(storedKey, coin, address, password);
+    if (!key.has_value()) {
+        return {};
+    }
+    auto signature = key->sign(digest, TWCurveSECP256k1);
+    if (signature.size() != 65) {
+        return {};
+    }
+    signature[64] += 27;
+    return signature;
+}
+
+Data sealedSignEthereumPersonalMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message) {
+    const std::string prefix = "\x19" "Ethereum Signed Message:\n" + std::to_string(message.size());
+    Data prefixed(prefix.begin(), prefix.end());
+    append(prefixed, message);
+    return signEvmDigest(storedKey, coin, address, password, Hash::keccak256(prefixed));
+}
+
+Data sealedSignEthereumTypedData(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const std::string& typedDataJson) {
+    Data digest;
+    try {
+        digest = Ethereum::MessageSigner::typedDataPreImageHash(typedDataJson);
+    } catch (...) {
+        return {};
+    }
+    return signEvmDigest(storedKey, coin, address, password, digest);
+}
+
+Data sealedSignBizUserOpHash(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password,
+                             const Data& chainId, const std::string& codeAddress, const std::string& codeName, const std::string& codeVersion,
+                             const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& userOpHash) {
+    // The signed Biz hash always names the signing account itself as `sender`.
+    const Rust::TWDataWrapper chainIdRust = chainId;
+    const Rust::TWStringWrapper codeAddressRust = codeAddress;
+    const Rust::TWStringWrapper codeNameRust = codeName;
+    const Rust::TWStringWrapper codeVersionRust = codeVersion;
+    const Rust::TWStringWrapper typeHashRust = typeHash;
+    const Rust::TWStringWrapper domainSeparatorHashRust = domainSeparatorHash;
+    const Rust::TWStringWrapper senderRust = address;
+    const Rust::TWStringWrapper userOpHashRust = userOpHash;
+    const Rust::TWDataWrapper encoded = Rust::tw_biz_get_encoded_hash(chainIdRust.get(), codeAddressRust.get(), codeNameRust.get(), codeVersionRust.get(),
+                                                                      typeHashRust.get(), domainSeparatorHashRust.get(), senderRust.get(), userOpHashRust.get());
+    if (!encoded.ptr) {
+        return {};
+    }
+    return signEvmDigest(storedKey, coin, address, password, encoded.toDataOrDefault());
+}
+
+// Minimal big-endian hex with a "0x" prefix and at least one byte, as the Rust serializer writes U256.
+static std::string compactHex(const Data& bigEndian) {
+    auto first = std::find_if(bigEndian.begin(), bigEndian.end(), [](byte b) { return b != 0; });
+    if (first == bigEndian.end()) {
+        return "0x00";
+    }
+    return hexEncoded(Data(first, bigEndian.end()));
+}
+
+std::string sealedSignEip7702Authorization(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password,
+                                           const Data& chainId, const std::string& contractAddress, const Data& nonce) {
+    if (!Ethereum::Address::isValid(contractAddress)) {
+        return {};
+    }
+    const Rust::TWDataWrapper chainIdRust = chainId;
+    const Rust::TWStringWrapper contractAddressRust = contractAddress;
+    const Rust::TWDataWrapper nonceRust = nonce;
+    const Rust::TWDataWrapper hash = Rust::tw_eip7702_get_authorization_hash(chainIdRust.get(), contractAddressRust.get(), nonceRust.get());
+    if (!hash.ptr) {
+        return {};
+    }
+    auto signature = signEvmDigest(storedKey, coin, address, password, hash.toDataOrDefault());
+    if (signature.empty()) {
+        return {};
+    }
+    const auto yParity = static_cast<byte>(signature[64] - 27);
+    // Same JSON as `TWEip7702SignAuthorization` (Rust `SignedAuthorization`, field order preserved).
+    return "{\"chainId\":\"" + compactHex(chainId) +
+           "\",\"address\":\"" + Ethereum::Address(contractAddress).string() +
+           "\",\"nonce\":\"" + compactHex(nonce) +
+           "\",\"yParity\":\"" + hexEncoded(Data{yParity}) +
+           "\",\"r\":\"" + compactHex(Data(signature.begin(), signature.begin() + 32)) +
+           "\",\"s\":\"" + compactHex(Data(signature.begin() + 32, signature.begin() + 64)) + "\"}";
 }
 
 } // namespace TW::Keystore
