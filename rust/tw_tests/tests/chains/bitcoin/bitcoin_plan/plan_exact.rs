@@ -163,7 +163,7 @@ fn test_exact_selector_with_and_without_change() {
 
 #[test]
 fn test_exact_selector_with_change_many_utxos_900() {
-    let inputs: Vec<_> = (0..900).into_iter().map(|i| (i + 1) * 100).collect();
+    let inputs: Vec<_> = (0..900).map(|i| (i + 1) * 100).collect();
     let sum_inputs: Amount = inputs.iter().sum();
 
     let requested_amount = sum_inputs / 8;

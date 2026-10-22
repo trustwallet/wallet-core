@@ -36,7 +36,7 @@ fn test_bitcoin_send_to_p2sh_address() {
         out_point: input::out_point(utxo_hash_0, 0),
         value: 10_000,
         sighash_type: SIGHASH_ALL,
-        claiming_script: input::p2pkh(alice_public_key.to_vec().into()),
+        claiming_script: input::p2pkh(alice_public_key.to_vec()),
         ..Default::default()
     };
 

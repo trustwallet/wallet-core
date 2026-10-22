@@ -99,7 +99,7 @@ fn test_max_selector_many_utxos_900() {
     const TX_VSIZE: u64 = 99_876;
     const TX_FEE: Amount = TX_VSIZE as Amount * 2;
 
-    let inputs: Vec<_> = (0..900).into_iter().map(|i| (i + 1) * 100).collect();
+    let inputs: Vec<_> = (0..900).map(|i| (i + 1) * 100).collect();
 
     // Expected result: 670 utxos, with the largest amounts.
     // Total transaction weight does not exceed the max limit if there are 670 UTXOs.

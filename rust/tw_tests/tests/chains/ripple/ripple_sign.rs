@@ -127,7 +127,6 @@ fn test_ripple_sign_trust_set() {
             value: "10".into(),
             issuer: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn".into(),
         }),
-        ..Proto::OperationTrustSet::default()
     };
     let input = Proto::SigningInput {
         fee: 10,
@@ -162,7 +161,6 @@ fn test_ripple_sign_trust_set_with_currency_amount() {
             value: "1000000000".into(),
             issuer: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De".into(),
         }),
-        ..Proto::OperationTrustSet::default()
     };
     let input = Proto::SigningInput {
         fee: 500,
@@ -412,7 +410,6 @@ fn test_ripple_sign_escrow_create_with_condition_0() {
         finish_after: 0,
         condition: "a0258020c26add2db64dd6d5700a5e2721c1e908d599901627b8dc82f25b3e035ec4004b810120"
             .into(),
-        ..Proto::OperationEscrowCreate::default()
     };
     let input = Proto::SigningInput {
         fee: 12,
@@ -449,7 +446,6 @@ fn test_ripple_sign_escrow_create_with_condition_1() {
         finish_after: 0,
         condition: "a0258020b3dda5c580919ce0fd6acdf013c337461951946e54b41446467961568cdd9e7b810120"
             .into(),
-        ..Proto::OperationEscrowCreate::default()
     };
     let input = Proto::SigningInput {
         fee: 12,
@@ -486,7 +482,6 @@ fn test_ripple_sign_escrow_create_with_condition_2() {
         finish_after: 0,
         condition: "a0258020ffecf1ae6182f10efebe0c0896cd6b044df7b27d33b05030033ef63d47e2b250810120"
             .into(),
-        ..Proto::OperationEscrowCreate::default()
     };
     let input = Proto::SigningInput {
         fee: 12,
@@ -584,7 +579,6 @@ fn test_ripple_sign_escrow_finish_with_condition_0() {
             .into(),
         fulfillment: "a02280205d729ac237c4c7976403817b6409be7190efbfad49af2cf974b9582a854e8794"
             .into(),
-        ..Proto::OperationEscrowFinish::default()
     };
     let input = Proto::SigningInput {
         fee: 423,
@@ -620,7 +614,6 @@ fn test_ripple_sign_escrow_finish_with_condition_1() {
             .into(),
         fulfillment: "a022802049b9ab20ca85b55d0c12b948ec7c524f843c77be1ef1561a42b7167dce174b7a"
             .into(),
-        ..Proto::OperationEscrowFinish::default()
     };
     let input = Proto::SigningInput {
         fee: 423,
@@ -815,7 +808,6 @@ fn x_addr_payment_input(
         amount_oneof: AmountType::amount(10),
         destination: destination.to_string().into(),
         destination_tag,
-        ..Proto::OperationPayment::default()
     };
     Proto::SigningInput {
         fee: 10,

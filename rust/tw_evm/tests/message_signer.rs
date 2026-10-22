@@ -44,7 +44,6 @@ fn test_message_signer_sign_verify(test_input: SignVerifyTestInput) {
         message: test_input.msg.into(),
         message_type: test_input.msg_type,
         chain_id,
-        ..Proto::MessageSigningInput::default()
     };
 
     let output = EthMessageSigner.sign_message(&coin, signing_input);
@@ -87,7 +86,6 @@ fn test_message_signer_sign_err(test_input: SignErrorTestInput) {
         chain_id: Some(Proto::MaybeChainId {
             chain_id: test_input.chain_id,
         }),
-        ..Proto::MessageSigningInput::default()
     };
 
     let output = EthMessageSigner.sign_message(&coin, signing_input);

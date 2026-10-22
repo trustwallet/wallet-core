@@ -65,7 +65,7 @@ fn test_sign_authorization_ffi() {
         json["nonce"].as_str().unwrap(),
         hex::encode(U256::from(1u64).to_big_endian_compact(), true)
     );
-    assert_eq!(json["yParity"].as_str().unwrap(), hex::encode(&[1u8], true));
+    assert_eq!(json["yParity"].as_str().unwrap(), hex::encode([1u8], true));
     assert_eq!(
         json["r"].as_str().unwrap(),
         "0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710"
