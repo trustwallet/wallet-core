@@ -1,0 +1,27 @@
+[
+  {
+    "digest": "JDnpg2cdKLbcqT4qQ3aCYhVgPpAd1DRYYFi3VCNUR3M7",
+    "file": "01-send-address-balance-only.bcs",
+    "scenario": "send 1 SUI from the address balance only"
+  },
+  {
+    "digest": "9upyqi3C5xUTwAsaY2EV19WZY7VVGag8Hac53cKrxd8Q",
+    "file": "02-stake-address-balance-only.bcs",
+    "scenario": "stake 1 SUI from the address balance only"
+  },
+  {
+    "digest": "DoDdPC5KggibNtq57CxiMqppq3MeCp1apaUNwbNHtrRL",
+    "file": "03-unstake-gas-from-address-balance.bcs",
+    "scenario": "unstake, gas from the address balance"
+  },
+  {
+    "digest": "5jjTnx4SfRSjF5N4W91EY5bjbVui2cZQ7wjbNEHVh6Qk",
+    "file": "04-send-coin-plus-address-balance.bcs",
+    "scenario": "send 4 SUI out of a 2 SUI coin + 2 SUI withdrawn, gas from the address balance"
+  },
+  {
+    "digest": "AFr3LovdhGP31HxGTGNZUtG5qtdGpZPRKv8XsajdYHhA",
+    "file": "05-send-gas-coin-plus-withdrawal.bcs",
+    "scenario": "send 2.5 SUI, gas coin plus a 1 SUI withdrawal"
+  }
+]

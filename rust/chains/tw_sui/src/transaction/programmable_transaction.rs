@@ -3,8 +3,11 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::address::SuiAddress;
+use crate::constants::{COIN_MODULE_NAME, REDEEM_FUNDS_FUN_NAME, SUI_FRAMEWORK_PACKAGE_ID};
 use crate::transaction::command::{Argument, Command};
-use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectID, ObjectRef};
+use crate::transaction::sui_types::{
+    sui_coin_type_tag, CallArg, FundsWithdrawalArg, ObjectArg, ObjectID, ObjectRef,
+};
 use indexmap::IndexMap;
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::TypeTag;
@@ -119,7 +122,18 @@ impl ProgrammableTransactionBuilder {
                 Ok(self.pure_bytes(bytes, force_separate))
             },
             CallArg::Object(obj) => self.obj(obj),
+            CallArg::FundsWithdrawal(withdrawal) => Ok(self.funds_withdrawal(withdrawal)),
         }
+    }
+
+    /// SIP-58 withdrawal input. Never deduplicated: the chain allows several withdrawals, even of
+    /// the same type, and each is reserved separately.
+    pub fn funds_withdrawal(&mut self, withdrawal: FundsWithdrawalArg) -> Argument {
+        let key = BuilderArg::ForcedNonUniquePure(self.inputs.len());
+        let (i, _) = self
+            .inputs
+            .insert_full(key, CallArg::FundsWithdrawal(withdrawal));
+        Argument::Input(i as u16)
     }
 
     pub fn pure_bytes(&mut self, bytes: Vec<u8>, force_separate: bool) -> Argument {
@@ -144,6 +158,10 @@ impl ProgrammableTransactionBuilder {
                 CallArg::Pure(_) => {
                     return SigningError::err(SigningErrorType::Error_internal)
                         .context("Expected Object, found Pure")
+                },
+                CallArg::FundsWithdrawal(_) => {
+                    return SigningError::err(SigningErrorType::Error_internal)
+                        .context("Expected Object, found FundsWithdrawal")
                 },
                 CallArg::Object(arg) => arg,
             };
@@ -197,6 +215,151 @@ impl ProgrammableTransactionBuilder {
             .map(|obj| self.obj(obj))
             .collect::<SigningResult<_>>()?;
         Ok(self.command(Command::MakeMoveVec(None, make_vec_args)))
+    }
+
+    /// SIP-58: withdraws `amount` of `coin_type` from the sender's address balance and redeems it
+    /// into a `Coin<T>` (`0x2::coin::redeem_funds<T>`). The returned coin exists only inside this
+    /// transaction: a `Coin` has no `drop`, so every path must consume it completely (merge it,
+    /// transfer it or stake it) or the transaction aborts. Redeem exactly what is needed.
+    pub fn redeem_funds(&mut self, amount: u64, coin_type: &TypeTag) -> SigningResult<Argument> {
+        let withdrawal = self.input(CallArg::FundsWithdrawal(
+            FundsWithdrawalArg::balance_from_sender(amount, coin_type.clone()),
+        ))?;
+        Ok(self.command(Command::move_call(
+            SUI_FRAMEWORK_PACKAGE_ID,
+            COIN_MODULE_NAME.to_owned(),
+            REDEEM_FUNDS_FUN_NAME.to_owned(),
+            vec![coin_type.clone()],
+            vec![withdrawal],
+        )))
+    }
+
+    /// Merges `sources` into `destination`. No-op for an empty list.
+    pub fn merge_coins(&mut self, destination: Argument, sources: Vec<Argument>) {
+        if !sources.is_empty() {
+            self.command(Command::MergeCoins(destination, sources));
+        }
+    }
+
+    /// One `Coin<T>` argument gathered from owned `coins` and, if `withdraw > 0`, a redeemed
+    /// SIP-58 withdrawal merged into the first owned coin. `None` when there is nothing to gather.
+    ///
+    /// A withdrawal on its own (no owned coin) comes back as the temporary redeemed coin: the caller
+    /// must consume it whole, see [`Self::pay_from_funds`] for how a payment avoids a left-over.
+    pub fn gather_coin(
+        &mut self,
+        coins: Vec<ObjectRef>,
+        withdraw: u64,
+        coin_type: &TypeTag,
+    ) -> SigningResult<Option<Argument>> {
+        let mut gathered = None;
+        let mut coins = coins.into_iter();
+        if let Some(first) = coins.next() {
+            let first = self.obj(ObjectArg::ImmOrOwnedObject(first))?;
+            let others: Vec<_> = coins
+                .map(|c| self.obj(ObjectArg::ImmOrOwnedObject(c)))
+                .collect::<Result<_, _>>()?;
+            self.merge_coins(first, others);
+            gathered = Some(first);
+        }
+        if withdraw > 0 {
+            let redeemed = self.redeem_funds(withdraw, coin_type)?;
+            gathered = Some(match gathered {
+                Some(owned) => {
+                    self.merge_coins(owned, vec![redeemed]);
+                    owned
+                },
+                None => redeemed,
+            });
+        }
+        Ok(gathered)
+    }
+
+    /// SIP-58: pays `amounts` of `coin_type` to `recipients` from owned `coins` and/or the address
+    /// balance. Not for the gas coin: `Argument::GasCoin` is never used.
+    ///
+    /// - With owned `coins`, the `withdraw` (if any) is merged into them and the amounts are split
+    ///   off; the change stays in the first owned coin.
+    /// - Without owned coins everything comes from the address balance, and `withdraw` must be
+    ///   exactly the total of `amounts`: each recipient gets a coin redeemed for exactly its amount.
+    ///   Nothing is split, so no empty or left-over `Coin` (which has no `drop`) has to be disposed of.
+    pub fn pay_from_funds(
+        &mut self,
+        coins: Vec<ObjectRef>,
+        withdraw: u64,
+        coin_type: &TypeTag,
+        recipients: Vec<SuiAddress>,
+        amounts: Vec<u64>,
+    ) -> SigningResult<()> {
+        if coins.is_empty() {
+            return self.pay_from_funds_only(withdraw, coin_type, recipients, amounts);
+        }
+        let Some(source) = self.gather_coin(coins, withdraw, coin_type)? else {
+            return SigningError::err(SigningErrorType::Error_internal)
+                .context("Owned coins were given but nothing was gathered");
+        };
+        self.pay_impl(recipients, amounts, source)
+    }
+
+    fn pay_from_funds_only(
+        &mut self,
+        withdraw: u64,
+        coin_type: &TypeTag,
+        recipients: Vec<SuiAddress>,
+        amounts: Vec<u64>,
+    ) -> SigningResult<()> {
+        if recipients.len() != amounts.len() {
+            return SigningError::err(SigningErrorType::Error_invalid_params).with_context(|| {
+                let recipients_num = recipients.len();
+                let amounts_num = amounts.len();
+                format!("Recipients and amounts mismatch. Got {recipients_num} recipients but {amounts_num} amounts")
+            });
+        }
+        // One transfer per distinct recipient, like `pay_impl`.
+        let mut per_recipient: IndexMap<SuiAddress, u64> = IndexMap::new();
+        let mut total = 0u64;
+        for (recipient, amount) in recipients.into_iter().zip(amounts) {
+            total = total
+                .checked_add(amount)
+                .or_tw_err(SigningErrorType::Error_invalid_params)
+                .context("Total of the amounts overflows u64")?;
+            let entry = per_recipient.entry(recipient).or_default();
+            *entry += amount;
+        }
+        if total == 0 {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("Nothing to pay: no input coins and a zero total amount");
+        }
+        if withdraw != total {
+            return SigningError::err(SigningErrorType::Error_invalid_params).with_context(|| {
+                format!(
+                    "Without input coins the address balance withdrawal ({withdraw}) must equal the total amount ({total})"
+                )
+            });
+        }
+        for (recipient, amount) in per_recipient {
+            let coin = self.redeem_funds(amount, coin_type)?;
+            let recipient = self.pure(recipient)?;
+            self.command(Command::TransferObjects(vec![coin], recipient));
+        }
+        Ok(())
+    }
+
+    /// SIP-58, gas paid from the address balance: sends everything gathered from `coins` and a
+    /// `withdraw` from the address balance to `recipient`.
+    pub fn pay_all_sui_from_funds(
+        &mut self,
+        coins: Vec<ObjectRef>,
+        withdraw: u64,
+        recipient: SuiAddress,
+    ) -> SigningResult<()> {
+        let Some(source) = self.gather_coin(coins, withdraw, &sui_coin_type_tag())? else {
+            return SigningError::err(SigningErrorType::Error_invalid_params)
+                .context("No input coins and no address balance withdrawal to pay from");
+        };
+        let recipient = self.pure(recipient)?;
+        self.command(Command::TransferObjects(vec![source], recipient));
+        Ok(())
     }
 
     pub fn command(&mut self, command: Command) -> Argument {

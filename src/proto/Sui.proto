@@ -46,6 +46,39 @@ message Pay {
 
     // Gas object to be used in this transaction.
     ObjectRef gas = 4;
+
+    // SIP-58: type of the coin that is withdrawn from the sender's address balance, like
+    // `0x2::sui::SUI` or `0xdba3...::usdc::USDC`. Required when `address_balance_amount` is set and
+    // rejected otherwise. The `input_coins` must be coins of this type.
+    string coin_type = 5;
+
+    // SIP-58: amount of `coin_type` withdrawn from the sender's address balance, an additional
+    // source of funds next to `input_coins`. 0 means none.
+    // - With `input_coins`, it is merged into the first coin and the change stays in that coin.
+    // - Without `input_coins` it must equal the sum of `amounts` exactly: every recipient is paid
+    //   with a coin redeemed for exactly its amount.
+    // Gas is separate: a gas coin, or the SUI address balance when `SigningInput.valid_during` is set.
+    uint64 address_balance_amount = 6;
+}
+
+// SIP-58 (address balances): the validity window of a transaction that pays gas from the sender's
+// SUI address balance instead of a gas coin object.
+// https://github.com/sui-foundation/sips/blob/main/sips/sip-58.md
+//
+// Without an owned gas coin a transaction has no natural uniqueness or replay protection, so it
+// declares the epochs it is valid in (at most two: N and N+1), the network it is valid on, and a nonce.
+message ValidDuring {
+    // First epoch the transaction is valid in: the current epoch (it must not be later).
+    uint64 min_epoch = 1;
+
+    // Last epoch the transaction is valid in, at most `min_epoch + 1`.
+    uint64 max_epoch = 2;
+
+    // Base58 chain identifier of the network (the digest of its genesis checkpoint).
+    string chain = 3;
+
+    // Makes otherwise identical transactions distinct. The protocol ignores it except in the digest.
+    uint32 nonce = 4;
 }
 
 // Send SUI coins to a list of addresses, following a list of amounts.
@@ -53,6 +86,8 @@ message Pay {
 // https://docs.sui.io/sui-api-ref#unsafe_paysui
 message PaySui {
     // The Sui coins to be used in this transaction, including the coin for gas payment.
+    // When `SigningInput.valid_during` is set, gas is paid from the address balance, no coin is
+    // reserved for it, and this list may be empty if `address_balance_amount` covers the amounts.
     repeated ObjectRef input_coins = 1;
 
     // The recipients' addresses, the length of this vector must be the same as amounts.
@@ -60,6 +95,15 @@ message PaySui {
 
     // The amounts to be transferred to recipients, following the same order.
     repeated uint64 amounts = 3;
+
+    // SIP-58: amount (MIST) withdrawn from the sender's SUI address balance, an additional source
+    // of funds next to `input_coins`. 0 means none.
+    // - With `input_coins`, it is merged into the first coin and the change stays in that coin.
+    // - Without `input_coins` it must equal the sum of `amounts` exactly: every recipient is paid
+    //   with a coin redeemed for exactly its amount.
+    // The caller must make sure the address balance covers this amount plus `gas_budget` (when
+    // `SigningInput.valid_during` is set) because the node rejects the transaction otherwise.
+    uint64 address_balance_amount = 4;
 }
 
 // Send all SUI coins to one recipient.
@@ -67,10 +111,17 @@ message PaySui {
 // https://docs.sui.io/sui-api-ref#unsafe_payallsui
 message PayAllSui {
     // The Sui coins to be used in this transaction, including the coin for gas payment.
+    // When `SigningInput.valid_during` is set, gas is paid from the address balance and no coin is
+    // reserved for it.
     repeated ObjectRef input_coins = 1;
 
     // The recipient address.
     string recipient = 2;
+
+    // SIP-58: amount (MIST) withdrawn from the sender's SUI address balance and sent as well.
+    // 0 means none. It cannot mean "everything": a withdrawal reserves an explicit amount, so the
+    // caller passes the address balance minus `gas_budget` (when `SigningInput.valid_during` is set).
+    uint64 address_balance_amount = 3;
 }
 
 // Add stake to a validator's staking pool using multiple coins and amount.
@@ -86,7 +137,12 @@ message RequestAddStake {
     string validator = 3;
 
     // Gas object to be used in this transaction.
+    // Must be unset when `SigningInput.valid_during` is set (gas is paid from the address balance).
     ObjectRef gas = 4;
+
+    // SIP-58: amount (MIST) withdrawn from the sender's SUI address balance and staked together
+    // with `coins`. 0 means none.
+    uint64 address_balance_amount = 5;
 }
 
 // Withdraw stake from a validator's staking pool.
@@ -137,6 +193,14 @@ message SigningInput {
 
     // Reference gas price.
     uint64 reference_gas_price = 13;
+
+    // SIP-58: when set, gas is paid from the sender's SUI address balance instead of a gas coin.
+    // Supported by `PaySui`, `PayAllSui`, `Pay`, `RequestAddStake`, `RequestWithdrawStake` and
+    // `TransferObject`; the `gas` object of the latter four must then be unset. It is an error with
+    // `SignDirect` and `RawJson` (their transaction is prebuilt) and when `gas_budget` is 0.
+    // `gas_budget` is reserved from the address balance and the unused part is refunded to it.
+    // The window must be the current epoch or the current and the next one.
+    ValidDuring valid_during = 14;
 }
 
 // Transaction signing output.
