@@ -122,13 +122,10 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    runs-on: xcode-27-xlarge
+    runs-on: macos-latest-xlarge
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - name: Select Xcode 27.1
-        run: tools/select-xcode
-
       - name: Install system dependencies
         run: |
           tools/install-sys-dependencies-mac

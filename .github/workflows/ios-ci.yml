@@ -63,8 +63,6 @@ jobs:
     - name: Cache Rust
       uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
       with:
-        # Do not reuse the cache saved on the macos-15 image: this job moved to the xcode-27 image.
-        key: xcode-27
         workspaces: |
           rust
 
