@@ -457,6 +457,13 @@ fn test_pay_all_sui_gas_coin_with_a_withdrawal() {
 }
 
 #[test]
+fn test_pay_all_sui_withdrawal_needs_a_gas_coin_or_a_valid_during_window() {
+    // A withdrawal but no input coins (so no gas coin) and no window: nothing to pay gas with.
+    let err = error_of(input(pay_all(vec![], SUI), false));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
+}
+
+#[test]
 fn test_pay_all_sui_needs_something_to_send() {
     let err = error_of(input(pay_all(vec![], 0), true));
     assert_eq!(err, SigningErrorType::Error_invalid_params);
@@ -953,4 +960,19 @@ fn test_pay_without_a_token_withdrawal_is_the_unchanged_legacy_transaction() {
         TransactionExpiration::None,
     );
     assert_eq!(actual, expected);
+}
+
+#[test]
+fn test_pay_sui_and_pay_all_sui_without_any_coin_or_withdrawal_are_rejected() {
+    // The legacy path (no `valid_during`, nothing withdrawn) still needs a coin to spend.
+    let pay = error_of(input(pay_sui(vec![], 0, &[ALICE], &[SUI]), false));
+    assert_eq!(pay, SigningErrorType::Error_invalid_params);
+    let pay_all = error_of(input(pay_all(vec![], 0), false));
+    assert_eq!(pay_all, SigningErrorType::Error_invalid_params);
+}
+
+#[test]
+fn test_a_signing_input_without_a_transaction_payload_is_rejected() {
+    let err = error_of(input(Payload::None, true));
+    assert_eq!(err, SigningErrorType::Error_invalid_params);
 }
