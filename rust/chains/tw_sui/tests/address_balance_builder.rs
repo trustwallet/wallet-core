@@ -4,7 +4,8 @@
 
 //! SIP-58 (address balances): the transactions built from `Sui.proto` are compared, byte for byte,
 //! with transactions written out literally here (inputs, commands, gas, expiration). The BCS layout of
-//! the types itself is pinned separately against transactions the Sui node itself serialised (`devnet_sip58_roundtrip.rs`).
+//! the types is pinned against transactions that landed on mainnet, see
+//! `tw_tests/tests/chains/sui/sui_sign_address_balance.rs`.
 
 use move_core_types::identifier::Identifier;
 use move_core_types::language_storage::{StructTag, TypeTag};
