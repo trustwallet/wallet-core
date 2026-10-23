@@ -17,10 +17,12 @@ tw_misc = { path = "../tw_misc" }
 tw_number = { path = "../tw_number" }
 tw_proto = { path = "../tw_proto" }
 wallet-core-rs = { path = "../wallet_core_rs" }
+move-core-types = { git = "https://github.com/move-language/move", rev = "ea70797099baea64f05194a918cebd69ed02b285", features = ["address32"] }
 # Chain specific:
 tw_bitcoin = { path = "../chains/tw_bitcoin" }
 tw_cosmos_sdk = { path = "../tw_cosmos_sdk", features = ["test-utils"] }
 tw_solana = { path = "../chains/tw_solana" }
 tw_ton = { path = "../chains/tw_ton" }
+tw_sui = { path = "../chains/tw_sui" }
 tw_ton_sdk = { path = "../frameworks/tw_ton_sdk" }
 tw_utxo = { path = "../frameworks/tw_utxo" }

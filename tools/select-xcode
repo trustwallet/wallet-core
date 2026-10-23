@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# Makes Xcode 27.1 the active developer dir (iOS, macOS and Mac Catalyst builds need it: its minimum
+# deployment targets are iOS 15.0 and macOS 12.0, see swift/project.yml and swift/common-xcframework.yml).
+# Fails loudly when it is not installed instead of silently building with another Xcode.
+#
+# usage: tools/select-xcode [version]   (default 27.1)
+
+set -e
+
+VERSION="${1:-27.1}"
+
+for app in "/Applications/Xcode_${VERSION}.app" "/Applications/Xcode-${VERSION}.app"; do
+  if [ -d "$app" ]; then
+    sudo xcode-select -s "$app/Contents/Developer"
+    break
+  fi
+done
+
+if ! xcodebuild -version | head -1 | grep -q "Xcode ${VERSION}"; then
+  echo "::error::Xcode ${VERSION} is not the active Xcode (found: $(xcodebuild -version | head -1)). Install it at /Applications/Xcode_${VERSION}.app" >&2
+  exit 1
+fi
+
+xcodebuild -version

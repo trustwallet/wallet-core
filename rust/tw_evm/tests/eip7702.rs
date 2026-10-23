@@ -38,7 +38,7 @@ fn test_sign_authorization() {
     );
     assert_eq!(json["address"].as_str().unwrap(), contract_address);
     assert_eq!(json["nonce"].as_str().unwrap(), hex::encode(nonce, true));
-    assert_eq!(json["yParity"].as_str().unwrap(), hex::encode(&[1u8], true));
+    assert_eq!(json["yParity"].as_str().unwrap(), hex::encode([1u8], true));
     assert_eq!(
         json["r"].as_str().unwrap(),
         "0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710"

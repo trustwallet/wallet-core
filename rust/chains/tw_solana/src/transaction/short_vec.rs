@@ -362,10 +362,10 @@ mod tests {
     #[test]
     fn test_short_vec_u8_too_long() {
         let vec = ShortVec(vec![4u8; u16::MAX as usize]);
-        assert!(matches!(serialize(&vec), Ok(_)));
+        assert!(serialize(&vec).is_ok());
 
         let vec = ShortVec(vec![4u8; u16::MAX as usize + 1]);
-        assert!(matches!(serialize(&vec), Err(_)));
+        assert!(serialize(&vec).is_err());
     }
 
     #[test]
