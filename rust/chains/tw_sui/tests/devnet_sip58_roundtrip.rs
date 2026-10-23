@@ -7,28 +7,31 @@
 //! types and encoding again must give the same bytes: enum variant indexes and field order match what the
 //! chain accepts.
 
-use std::fs;
-use std::path::Path;
 use tw_encoding::bcs;
 use tw_sui::transaction::programmable_transaction::ProgrammableTransaction;
 use tw_sui::transaction::sui_types::{CallArg, TransactionExpiration};
 use tw_sui::transaction::transaction_data::{TransactionData, TransactionDataV1, TransactionKind};
 
-fn fixtures() -> Vec<(String, Vec<u8>)> {
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devnet_sip58");
-    let mut all: Vec<_> = fs::read_dir(dir)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .filter(|p| p.extension().is_some_and(|e| e == "bcs"))
-        .map(|p| {
+const MANIFEST: &str = include_str!("fixtures/devnet_sip58/manifest.json");
+
+/// Embedded at compile time: the WASM test runner has no access to the host file system.
+/// Must list every file of `manifest.json` (see `test_embedded_fixtures_match_the_manifest`).
+fn fixtures() -> Vec<(&'static str, &'static [u8])> {
+    macro_rules! fixture {
+        ($name:literal) => {
             (
-                p.file_name().unwrap().to_string_lossy().into_owned(),
-                fs::read(p).unwrap(),
+                $name,
+                &include_bytes!(concat!("fixtures/devnet_sip58/", $name))[..],
             )
-        })
-        .collect();
-    all.sort();
-    all
+        };
+    }
+    vec![
+        fixture!("01-send-address-balance-only.bcs"),
+        fixture!("02-stake-address-balance-only.bcs"),
+        fixture!("03-unstake-gas-from-address-balance.bcs"),
+        fixture!("04-send-coin-plus-address-balance.bcs"),
+        fixture!("05-send-gas-coin-plus-withdrawal.bcs"),
+    ]
 }
 
 fn decode(name: &str, raw: &[u8]) -> TransactionDataV1 {
@@ -37,12 +40,50 @@ fn decode(name: &str, raw: &[u8]) -> TransactionDataV1 {
     v1
 }
 
+fn manifest_files() -> Vec<String> {
+    let entries: Vec<serde_json::Value> = serde_json::from_str(MANIFEST).unwrap();
+    let mut files: Vec<_> = entries
+        .iter()
+        .map(|e| e["file"].as_str().unwrap().to_string())
+        .collect();
+    files.sort();
+    files
+}
+
+#[test]
+fn test_embedded_fixtures_match_the_manifest() {
+    let mut embedded: Vec<_> = fixtures().iter().map(|(n, _)| n.to_string()).collect();
+    embedded.sort();
+    assert!(!embedded.is_empty());
+    assert_eq!(
+        embedded,
+        manifest_files(),
+        "fixtures() and manifest.json differ"
+    );
+}
+
+/// The WASM runner cannot list the directory, so a stray `.bcs` file is only caught natively.
+#[cfg(not(target_family = "wasm"))]
+#[test]
+fn test_every_fixture_file_is_in_the_manifest() {
+    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/devnet_sip58");
+    let mut on_disk: Vec<_> = std::fs::read_dir(dir)
+        .unwrap()
+        .map(|e| e.unwrap().file_name().to_string_lossy().into_owned())
+        .filter(|n| n.ends_with(".bcs"))
+        .collect();
+    on_disk.sort();
+    assert_eq!(
+        on_disk,
+        manifest_files(),
+        "fixture files and manifest.json differ"
+    );
+}
+
 #[test]
 fn test_devnet_transactions_round_trip_byte_identically() {
-    let all = fixtures();
-    assert_eq!(all.len(), 5, "fixtures missing");
-    for (name, raw) in all {
-        let tx = TransactionData::V1(decode(&name, &raw));
+    for (name, raw) in fixtures() {
+        let tx = TransactionData::V1(decode(name, raw));
         assert_eq!(
             bcs::encode(&tx).unwrap(),
             raw,
@@ -55,7 +96,7 @@ fn test_devnet_transactions_round_trip_byte_identically() {
 fn test_devnet_transactions_have_the_sip58_shapes() {
     let (mut address_balance_gas, mut with_withdrawal) = (0, 0);
     for (name, raw) in fixtures() {
-        let v1 = decode(&name, &raw);
+        let v1 = decode(name, raw);
         if let TransactionExpiration::ValidDuring {
             min_epoch,
             max_epoch,
