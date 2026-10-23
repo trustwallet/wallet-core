@@ -88,11 +88,6 @@ jobs:
     - name: Run iOS tests
       run: |
         tools/generate-files ios
-        # TEMPORARY diagnostics: Barz.getInitCode is missing in the CI build only.
-        ruby -v; perl -v | sed -n 2p
-        wc -l swift/Sources/Generated/Barz.swift
-        grep -n "static func" swift/Sources/Generated/Barz.swift || true
-        git status --short | head -20
         tools/ios-test
 
     - name: Build sample app
