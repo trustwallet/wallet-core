@@ -21,18 +21,18 @@ identical, i.e. variant indexes and field order are what the chain accepts.
 
 ## Regenerate
 
-Self-contained: wallet-core's own types and `AnySigner`, plus `curl` for the faucet and the node (GraphQL).
-Not part of CI (a public network brings flakiness).
+The generator is not part of the repository: a public network brings flakiness, and the project does not commit
+scripts that talk to a network. To refresh the fixtures, write a throwaway script that builds the transactions with
+wallet-core (`AnySigner`, `Sui.proto`), asks the node (GraphQL `transactionBcs`) for the canonical bytes of the
+executed transactions, and keep the transaction only if those bytes equal what wallet-core produced. Copy the `.bcs`
+files here and run:
 
 ```bash
 cd rust
-cargo run -p tw_tests --example sui_devnet_sip58_fixtures --release -- /tmp/devnet-sip58
-cp /tmp/devnet-sip58/* chains/tw_sui/tests/fixtures/devnet_sip58/
 cargo test -p tw_sui --test devnet_sip58_roundtrip
 ```
 
-The generator fails unless the node's canonical bytes equal what wallet-core produced, so the written files are by
-construction what the chain accepted. A new run yields different transactions (new keys, epoch, nonce) of the same shapes.
+A new run yields different transactions (new keys, epoch, nonce) of the same shapes.
 
 ## Test coin (tokens held in the address balance)
 
