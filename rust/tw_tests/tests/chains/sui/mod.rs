@@ -8,6 +8,7 @@ mod sui_address;
 mod sui_compile;
 mod sui_message_sign;
 mod sui_sign;
+mod sui_sign_address_balance;
 mod sui_transaction_util;
 mod test_cases;
 

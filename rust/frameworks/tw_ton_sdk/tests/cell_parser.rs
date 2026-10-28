@@ -45,20 +45,20 @@ fn test_cell_parse_internal_transfer_message() {
             .unwrap();
     let expected_value = U256::from(9_223_372_036_854_775_808_u64);
 
-    assert_eq!(bit_0, false);
-    assert_eq!(ihr_disabled, true);
-    assert_eq!(bounce, true);
-    assert_eq!(bounced, false);
+    assert!(!bit_0);
+    assert!(ihr_disabled);
+    assert!(bounce);
+    assert!(!bounced);
     assert_eq!(src_addr, AddressData::NULL);
     assert_eq!(dest_addr, expected_dest_addr.into_data());
     assert_eq!(value, expected_value);
-    assert_eq!(currency_collections, false);
+    assert!(!currency_collections);
     assert_eq!(ihr_fees, U256::ZERO);
     assert_eq!(fwd_fees, U256::ZERO);
     assert_eq!(created_lt, 0);
     assert_eq!(created_at, 0);
-    assert_eq!(contains_state_init, false);
-    assert_eq!(contains_data, false);
+    assert!(!contains_state_init);
+    assert!(!contains_data);
 }
 
 /// Verifies that load_address correctly sign-extends workchain byte 0xFF to -1

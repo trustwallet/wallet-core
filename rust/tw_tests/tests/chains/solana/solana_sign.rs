@@ -96,7 +96,6 @@ fn test_solana_sign_transfer_with_memo_and_references() {
             "CuieVDEDtLo7FypA9SbLM9saXFdb1dsshEkyErMqkRQq".into(),
             "tFpP7tZUt6zb7YZPpQ11kXNmsc5YzpMXmahGMvCHhqS".into(),
         ],
-        ..Proto::Transfer::default()
     };
     let input = Proto::SigningInput {
         private_key: b58("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"),

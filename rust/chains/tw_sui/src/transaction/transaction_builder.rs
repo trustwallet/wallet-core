@@ -7,25 +7,59 @@ use crate::constants::{
     ADD_STAKE_MUL_COIN_FUN_NAME, SUI_SYSTEM_MODULE_NAME, SUI_SYSTEM_PACKAGE_ID,
     WITHDRAW_STAKE_FUN_NAME,
 };
-use crate::transaction::command::Command;
+use crate::transaction::command::{Argument, Command};
 use crate::transaction::programmable_transaction::{
     ProgrammableTransaction, ProgrammableTransactionBuilder,
 };
 use crate::transaction::raw_types::RawTransaction;
-use crate::transaction::sui_types::{CallArg, ObjectArg, ObjectRef};
+use crate::transaction::sui_types::{
+    sui_coin_type_tag, CallArg, ObjectArg, ObjectRef, TransactionExpiration,
+};
 use crate::transaction::transaction_data::{TransactionData, TransactionKind};
+use move_core_types::language_storage::TypeTag;
 use tw_coin_entry::error::prelude::*;
 use tw_encoding::bcs;
+
+/// How a transaction pays for gas.
+#[derive(Debug)]
+pub enum GasPayment {
+    /// A gas coin object.
+    Coin(ObjectRef),
+    /// SIP-58: `gas_budget` is withdrawn from the sender's SUI address balance and no gas object
+    /// is referenced. The transaction then needs a [`TransactionExpiration::ValidDuring`] window.
+    AddressBalance(TransactionExpiration),
+}
+
+impl GasPayment {
+    /// The `gas_data.payment` objects and the transaction expiration this gas payment implies.
+    fn into_parts(self) -> (Vec<ObjectRef>, Option<TransactionExpiration>) {
+        match self {
+            GasPayment::Coin(gas) => (vec![gas], None),
+            GasPayment::AddressBalance(expiration) => (vec![], Some(expiration)),
+        }
+    }
+}
+
+/// SIP-58: `amount` of `coin_type` that is withdrawn from the sender's address balance.
+#[derive(Debug)]
+pub struct AddressBalanceWithdrawal {
+    pub amount: u64,
+    pub coin_type: TypeTag,
+}
 
 pub struct TransactionBuilder;
 
 impl TransactionBuilder {
+    /// `address_balance_amount` (SIP-58) is withdrawn from the sender's SUI address balance and staked
+    /// together with `coins`; 0 means none.
+    #[allow(clippy::too_many_arguments)]
     pub fn request_add_stake(
         signer: SuiAddress,
         coins: Vec<ObjectRef>,
+        address_balance_amount: u64,
         amount: Option<u64>,
         validator: SuiAddress,
-        gas: ObjectRef,
+        gas: GasPayment,
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
@@ -33,9 +67,18 @@ impl TransactionBuilder {
 
         let pt = {
             let mut builder = ProgrammableTransactionBuilder::default();
+            let system_state = builder.input(CallArg::SUI_SYSTEM_MUT).unwrap();
+            let mut coin_args = obj_vec
+                .into_iter()
+                .map(|obj| builder.obj(obj))
+                .collect::<SigningResult<Vec<_>>>()?;
+            if address_balance_amount > 0 {
+                coin_args.push(builder.redeem_funds(address_balance_amount, &sui_coin_type_tag())?);
+            }
+            let coins_vec = builder.command(Command::MakeMoveVec(None, coin_args));
             let arguments = vec![
-                builder.input(CallArg::SUI_SYSTEM_MUT).unwrap(),
-                builder.make_obj_vec(obj_vec)?,
+                system_state,
+                coins_vec,
                 builder.input(CallArg::Pure(bcs::encode(&amount)?)).unwrap(),
                 builder
                     .input(CallArg::Pure(bcs::encode(&validator)?))
@@ -50,36 +93,47 @@ impl TransactionBuilder {
             ));
             builder.finish()
         };
-        Ok(TransactionData::new_programmable(
+        let (gas_payment, expiration) = gas.into_parts();
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
             signer,
-            vec![gas],
-            pt,
+            gas_payment,
             gas_budget,
             gas_price,
+            expiration,
         ))
     }
 
     pub fn request_withdraw_stake(
         signer: SuiAddress,
         staked_sui: ObjectRef,
-        gas: ObjectRef,
+        gas: GasPayment,
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
-        TransactionData::new_move_call(
+        let pt = {
+            let mut builder = ProgrammableTransactionBuilder::default();
+            builder.move_call(
+                SUI_SYSTEM_PACKAGE_ID,
+                SUI_SYSTEM_MODULE_NAME.to_owned(),
+                WITHDRAW_STAKE_FUN_NAME.to_owned(),
+                vec![],
+                vec![
+                    CallArg::SUI_SYSTEM_MUT,
+                    CallArg::Object(ObjectArg::ImmOrOwnedObject(staked_sui)),
+                ],
+            )?;
+            builder.finish()
+        };
+        let (gas_payment, expiration) = gas.into_parts();
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
             signer,
-            SUI_SYSTEM_PACKAGE_ID,
-            SUI_SYSTEM_MODULE_NAME.to_owned(),
-            WITHDRAW_STAKE_FUN_NAME.to_owned(),
-            vec![],
-            gas,
-            vec![
-                CallArg::SUI_SYSTEM_MUT,
-                CallArg::Object(ObjectArg::ImmOrOwnedObject(staked_sui)),
-            ],
+            gas_payment,
             gas_budget,
             gas_price,
-        )
+            expiration,
+        ))
     }
 
     /// Send `Coin<T>` to a list of addresses, where T can be any coin type, following a list of amounts.
@@ -90,27 +144,44 @@ impl TransactionBuilder {
     pub fn pay(
         signer: SuiAddress,
         input_coins: Vec<ObjectRef>,
+        withdrawal: Option<AddressBalanceWithdrawal>,
         recipients: Vec<SuiAddress>,
         amounts: Vec<u64>,
-        gas: ObjectRef,
+        gas: GasPayment,
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
-        if input_coins.iter().any(|coin| coin.0 == gas.0) {
-            return SigningError::err(SigningErrorType::Error_invalid_params).context(
-                "Gas coin is in input coins of Pay transaction, use PaySui transaction instead!",
-            );
+        if let GasPayment::Coin(gas_coin) = &gas {
+            if input_coins.iter().any(|coin| coin.0 == gas_coin.0) {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    "Gas coin is in input coins of Pay transaction, use PaySui transaction instead!",
+                );
+            }
         }
 
-        TransactionData::new_pay(
+        let pt = {
+            let mut builder = ProgrammableTransactionBuilder::default();
+            match withdrawal {
+                Some(w) => builder.pay_from_funds(
+                    input_coins,
+                    w.amount,
+                    &w.coin_type,
+                    recipients,
+                    amounts,
+                )?,
+                None => builder.pay(input_coins, recipients, amounts)?,
+            }
+            builder.finish()
+        };
+        let (gas_payment, expiration) = gas.into_parts();
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
             signer,
-            input_coins,
-            recipients,
-            amounts,
-            gas,
+            gas_payment,
             gas_budget,
             gas_price,
-        )
+            expiration,
+        ))
     }
 
     /// Send SUI coins to a list of addresses, following a list of amounts.
@@ -167,24 +238,152 @@ impl TransactionBuilder {
         ))
     }
 
+    /// SIP-58 variant of [`Self::pay_sui`]: besides `input_coins`, `address_balance_amount` MIST is
+    /// withdrawn from the sender's SUI address balance, and gas is paid either with the first input
+    /// coin (`expiration` is `None`, as before) or from the address balance (`expiration` is the
+    /// `ValidDuring` window; then no input coin is needed or reserved for gas).
+    ///
+    /// With neither a withdrawal nor an expiration this is exactly [`Self::pay_sui`].
+    #[allow(clippy::too_many_arguments)]
+    pub fn pay_sui_funds(
+        signer: SuiAddress,
+        input_coins: Vec<ObjectRef>,
+        address_balance_amount: u64,
+        recipients: Vec<SuiAddress>,
+        amounts: Vec<u64>,
+        gas_budget: u64,
+        gas_price: u64,
+        expiration: Option<TransactionExpiration>,
+    ) -> SigningResult<TransactionData> {
+        let Some(expiration) = expiration else {
+            if address_balance_amount == 0 {
+                return Self::pay_sui(
+                    signer,
+                    input_coins,
+                    recipients,
+                    amounts,
+                    gas_budget,
+                    gas_price,
+                );
+            }
+            if input_coins.is_empty() {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    "An address balance withdrawal needs a gas coin, or a `valid_during` window to pay gas from the address balance",
+                );
+            }
+            // Gas is paid with the input coins (smashed into the gas coin). The withdrawal joins them.
+            let pt = {
+                let mut builder = ProgrammableTransactionBuilder::default();
+                let redeemed =
+                    builder.redeem_funds(address_balance_amount, &sui_coin_type_tag())?;
+                builder.merge_coins(Argument::GasCoin, vec![redeemed]);
+                builder.pay_sui(recipients, amounts)?;
+                builder.finish()
+            };
+            return Ok(TransactionData::new(
+                TransactionKind::ProgrammableTransaction(pt),
+                signer,
+                input_coins,
+                gas_budget,
+                gas_price,
+                None,
+            ));
+        };
+
+        let pt = {
+            let mut builder = ProgrammableTransactionBuilder::default();
+            builder.pay_from_funds(
+                input_coins,
+                address_balance_amount,
+                &sui_coin_type_tag(),
+                recipients,
+                amounts,
+            )?;
+            builder.finish()
+        };
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
+            signer,
+            vec![],
+            gas_budget,
+            gas_price,
+            Some(expiration),
+        ))
+    }
+
+    /// SIP-58 variant of [`Self::pay_all_sui`], see [`Self::pay_sui_funds`] for the parameters.
+    ///
+    /// With neither a withdrawal nor an expiration this is exactly [`Self::pay_all_sui`].
+    pub fn pay_all_sui_funds(
+        signer: SuiAddress,
+        input_coins: Vec<ObjectRef>,
+        address_balance_amount: u64,
+        recipient: SuiAddress,
+        gas_budget: u64,
+        gas_price: u64,
+        expiration: Option<TransactionExpiration>,
+    ) -> SigningResult<TransactionData> {
+        let Some(expiration) = expiration else {
+            if address_balance_amount == 0 {
+                return Self::pay_all_sui(signer, input_coins, recipient, gas_budget, gas_price);
+            }
+            if input_coins.is_empty() {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(
+                    "An address balance withdrawal needs a gas coin, or a `valid_during` window to pay gas from the address balance",
+                );
+            }
+            let pt = {
+                let mut builder = ProgrammableTransactionBuilder::default();
+                let redeemed =
+                    builder.redeem_funds(address_balance_amount, &sui_coin_type_tag())?;
+                builder.merge_coins(Argument::GasCoin, vec![redeemed]);
+                builder.pay_all_sui(recipient);
+                builder.finish()
+            };
+            return Ok(TransactionData::new(
+                TransactionKind::ProgrammableTransaction(pt),
+                signer,
+                input_coins,
+                gas_budget,
+                gas_price,
+                None,
+            ));
+        };
+
+        let pt = {
+            let mut builder = ProgrammableTransactionBuilder::default();
+            builder.pay_all_sui_from_funds(input_coins, address_balance_amount, recipient)?;
+            builder.finish()
+        };
+        Ok(TransactionData::new(
+            TransactionKind::ProgrammableTransaction(pt),
+            signer,
+            vec![],
+            gas_budget,
+            gas_price,
+            Some(expiration),
+        ))
+    }
+
     pub fn transfer_object(
         signer: SuiAddress,
         object: ObjectRef,
         recipient: SuiAddress,
-        gas: ObjectRef,
+        gas: GasPayment,
         gas_budget: u64,
         gas_price: u64,
     ) -> SigningResult<TransactionData> {
         let mut builder = ProgrammableTransactionBuilder::default();
         builder.transfer_object(recipient, object)?;
 
+        let (gas_payment, expiration) = gas.into_parts();
         Ok(TransactionData::new(
             TransactionKind::ProgrammableTransaction(builder.finish()),
             signer,
-            vec![gas],
+            gas_payment,
             gas_budget,
             gas_price,
-            None,
+            expiration,
         ))
     }
 

@@ -18,7 +18,7 @@ fn test_encode_json_transaction() {
 
         let signing_only = false;
         let serialized = STObject::try_from_value(tx_json.clone(), signing_only)
-            .expect(&format!("Error encoding transaction[{idx}]: {tx_json:?}"));
+            .unwrap_or_else(|_| panic!("Error encoding transaction[{idx}]: {tx_json:?}"));
 
         assert_eq!(serialized.0.to_hex().to_uppercase(), binary_no_signing);
     }

@@ -31,7 +31,6 @@ fn test_zcash_pre_hash_different_sighash_types() {
             sighash_type,
             sequence: input::sequence(0xFFFFFFFE),
             claiming_script: input::custom_script(spend_script),
-            ..Default::default()
         };
 
         let script_out1 = "76a9148132712c3ff19f3a151234616777420a6d7ef22688ac"

@@ -99,7 +99,7 @@ impl<'a> BitcoinSignHelper<'a> {
 
         let mut output_inputs = Vec::with_capacity(out_points.len());
         for searching_out_point in out_points.iter() {
-            let utxo_amount = *utxo_map.get(&searching_out_point).unwrap_or_else(|| {
+            let utxo_amount = *utxo_map.get(searching_out_point).unwrap_or_else(|| {
                 panic!("Signed transaction does not contain {searching_out_point:?} UTXO")
             });
             output_inputs.push(utxo_amount);
