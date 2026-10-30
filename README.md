@@ -112,6 +112,7 @@ Projects using Trust Wallet Core. Add yours too!
 | [xPortal](https://xportal.com/)
 | [Slingshot](https://slingshot.finance/)
 | [ECOIN Wallet](https://play.google.com/store/apps/details?id=org.ecoinwallet&pcampaignid=web_share)
+| [Fexr Wallet](https://fexr.io)
 
 # Community
 
