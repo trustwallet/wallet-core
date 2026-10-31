@@ -7,6 +7,7 @@ use crate::modules::psbt_request::utxo_psbt::UtxoPsbt;
 use crate::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
 use crate::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
 use std::marker::PhantomData;
+use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
@@ -24,6 +25,7 @@ where
     Context: UtxoContext<Transaction = Transaction, Psbt = Psbt>,
 {
     fn parse_request(
+        _coin: &dyn CoinContext,
         input: &Proto::SigningInput,
         psbt_input: &Proto::Psbt,
     ) -> SigningResult<PsbtRequest<Context>> {

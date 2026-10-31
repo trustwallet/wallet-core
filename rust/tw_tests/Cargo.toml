@@ -26,3 +26,4 @@ tw_ton = { path = "../chains/tw_ton" }
 tw_sui = { path = "../chains/tw_sui" }
 tw_ton_sdk = { path = "../frameworks/tw_ton_sdk" }
 tw_utxo = { path = "../frameworks/tw_utxo" }
+tw_zcash = { path = "../chains/tw_zcash" }
