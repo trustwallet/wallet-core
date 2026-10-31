@@ -44,7 +44,7 @@ namespace TW::Wasm {
         return TWCoinTypeStaticPrefix(coin);
     }
     auto CoinTypeExt::chainId(TWCoinType coin) {
-        return TWStringToStd(TWCoinTypeChainId(coin));
+        return TWStringToVal(TWCoinTypeChainId(coin));
     }
     auto CoinTypeExt::slip44Id(TWCoinType coin) {
         return TWCoinTypeSlip44Id(coin);
@@ -59,19 +59,19 @@ namespace TW::Wasm {
         return TWCoinTypeValidate(coin, &address);
     }
     auto CoinTypeExt::derivationPath(TWCoinType coin) {
-        return TWStringToStd(TWCoinTypeDerivationPath(coin));
+        return TWStringToVal(TWCoinTypeDerivationPath(coin));
     }
     auto CoinTypeExt::derivationPathWithDerivation(TWCoinType coin, TWDerivation derivation) {
-        return TWStringToStd(TWCoinTypeDerivationPathWithDerivation(coin, derivation));
+        return TWStringToVal(TWCoinTypeDerivationPathWithDerivation(coin, derivation));
     }
     auto CoinTypeExt::deriveAddress(TWCoinType coin, WasmPrivateKey* privateKey) {
-        return TWStringToStd(TWCoinTypeDeriveAddress(coin, privateKey->instance));
+        return TWStringToVal(TWCoinTypeDeriveAddress(coin, privateKey->instance));
     }
     auto CoinTypeExt::deriveAddressFromPublicKey(TWCoinType coin, WasmPublicKey* publicKey) {
-        return TWStringToStd(TWCoinTypeDeriveAddressFromPublicKey(coin, publicKey->instance));
+        return TWStringToVal(TWCoinTypeDeriveAddressFromPublicKey(coin, publicKey->instance));
     }
     auto CoinTypeExt::deriveAddressFromPublicKeyAndDerivation(TWCoinType coin, WasmPublicKey* publicKey, TWDerivation derivation) {
-        return TWStringToStd(TWCoinTypeDeriveAddressFromPublicKeyAndDerivation(coin, publicKey->instance, derivation));
+        return TWStringToVal(TWCoinTypeDeriveAddressFromPublicKeyAndDerivation(coin, publicKey->instance, derivation));
     }
 
     EMSCRIPTEN_BINDINGS(Wasm_CoinTypeExt) {
