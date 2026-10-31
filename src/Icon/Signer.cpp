@@ -57,7 +57,7 @@ TW::Data Signer::hashImage(const Data& image) const {
     return Hash::sha3_256(image);
 }
 
-std::string Signer::encode(const Data& signature) const noexcept {
+std::string Signer::encode(const Data& signature) const {
     auto json = nlohmann::json();
     json["from"] = input.from_address();
     json["to"] = input.to_address();
