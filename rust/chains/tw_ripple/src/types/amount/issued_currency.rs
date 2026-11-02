@@ -51,8 +51,9 @@ impl IssuedCurrency {
         }
 
         let is_positive: bool = self.value.is_positive();
-        let (mantissa_str, scale) = self.value.normalized().as_bigint_and_exponent();
-        let mut exp: i32 = -(scale as i32);
+        let (mantissa_str, _) = self.value.normalized().as_bigint_and_exponent();
+        // In range: checked by `verify_valid_ic_value`.
+        let mut exp = calculate_exponent(&self.value) as i32;
         let mut mantissa: u128 = mantissa_str.abs().to_u128().unwrap();
 
         while mantissa < MIN_MANTISSA && exp > MIN_IOU_EXPONENT {
@@ -113,20 +114,36 @@ fn calculate_precision(value: &BigDecimal) -> usize {
     uint.to_string().len()
 }
 
-fn calculate_exponent(value: &BigDecimal) -> i32 {
+fn calculate_exponent(value: &BigDecimal) -> i64 {
     let decimal = value.normalized();
     let (_, reversed_exponent) = decimal.as_bigint_and_exponent();
-    -(reversed_exponent as i32)
+    reversed_exponent.saturating_neg()
+}
+
+/// Rejects a scale that can't normalize into the valid exponent range.
+/// Must run before `BigDecimal::normalized()`, which never finishes on huge scales.
+fn verify_scale_in_range(ic_value: &BigDecimal) -> SigningResult<()> {
+    let (int, scale) = ic_value.as_bigint_and_exponent();
+    let digits = int.magnitude().to_str_radix(10).len() as i64;
+    let min_scale = -i64::from(MAX_IOU_EXPONENT);
+    let max_scale = i64::from(-MIN_IOU_EXPONENT) + digits;
+
+    if !(min_scale..=max_scale).contains(&scale) {
+        return SigningError::err(SigningErrorType::Error_invalid_requested_token_amount)
+            .context("Invalid Issued Currency scale is out of available range");
+    }
+    Ok(())
 }
 
 /// Validates the format of an issued currency amount value.
 fn verify_valid_ic_value(ic_value: &BigDecimal) -> SigningResult<()> {
-    let exponent = calculate_exponent(ic_value);
-    let prec = calculate_precision(ic_value);
-
     if ic_value.is_zero() {
         return Ok(());
     }
+    verify_scale_in_range(ic_value)?;
+
+    let exponent = calculate_exponent(ic_value);
+    let prec = calculate_precision(ic_value);
 
     if prec > MAX_IOU_PRECISION {
         let error = format!(
@@ -136,7 +153,7 @@ fn verify_valid_ic_value(ic_value: &BigDecimal) -> SigningResult<()> {
             .context(error);
     }
 
-    if !(MIN_IOU_EXPONENT..=MAX_IOU_EXPONENT).contains(&exponent) {
+    if !(i64::from(MIN_IOU_EXPONENT)..=i64::from(MAX_IOU_EXPONENT)).contains(&exponent) {
         let error = format!(
             "Invalid Issued Currency scale is out of available range (min: {MIN_IOU_EXPONENT} max: {MAX_IOU_EXPONENT} found: {exponent})"
         );
@@ -166,7 +183,7 @@ mod tests {
     }
 
     #[track_caller]
-    fn test_calculate_exponent_impl(number: &str, exponent: i32) {
+    fn test_calculate_exponent_impl(number: &str, exponent: i64) {
         let num = BigDecimal::from_str(number).unwrap();
         assert_eq!(
             calculate_exponent(&num),
@@ -211,6 +228,38 @@ mod tests {
         test_calculate_precision_impl("11111000.00000001", 16);
         test_calculate_precision_impl("1.111111111111111e-3", 16);
         test_calculate_precision_impl("-1.111111111111111e-3", 16);
+    }
+
+    #[test]
+    fn test_out_of_range_exponent_rejected() {
+        for value in [
+            "1e-4294967294",
+            "100e-4294967296",
+            "1e4294967296",
+            "1e-9223372036854775807",
+            "1e9223372036854775807",
+        ] {
+            let value = BigDecimal::from_str(value).unwrap();
+            let ic = IssuedCurrency {
+                value,
+                currency: Currency::from_str("USD").unwrap(),
+                issuer: AccountId::from_str("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn").unwrap(),
+            };
+            assert!(ic.serialize_issued_currency_value().is_err(), "{ic:?}");
+        }
+    }
+
+    #[test]
+    fn test_boundary_values_accepted() {
+        for value in ["1e80", "1e-96", "100", "1.00000000000000000000000000000"] {
+            let value = BigDecimal::from_str(value).unwrap();
+            let ic = IssuedCurrency {
+                value,
+                currency: Currency::from_str("USD").unwrap(),
+                issuer: AccountId::from_str("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn").unwrap(),
+            };
+            assert!(ic.serialize_issued_currency_value().is_ok(), "{ic:?}");
+        }
     }
 
     #[test]
