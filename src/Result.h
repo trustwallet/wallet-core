@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <new>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -133,12 +134,12 @@ struct Result {
   private:
     template <typename U>
     const U& get() const {
-        return *reinterpret_cast<const U*>(&storage_);
+        return *std::launder(static_cast<const U*>(static_cast<const void*>(&storage_)));
     }
 
     template <typename U>
     U& get() {
-        return *reinterpret_cast<U*>(&storage_);
+        return *std::launder(static_cast<U*>(static_cast<void*>(&storage_)));
     }
 };
 
