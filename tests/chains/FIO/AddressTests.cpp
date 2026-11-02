@@ -4,6 +4,7 @@
 
 #include "FIO/Address.h"
 #include "HexCoding.h"
+#include "Coin.h"
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWPublicKeyType.h>
 
@@ -50,26 +51,30 @@ TEST(FIOAddress, FromPublicKey) {
     auto key = PrivateKey(parse_hex("ea8eb60b7e5868e218f248e032769020b4fea5dcfd02f2992861eaf4fb534854"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     EXPECT_EQ(hex(publicKey.bytes), "0271195c66ec2799e436757a70cd8431d4b17733a097b18a5f7f1b6b085978ff0f");
-    auto address = Address(publicKey);
+    auto address = Address::fromPublicKey(publicKey);
 
-    ASSERT_EQ(address.string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    ASSERT_TRUE(address);
+    ASSERT_EQ(address.payload().string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
 
-    auto extendedAddress = Address(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
-    ASSERT_EQ(extendedAddress.string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    auto extendedAddress = Address::fromPublicKey(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
+    ASSERT_TRUE(extendedAddress);
+    ASSERT_EQ(extendedAddress.payload().string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
 }
 
 TEST(FIOAddress, FromPublicKeyInvalidType) {
     const auto cardanoKey = PublicKey(Data(PublicKey::cardanoKeySize, 0x41), TWPublicKeyTypeED25519Cardano);
-    EXPECT_THROW(Address{cardanoKey}, std::invalid_argument);
+    EXPECT_TRUE(Address::fromPublicKey(cardanoKey).isFailure());
 
     const auto ed25519Key = PrivateKey(Data(32, 1)).getPublicKey(TWPublicKeyTypeED25519);
-    EXPECT_THROW(Address{ed25519Key}, std::invalid_argument);
+    EXPECT_TRUE(Address::fromPublicKey(ed25519Key).isFailure());
+
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeFIO, cardanoKey), "");
 }
 
 TEST(FIOAddress, GetPublicKey) {
     const auto publicKeyHex = "0271195c66ec2799e436757a70cd8431d4b17733a097b18a5f7f1b6b085978ff0f";
     const PublicKey publicKey(parse_hex(publicKeyHex), TWPublicKeyTypeSECP256k1);
-    auto address = Address(publicKey);
+    auto address = Address::fromPublicKey(publicKey).payload();
     EXPECT_EQ(hex(address.publicKey().bytes), publicKeyHex);
 }
 

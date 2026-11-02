@@ -49,14 +49,14 @@ Address::Address(const std::string& string) {
     }
 }
 
-/// Initializes a NEAR address from a public key.
-Address::Address(const PublicKey& publicKey) {
-    if (publicKey.type != TWPublicKeyTypeED25519) {
-        throw std::invalid_argument("Invalid public key type");
+/// Creates a NEAR address from an ED25519 public key.
+Result<Address> Address::fromPublicKey(const PublicKey& publicKey) {
+    if (publicKey.type != TWPublicKeyTypeED25519 || publicKey.bytes.size() != size) {
+        return Result<Address>::failure("Invalid public key type");
     }
-    // copy the raw, compressed key data
-    auto data = publicKey.compressed().bytes;
-    std::copy(std::begin(data), std::end(data), std::begin(bytes));
+    std::array<byte, size> addressBytes;
+    std::copy(std::begin(publicKey.bytes), std::end(publicKey.bytes), std::begin(addressBytes));
+    return Result<Address>::success(Address(addressBytes));
 }
 
 /// Returns a string representation of the NEAR address.

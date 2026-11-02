@@ -76,13 +76,16 @@ Address::Address(const std::string& string) {
     std::copy(std::begin(*data), std::end(*data), std::begin(bytes));
 }
 
-/// Initializes a FIO address from a public key.
-Address::Address(const PublicKey& publicKey) {
+/// Creates a FIO address from a SECP256k1 public key (compressed or extended).
+Result<Address> Address::fromPublicKey(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1 && publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
-        throw std::invalid_argument("Invalid public key type");
+        return Result<Address>::failure("Invalid public key type");
     }
     // copy the raw, compressed key data
     Data data = publicKey.compressed().bytes;
+    if (data.size() != PublicKey::secp256k1Size) {
+        return Result<Address>::failure("Invalid public key size");
+    }
 
     // append the checksum
     uint32_t checksum = createChecksum(data);
@@ -90,7 +93,9 @@ Address::Address(const PublicKey& publicKey) {
     encode32LE(checksum, checksumBytes);
     append(data, checksumBytes);
 
-    std::copy(std::begin(data), std::end(data), std::begin(bytes));
+    std::array<byte, size> addressBytes;
+    std::copy(std::begin(data), std::end(data), std::begin(addressBytes));
+    return Result<Address>::success(Address(addressBytes));
 }
 
 /// Returns a string representation of the FIO address.

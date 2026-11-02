@@ -4,6 +4,7 @@
 
 #include "NEAR/Address.h"
 #include "Base58.h"
+#include "Coin.h"
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWPublicKeyType.h>
 
@@ -40,17 +41,20 @@ TEST(NEARAddress, FromPrivateKey) {
     auto fullKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     auto key = PrivateKey(Data(fullKey.begin(), fullKey.begin() + 32));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeED25519);
-    auto address = Address(publicKey);
+    auto address = Address::fromPublicKey(publicKey);
 
-    ASSERT_EQ(address.string(), "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
+    ASSERT_TRUE(address);
+    ASSERT_EQ(address.payload().string(), "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
 }
 
 TEST(NEARAddress, FromPublicKeyInvalidType) {
     const auto cardanoKey = PublicKey(Data(PublicKey::cardanoKeySize, 0x41), TWPublicKeyTypeED25519Cardano);
-    EXPECT_THROW(Address{cardanoKey}, std::invalid_argument);
+    EXPECT_TRUE(Address::fromPublicKey(cardanoKey).isFailure());
 
     const auto secpKey = PrivateKey(Data(32, 1)).getPublicKey(TWPublicKeyTypeSECP256k1);
-    EXPECT_THROW(Address{secpKey}, std::invalid_argument);
+    EXPECT_TRUE(Address::fromPublicKey(secpKey).isFailure());
+
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEAR, cardanoKey), "");
 }
 
 } // namespace TW::NEAR::tests

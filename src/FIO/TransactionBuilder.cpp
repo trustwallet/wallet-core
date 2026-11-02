@@ -72,8 +72,12 @@ string TransactionBuilder::actionName(const Proto::SigningInput& input) {
 string TransactionBuilder::sign(Proto::SigningInput in) {
     PrivateKey privateKey(in.private_key(), TWCurveSECP256k1);
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    Address owner(publicKey);
-    
+    const auto ownerResult = Address::fromPublicKey(publicKey);
+    if (!ownerResult) {
+        return {};
+    }
+    const auto owner = ownerResult.payload();
+
     string json;
     if (in.action().has_register_fio_address_message()) {
         const auto action = in.action().register_fio_address_message();
