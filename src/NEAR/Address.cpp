@@ -6,6 +6,7 @@
 #include "Base58.h"
 #include "HexCoding.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 using namespace TW;
@@ -55,7 +56,7 @@ Result<Address> Address::fromPublicKey(const PublicKey& publicKey) {
         return Result<Address>::failure("Invalid public key type");
     }
     std::array<byte, size> addressBytes;
-    std::copy(std::begin(publicKey.bytes), std::end(publicKey.bytes), std::begin(addressBytes));
+    std::ranges::copy(publicKey.bytes, addressBytes.begin());
     return Result<Address>::success(Address(addressBytes));
 }
 

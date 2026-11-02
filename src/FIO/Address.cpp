@@ -8,6 +8,7 @@
 
 #include <TrezorCrypto/ripemd160.h>
 
+#include <algorithm>
 #include <stdexcept>
 
 using namespace TW;
@@ -94,7 +95,7 @@ Result<Address> Address::fromPublicKey(const PublicKey& publicKey) {
     append(data, checksumBytes);
 
     std::array<byte, size> addressBytes;
-    std::copy(std::begin(data), std::end(data), std::begin(addressBytes));
+    std::ranges::copy(data, addressBytes.begin());
     return Result<Address>::success(Address(addressBytes));
 }
 
