@@ -347,7 +347,7 @@ std::vector<TxInput> selectInputsSimpleNative(const std::vector<TxInput>& inputs
 
 // Select a subset of inputs, to cover desired token amount. Simple algorithm: pick the largest ones.
 void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key, const uint256_t& amount, std::vector<TxInput>& selectedInputs) {
-    auto accumulateFunctor = [key](const uint256_t& sum, const TxInput& si) { return sum + si.tokenBundle.getAmount(key); };
+    auto accumulateFunctor = [&key](const uint256_t& sum, const TxInput& si) { return sum + si.tokenBundle.getAmount(key); };
     uint256_t selectedAmount = std::accumulate(selectedInputs.begin(), selectedInputs.end(), uint256_t(0), accumulateFunctor);
     if (selectedAmount >= amount) {
         return; // already covered
