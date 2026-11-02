@@ -75,8 +75,7 @@ struct Result {
         return *this;
     }
 
-    Result(Result&& other) noexcept(std::is_nothrow_move_constructible_v<T> && std::is_nothrow_move_constructible_v<E>)
-        : success_(other.success_) {
+    Result(Result&& other) noexcept : success_(other.success_) {
         if (success_) {
             new (&storage_) T(std::move(other.get<T>()));
         } else {
