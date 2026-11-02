@@ -8,7 +8,9 @@ use crate::types::account_id::AccountId;
 use crate::types::amount::POS_SIGN_BIT_MASK;
 use crate::types::currency::Currency;
 use bigdecimal::{BigDecimal, Signed, ToPrimitive, Zero};
-use serde::{Deserialize, Serialize, Serializer};
+use serde::de::Error as _;
+use serde::ser::Error as _;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H64;
 use tw_misc::serde::as_string;
@@ -23,15 +25,22 @@ pub const MAX_IOU_PRECISION: usize = 16;
 /// Normally when using bigdecimal "serde_json" feature a `1` will be serialized as `1.000000000000000`.
 /// This function normalizes a `BigDecimal` before serializing to a string.
 fn serialize_bigdecimal<S: Serializer>(value: &BigDecimal, s: S) -> Result<S::Ok, S::Error> {
+    verify_scale_in_range(value).map_err(|e| S::Error::custom(format!("{e:?}")))?;
     let trimmed_str = value.normalized().to_string();
     s.serialize_str(&trimmed_str)
+}
+
+fn deserialize_bigdecimal<'de, D: Deserializer<'de>>(d: D) -> Result<BigDecimal, D::Error> {
+    let value = as_string::deserialize(d)?;
+    verify_scale_in_range(&value).map_err(|e| D::Error::custom(format!("{e:?}")))?;
+    Ok(value)
 }
 
 /// An Issued Currency object.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct IssuedCurrency {
     #[serde(
-        deserialize_with = "as_string::deserialize",
+        deserialize_with = "deserialize_bigdecimal",
         serialize_with = "serialize_bigdecimal"
     )]
     pub value: BigDecimal,
@@ -51,9 +60,10 @@ impl IssuedCurrency {
         }
 
         let is_positive: bool = self.value.is_positive();
-        let (mantissa_str, _) = self.value.normalized().as_bigint_and_exponent();
-        // In range: checked by `verify_valid_ic_value`.
-        let mut exp = calculate_exponent(&self.value) as i32;
+        let (mantissa_str, scale) = self.value.normalized().as_bigint_and_exponent();
+        let mut exp = i32::try_from(scale.saturating_neg())
+            .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
+            .context("Invalid Issued Currency scale")?;
         let mut mantissa: u128 = mantissa_str.abs().to_u128().unwrap();
 
         while mantissa < MIN_MANTISSA && exp > MIN_IOU_EXPONENT {
@@ -122,11 +132,11 @@ fn calculate_exponent(value: &BigDecimal) -> i64 {
 
 /// Rejects a scale that can't normalize into the valid exponent range.
 /// Must run before `BigDecimal::normalized()`, which never finishes on huge scales.
-fn verify_scale_in_range(ic_value: &BigDecimal) -> SigningResult<()> {
+pub(crate) fn verify_scale_in_range(ic_value: &BigDecimal) -> SigningResult<()> {
     let (int, scale) = ic_value.as_bigint_and_exponent();
     let digits = int.magnitude().to_str_radix(10).len() as i64;
     let min_scale = -i64::from(MAX_IOU_EXPONENT);
-    let max_scale = i64::from(-MIN_IOU_EXPONENT) + digits;
+    let max_scale = i64::from(-MIN_IOU_EXPONENT) + digits - 1;
 
     if !(min_scale..=max_scale).contains(&scale) {
         return SigningError::err(SigningErrorType::Error_invalid_requested_token_amount)
@@ -137,10 +147,10 @@ fn verify_scale_in_range(ic_value: &BigDecimal) -> SigningResult<()> {
 
 /// Validates the format of an issued currency amount value.
 fn verify_valid_ic_value(ic_value: &BigDecimal) -> SigningResult<()> {
+    verify_scale_in_range(ic_value)?;
     if ic_value.is_zero() {
         return Ok(());
     }
-    verify_scale_in_range(ic_value)?;
 
     let exponent = calculate_exponent(ic_value);
     let prec = calculate_precision(ic_value);
@@ -246,6 +256,26 @@ mod tests {
                 issuer: AccountId::from_str("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn").unwrap(),
             };
             assert!(ic.serialize_issued_currency_value().is_err(), "{ic:?}");
+        }
+    }
+
+    #[test]
+    fn test_out_of_range_exponent_rejected_by_serde() {
+        for value in ["1e-4294967294", "1e4294967296", "0e-4294967294"] {
+            let json = format!(
+                r#"{{"value":"{value}","currency":"USD","issuer":"rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"}}"#
+            );
+            assert!(
+                serde_json::from_str::<IssuedCurrency>(&json).is_err(),
+                "{value}"
+            );
+
+            let ic = IssuedCurrency {
+                value: BigDecimal::from_str(value).unwrap(),
+                currency: Currency::from_str("USD").unwrap(),
+                issuer: AccountId::from_str("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn").unwrap(),
+            };
+            assert!(serde_json::to_value(&ic).is_err(), "{value}");
         }
     }
 
