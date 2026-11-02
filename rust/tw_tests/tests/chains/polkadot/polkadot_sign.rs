@@ -171,7 +171,7 @@ fn test_polkadot_sign_bond() {
             Proto::mod_Staking::Bond {
                 controller: ACCOUNT_2.into(),
                 value: Cow::Owned(U256::from(11000000000u64).to_big_endian().to_vec()),
-                reward_destination: Proto::RewardDestination::STASH.into(),
+                reward_destination: Proto::RewardDestination::STASH,
                 ..Default::default()
             },
         )),
@@ -206,7 +206,7 @@ fn test_polkadot_sign_bond_and_nominate() {
             Proto::mod_Staking::BondAndNominate {
                 controller: "13ZLCqJNPsRZYEbwjtZZFpWt9GyFzg5WahXCVWKpWdUJqrQ5".into(),
                 value: Cow::Owned(U256::from(10000000000u64).to_big_endian().to_vec()),
-                reward_destination: Proto::RewardDestination::STASH.into(),
+                reward_destination: Proto::RewardDestination::STASH,
                 nominators: vec![
                     "1zugcavYA9yCuYwiEYeMHNJm9gXznYjNfXQjZsZukF1Mpow".into(),
                     "15oKi7HoBQbwwdQc47k71q4sJJWnu5opn1pqoGx4NAEYZSHs".into(),
@@ -454,7 +454,6 @@ fn test_statemint_encode_transaction_transfer() {
                 asset_id: 1984,
                 fee_asset_id: 0x00,
                 call_indices: custom_call_indices(0x32, 0x05),
-                ..Default::default()
             },
         )),
         ..Default::default()
@@ -504,7 +503,6 @@ fn test_statemint_encode_transaction_transfer_keep_alive() {
                 asset_id: 1984,
                 fee_asset_id: 0x00,
                 call_indices: custom_call_indices(0x32, 0x06),
-                ..Default::default()
             },
         )),
         ..Default::default()
@@ -605,7 +603,6 @@ fn test_statemint_encode_transaction_dot_transfer_keep_alive() {
                 asset_id: 0x00,
                 fee_asset_id: 0x00,
                 call_indices: custom_call_indices(0x0a, 0x03),
-                ..Default::default()
             },
         )),
         ..Default::default()
@@ -646,7 +643,6 @@ fn test_statemint_encode_transaction_usdt_transfer_keep_alive() {
                 asset_id: 1984,
                 fee_asset_id: 1984,
                 call_indices: custom_call_indices(0x32, 0x06),
-                ..Default::default()
             },
         )),
         ..Default::default()

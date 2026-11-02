@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "PBKDF2Parameters.h"
+#include "JsonParsing.h"
 
 #include <TrezorCrypto/rand.h>
 
@@ -36,10 +37,9 @@ PBKDF2Parameters::PBKDF2Parameters(const nlohmann::json& json) {
     salt = parse_hex(json[CodingKeys::salt].get<std::string>());
     desiredKeyLength = json[CodingKeys::desiredKeyLength];
     if (json.count(CodingKeys::iterations) != 0) {
-        if (!json[CodingKeys::iterations].is_number_unsigned()) {
-            throw std::invalid_argument("Invalid iterations");
-        }
-        iterations = json[CodingKeys::iterations];
+        // Range-checked: assigning the JSON value straight into `uint32_t` silently wrapped, so
+        // `"c": 4294967296` loaded as zero iterations.
+        iterations = internal::parseU32(json[CodingKeys::iterations], "Invalid PBKDF2 parameters: ", CodingKeys::iterations);
     }
 }
 

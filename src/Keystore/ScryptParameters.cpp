@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "ScryptParameters.h"
+#include "JsonParsing.h"
 
 #include <TrezorCrypto/rand.h>
 #include <limits>
@@ -22,12 +23,20 @@ Data randomSalt() {
 
 } // namespace internal
 
+namespace {
+
+const auto* const kErrorPrefix = "Invalid scrypt parameters: ";
+
+} // namespace
+
 std::string toString(const ScryptValidationError error) {
     switch (error) {
-    case ScryptValidationError::desiredKeyLengthTooLarge:
-            return "Desired key length is too large";
+    case ScryptValidationError::invalidDesiredKeyLength:
+            return "Desired key length must be 32";
     case ScryptValidationError::invalidSaltLength:
         return "Salt length is invalid";
+    case ScryptValidationError::zeroBlockSizeOrParallelization:
+            return "Block size r and parallelization p must be greater than 0";
     case ScryptValidationError::blockSizeTooLarge:
             return "Block size (r * p) is too large";
     case ScryptValidationError::invalidCostFactor:
@@ -68,15 +77,21 @@ ScryptParameters::ScryptParameters()
     : salt(internal::randomSalt()) {
 }
 
-#pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
-
 std::optional<ScryptValidationError> ScryptParameters::validate() const {
-    if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false
-        return ScryptValidationError::desiredKeyLengthTooLarge;
+    // wallet-core derives exactly `defaultDesiredKeyLength` bytes on both the encrypt and decrypt
+    // paths. Any other value would size the derived-key buffer incorrectly for the AES key schedule
+    // and the MAC, which read fixed offsets of up to 32 bytes.
+    if (desiredKeyLength != defaultDesiredKeyLength) {
+        return ScryptValidationError::invalidDesiredKeyLength;
     }
     // For backward compatibility with existing keys, we allow empty and less than 16 bytes salt.
     if (salt.size() > maxSaltLength) {
         return ScryptValidationError::invalidSaltLength;
+    }
+    // Must precede the overflow check below, which divides by `p` and by `r`. With either at zero
+    // that division is undefined behaviour (SIGFPE on x86-64). scrypt itself rejects r == 0 || p == 0.
+    if (r == 0 || p == 0) {
+        return ScryptValidationError::zeroBlockSizeOrParallelization;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {
         return ScryptValidationError::blockSizeTooLarge;
@@ -130,15 +145,18 @@ ScryptParameters::ScryptParameters(const nlohmann::json& json) {
         salt = res.payload();
     }
 
-    desiredKeyLength = json[CodingKeys::SP::desiredKeyLength];
-    n = json[CodingKeys::SP::n];
-    p = json[CodingKeys::SP::p];
-    r = json[CodingKeys::SP::r];
+    // Each field must be a JSON integer: floats (`32.0`, `16384.0`), negatives and non-numeric values
+    // are rejected, and nothing is ever cast from a float, which would be UB when out of range.
+    // `dklen` is only read here; `validate()` below is the single place that requires it to be 32.
+    desiredKeyLength = static_cast<std::size_t>(internal::parseUnsigned(
+        json[CodingKeys::SP::desiredKeyLength], kErrorPrefix, CodingKeys::SP::desiredKeyLength,
+        std::numeric_limits<std::size_t>::max()));
+    n = internal::parseU32(json[CodingKeys::SP::n], kErrorPrefix, CodingKeys::SP::n);
+    p = internal::parseU32(json[CodingKeys::SP::p], kErrorPrefix, CodingKeys::SP::p);
+    r = internal::parseU32(json[CodingKeys::SP::r], kErrorPrefix, CodingKeys::SP::r);
 
     if (const auto error = validate()) {
-        std::stringstream ss;
-        ss << "Invalid scrypt parameters: " << toString(*error);
-        throw std::invalid_argument(ss.str());
+        throw std::invalid_argument(kErrorPrefix + toString(*error));
     }
 }
 

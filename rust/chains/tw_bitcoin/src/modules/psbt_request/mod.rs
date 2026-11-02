@@ -98,7 +98,7 @@ mod tests {
                 &mut psbt, &signed_tx,
             );
         assert_eq!(
-            *result.err().expect("Expected an error").error_type(),
+            *result.expect_err("Expected an error").error_type(),
             SigningErrorType::Error_not_supported
         );
 
@@ -108,7 +108,7 @@ mod tests {
                 &psbt,
             );
         assert_eq!(
-            *result.err().expect("Expected an error").error_type(),
+            *result.expect_err("Expected an error").error_type(),
             SigningErrorType::Error_not_supported
         );
     }

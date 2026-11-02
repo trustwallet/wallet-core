@@ -208,7 +208,7 @@ mod tests {
         ];
 
         for input in inputs {
-            assert_eq!(PropertyType::from_str(input).is_err(), true, "{}", input);
+            assert!(PropertyType::from_str(input).is_err(), "{}", input);
         }
     }
 }

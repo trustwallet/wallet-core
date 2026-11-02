@@ -49,7 +49,6 @@ fn test_bitcoin_babylon_stake() {
         sighash_type: SIGHASH_ALL,
         sequence: input::sequence(RBF_ENABLED),
         claiming_script: input::p2tr_key_path(PUBLIC_KEY_1.decode_hex().unwrap()),
-        ..Default::default()
     };
 
     let txid1 = "69e8ff4bbc1006f9e967a2d48785f50d7906c69c6d89b9c5a29c648639079ef2";
@@ -59,7 +58,6 @@ fn test_bitcoin_babylon_stake() {
         sighash_type: SIGHASH_ALL,
         sequence: input::sequence(RBF_ENABLED),
         claiming_script: input::p2tr_key_path(PUBLIC_KEY_1.decode_hex().unwrap()),
-        ..Default::default()
     };
 
     let out0 = Proto::Output {
@@ -142,8 +140,8 @@ fn test_bitcoin_babylon_unbond() {
 
     let txid0 = "0942545a1e324c713933350bd234e708b4f6092406dc45a97a61ce627a095e1b";
     let covenant_signatures = babylon::input::PubkeySignatures::default()
-        .add(&COVENANT_COMMITTEES[1], COVENANT_1_SIGNATURE)
-        .add(&COVENANT_COMMITTEES[2], COVENANT_2_SIGNATURE);
+        .add(COVENANT_COMMITTEES[1], COVENANT_1_SIGNATURE)
+        .add(COVENANT_COMMITTEES[2], COVENANT_2_SIGNATURE);
     let utxo0 = Proto::Input {
         out_point: input::out_point(txid0, 0),
         value: STAKING_AMOUNT,
@@ -164,7 +162,6 @@ fn test_bitcoin_babylon_unbond() {
             },
             covenant_signatures,
         ),
-        ..Default::default()
     };
 
     let out0 = Proto::Output {
@@ -244,7 +241,6 @@ fn test_bitcoin_babylon_withdraw_unbonding_tx() {
             covenant_committee_public_keys: covenant_committees(),
             covenant_quorum: 2,
         }),
-        ..Default::default()
     };
 
     // Regular P2TR transfer.

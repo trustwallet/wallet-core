@@ -48,6 +48,7 @@ pub enum OpsDetails {
     FungibleAssetTransfer(FungibleAssetTransfer),
 }
 
+#[allow(clippy::too_many_arguments)]
 fn setup_proto_transaction<'a>(
     sender: &'a str,
     keypair_str: &'a str,
@@ -147,7 +148,7 @@ fn setup_proto_transaction<'a>(
         _ => Proto::mod_SigningInput::OneOftransaction_payload::None,
     };
 
-    let input = SigningInput {
+    SigningInput {
         chain_id,
         sender: sender.into(),
         sequence_number,
@@ -158,9 +159,7 @@ fn setup_proto_transaction<'a>(
         any_encoded: any_encoded.into(),
         transaction_payload: payload,
         abi: abi.into(),
-    };
-
-    input
+    }
 }
 
 fn test_tx_result(
@@ -174,15 +173,15 @@ fn test_tx_result(
     assert!(output.error_message.is_empty());
 
     assert_eq!(
-        hex::encode(output.raw_txn.to_vec(), false),
+        hex::encode(&output.raw_txn, false),
         expected_raw_txn_bytes_str
     );
     assert_eq!(
-        hex::encode(output.authenticator.unwrap().signature.to_vec(), false),
+        hex::encode(&output.authenticator.unwrap().signature, false),
         expected_signature_str
     );
     assert_eq!(
-        hex::encode(output.encoded.to_vec(), false),
+        hex::encode(&output.encoded, false),
         expected_encoded_txn_str
     );
 

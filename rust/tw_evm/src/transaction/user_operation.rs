@@ -171,7 +171,7 @@ mod tests {
 
         let execute_args = ExecuteArgs {
             to: Address::from("0x61061fCAE11fD5461535e134EfF67A98CFFF44E9"),
-            value: U256::from(0x2_386f_26fc_10000u64),
+            value: U256::from(0x0023_86f2_6fc1_0000_u64),
             data: Vec::default(),
         };
         let payload = Erc4337SimpleAccount::encode_execute(execute_args).unwrap();
