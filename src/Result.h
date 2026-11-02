@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace TW {
 
@@ -74,11 +75,11 @@ struct Result {
         return *this;
     }
 
-    Result(Result&& other) {
+    Result(Result&& other) : success_(other.success_) {
         if (success_) {
-            new (&storage_) T(other.get<T>());
+            new (&storage_) T(std::move(other.get<T>()));
         } else {
-            new (&storage_) E(other.get<E>());
+            new (&storage_) E(std::move(other.get<E>()));
         }
     }
 
