@@ -371,6 +371,17 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     return addressUpdated;
 }
 
+// Lowercase hex like `TW::hex`, which leaves an unwiped copy on the Rust heap.
+static ZeroizingString hexZeroizing(const Data& data) {
+    constexpr char digits[] = "0123456789abcdef";
+    std::string out(data.size() * 2, '\0');
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        out[2 * i] = digits[data[i] >> 4];
+        out[2 * i + 1] = digits[data[i] & 0x0f];
+    }
+    return ZeroizingString(std::move(out));
+}
+
 ZeroizingString StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
     if (encodedPayload) {
         const auto data = encodedPayload->decrypt(password);
@@ -378,7 +389,7 @@ ZeroizingString StoredKey::decryptPrivateKeyEncoded(const Data& password) const 
     }
 
     const auto data = payload.decrypt(password);
-    return ZeroizingString(TW::hex(data.get()));
+    return hexZeroizing(data.get());
 }
 
 // -----------------

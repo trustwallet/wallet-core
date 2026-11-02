@@ -182,7 +182,9 @@ EncryptedPayload::~EncryptedPayload() {
 }
 
 ZeroizingData EncryptedPayload::decrypt(const Data& password) const {
-    auto derivedKey = Data();
+    // Wiped on every exit path, including throws.
+    ZeroizingData derivedKeyHolder;
+    auto& derivedKey = derivedKeyHolder.get();
     auto mac = Data();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
@@ -190,9 +192,6 @@ ZeroizingData EncryptedPayload::decrypt(const Data& password) const {
         if (scrypt(password.data(), password.size(), scryptParams->salt.data(),
                    scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
                    ScryptParameters::defaultDesiredKeyLength) != 0) {
-            // Usually nothing was derived, but on one late path (munmap failing after derivation)
-            // the buffer already holds the real key. Wipe it either way before the throw frees it.
-            memzero(derivedKey.data(), derivedKey.size());
             throw DecryptionError::derivationFailed;
         }
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
@@ -207,7 +206,6 @@ ZeroizingData EncryptedPayload::decrypt(const Data& password) const {
     }
 
     if (!isEqualConstantTime(mac, _mac)) {
-        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::invalidPassword;
     }
 
@@ -231,9 +229,7 @@ ZeroizingData EncryptedPayload::decrypt(const Data& password) const {
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
         memzero(&ctx, sizeof(ctx));
-        memzero(derivedKey.data(), derivedKey.size());
     } else {
-        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::unsupportedCipher;
     }
 
