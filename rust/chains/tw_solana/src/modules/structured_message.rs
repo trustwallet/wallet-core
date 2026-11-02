@@ -33,10 +33,7 @@ impl StructuredMessageRenderer {
                     .context(format!("'fields[{index}]' has an empty label"));
             }
 
-            // A colon in a label would let two different (label, value) pairs render to the same
-            // line, e.g. ("A: B", "C") and ("A", "B: C"). Without one, a line splits uniquely at
-            // its first colon, so the rendered bytes identify the fields for any verifier that
-            // parses them rather than rebuilding them.
+            // A ':' here makes ("A: B", "C") render like ("A", "B: C").
             if field.label.contains(':') {
                 return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
                     "'fields[{index}]' label {:?} contains ':', which would make the rendered line ambiguous",
