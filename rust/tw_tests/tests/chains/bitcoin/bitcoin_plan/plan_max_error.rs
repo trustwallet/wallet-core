@@ -35,7 +35,7 @@ fn test_max_selector_insufficient_to_cover_fee_and_dust() {
     const UTXO1: Amount = 700;
     const UTXO2: Amount = 3_000;
 
-    assert!(UTXO1 + UTXO2 - TX_FEE < DUST);
+    const { assert!(UTXO1 + UTXO2 - TX_FEE < DUST) };
 
     let input = plan::make_planning_input(plan::PlanArgs {
         inputs: vec![UTXO1, UTXO2],

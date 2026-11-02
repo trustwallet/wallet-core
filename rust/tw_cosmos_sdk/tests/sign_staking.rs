@@ -126,7 +126,7 @@ fn test_staking_compounding_authz_f355e659() {
     // Successfully broadcasted https://www.mintscan.io/cosmos/tx/F355E659CBB8C0191213415E8F3EC6FD0AD1541F96FF192855147F6C0872A98B?height=17879293
     test_sign_protobuf::<StandardCosmosContext>(TestInput {
         coin: &coin,
-        input: input,
+        input,
         tx: r#"{"mode":"BROADCAST_MODE_BLOCK","tx_bytes":"CvgBCvUBCh4vY29zbW9zLmF1dGh6LnYxYmV0YTEuTXNnR3JhbnQS0gEKLWNvc21vczF3ZDBoZGt6cTY4bm13enBwcmN1Z3g4Mm1zajNsMnkzd2g4ZzV2dhItY29zbW9zMWZzN2x1MjhoeDVtOWFrbTdycDBjMjQyMmNuOHIyZjdndXJ1amhmGnIKaAoqL2Nvc21vcy5zdGFraW5nLnYxYmV0YTEuU3Rha2VBdXRob3JpemF0aW9uEjogARI2CjRjb3Ntb3N2YWxvcGVyMWdqdHZseTlsZWw2enNrdnd0dmxnNXZod3B1OWM5d2F3N3N4end4EgYIgM6uugYSZQpOCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohA1yVadHrd1uQDhwasOzMBbg6zarM8PjyhRmDVY97HiX5EgQKAggBEhMKDQoFdWF0b20SBDI0MTgQqfMFGkCcDzlVwE+RUkWhjH0PiBrKDzqGgIczmj9fuMI0umrOFTqmKm/IQGol0eo4XZOIcahSYlqJ+1MOptAZM8Csqoay"}"#,
         signature: "9c0f3955c04f915245a18c7d0f881aca0f3a868087339a3f5fb8c234ba6ace153aa62a6fc8406a25d1ea385d938871a852625a89fb530ea6d01933c0acaa86b2",
         signature_json: r#"[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A1yVadHrd1uQDhwasOzMBbg6zarM8PjyhRmDVY97HiX5"},"signature":"nA85VcBPkVJFoYx9D4gayg86hoCHM5o/X7jCNLpqzhU6pipvyEBqJdHqOF2TiHGoUmJaiftTDqbQGTPArKqGsg=="}]"#,

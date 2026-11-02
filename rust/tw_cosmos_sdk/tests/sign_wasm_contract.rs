@@ -98,7 +98,6 @@ fn test_wasm_execute_generic_with_coins() {
         contract_address: "terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s".into(),
         execute_msg: execute_msg.into(),
         coins: vec![make_amount("uusd", "1000")],
-        ..Proto::mod_Message::WasmExecuteContractGeneric::default()
     };
 
     let input = Proto::SigningInput {
@@ -146,7 +145,6 @@ fn test_wasm_instantiate_contract() {
         label: "Contract".into(),
         msg: Cow::Borrowed(execute_msg.as_bytes()),
         init_funds: vec![],
-        ..Default::default()
     };
 
     let input = Proto::SigningInput {

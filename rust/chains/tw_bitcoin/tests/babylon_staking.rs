@@ -108,7 +108,7 @@ fn test_babylon_staking_taproot_tree() {
             .unwrap()
             .add_leaf(1, slash)
             .unwrap()
-            .finalize(&SECP256K1, xonly)
+            .finalize(SECP256K1, xonly)
             .unwrap();
 
         let mut actual_root = spend_info.merkle_root().unwrap().to_byte_array();

@@ -2646,6 +2646,7 @@ dependencies = [
 name = "tw_tests"
 version = "0.1.0"
 dependencies = [
+ "move-core-types",
  "serde",
  "serde_json",
  "tw_any_coin",
@@ -2661,6 +2662,7 @@ dependencies = [
  "tw_number",
  "tw_proto",
  "tw_solana",
+ "tw_sui",
  "tw_ton",
  "tw_ton_sdk",
  "tw_utxo",

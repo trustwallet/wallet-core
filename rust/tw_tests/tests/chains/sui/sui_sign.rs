@@ -95,6 +95,7 @@ fn test_sui_sign_split_sui() {
             SENDER_54E80D76.into(),
         ],
         amounts: vec![150_000, 200_000, 100_000],
+        ..Default::default()
     };
 
     let input = Proto::SigningInput {
@@ -142,6 +143,7 @@ fn test_sui_sign_merge_sui() {
             "JAdejLaC6f59Ko7SugLSuwVn55wVKYE2ukQae4nRJcm5",
         )),
         amounts: vec![primary_coin_balance + coin_to_merge_balance],
+        ..Proto::Pay::default()
     };
 
     let input = Proto::SigningInput {
@@ -185,6 +187,7 @@ fn test_sui_sign_transfer_all_sui() {
             ),
         ],
         recipient: "0xf887e7077017554511e736d43424363da946d8aa748225f6b054630a0b1c0ae5".into(),
+        ..Default::default()
     };
 
     let input = Proto::SigningInput {
@@ -227,6 +230,7 @@ fn test_sui_sign_transfer_token() {
             85619065,
             "9zB7kRVtKQcxCfi47z22u6vQGcUtnYFBXeiuaDfHUudr",
         )),
+        ..Proto::Pay::default()
     };
 
     let input = Proto::SigningInput {
@@ -270,6 +274,7 @@ fn test_sui_sign_split_tokens() {
             85887686,
             "HE58PPRBBwksCbB7DMG6RRUcHkR4uJEh5yq5Eax5g546",
         )),
+        ..Proto::Pay::default()
     };
 
     let input = Proto::SigningInput {
@@ -328,6 +333,7 @@ fn test_sui_sign_merge_tokens() {
             85887687,
             "GvBAtzvLkhaj2mpC4LnmTH7796zYfHLof4U5dpRStSbn",
         )),
+        ..Proto::Pay::default()
     };
 
     let input = Proto::SigningInput {
@@ -377,6 +383,7 @@ fn test_sui_sign_delegate_sui() {
             85989207,
             "GXGhEVNJGNBsvaTiLi85bGask5PbVXTZUKyN6CLR3N7D",
         )),
+        ..Default::default()
     };
 
     let input = Proto::SigningInput {
