@@ -133,3 +133,35 @@ TEST(CardanoCompiler, CompileInvalidInputReturnsError) {
     EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
     EXPECT_EQ(output.encoded().size(), 0ul);
 }
+
+TEST(CardanoCompiler, PlanErrorIsReturned) {
+    // 1 ADA in the only UTXO, 2 ADA staking deposit: planning fails with low balance
+    const auto ownAddress = "addr1v8mv75d2evhr4kt048cx7m3f97x363ajadha8xv8dp96nuggpv8rn";
+    auto input = Cardano::Proto::SigningInput();
+    input.mutable_transfer_message()->set_to_address(ownAddress);
+    input.mutable_transfer_message()->set_change_address(ownAddress);
+    input.mutable_transfer_message()->set_amount(500000);
+    input.mutable_register_staking_key()->set_staking_address("stake1u8kyfa6pl6v28mcpqzpxzc0xmtgc3c7jkxfvjvvpd7f54hqfd5mnh");
+    input.mutable_register_staking_key()->set_deposit_amount(2000000);
+    auto* utxo = input.add_utxos();
+    utxo->set_address(ownAddress);
+    utxo->set_amount(1000000);
+    const auto txHash = parse_hex("d87f6e99c8d3a0fb22b1ea4de477f5a6d1f0e419450c2a194304371cada0ebb9");
+    utxo->mutable_out_point()->set_tx_hash(txHash.data(), txHash.size());
+    utxo->mutable_out_point()->set_output_index(0);
+    const auto inputData = data(input.SerializeAsString());
+
+    const auto preImageHashes = TransactionCompiler::preImageHashes(TWCoinTypeCardano, inputData);
+    TxCompiler::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashes.data(), (int)preImageHashes.size()));
+    EXPECT_EQ(preSigningOutput.error(), Common::Proto::Error_low_balance);
+    EXPECT_EQ(preSigningOutput.data_hash().size(), 0ul);
+
+    const auto publicKeyData = parse_hex("17c55d712152ccabf28215fe2d008d615f94796e098a97f1aa43d986ac3cb946");
+    const auto sig = parse_hex("1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e");
+    const Data outData = TransactionCompiler::compileWithSignaturesAndPubKeyType(TWCoinTypeCardano, inputData, {sig}, {publicKeyData}, TWPublicKeyTypeED25519);
+    Cardano::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outData.data(), (int)outData.size()));
+    EXPECT_EQ(output.error(), Common::Proto::Error_low_balance);
+    EXPECT_EQ(output.encoded().size(), 0ul);
+}

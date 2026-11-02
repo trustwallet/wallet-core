@@ -347,6 +347,48 @@ TEST(CardanoSigning, PlanMaxAmountExtraOutputsExceedInputs) {
     EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
 }
 
+TEST(CardanoSigning, PlanForceFeeAmountAndExtraExceedInputs) {
+    // 8 ADA available, 6.5 ADA + 2 ADA extra requested: the fee is kept, the amount is reduced
+    auto input = createSampleInput(6500000);
+    auto* extra = input.add_extra_outputs();
+    extra->set_address(ownAddress1);
+    extra->set_amount(2000000);
+    input.mutable_transfer_message()->set_force_fee(170000);
+    const auto plan = Signer(input).doPlan();
+    EXPECT_EQ(plan.error, Common::Proto::OK);
+    EXPECT_EQ(plan.fee, 170000ul);
+    EXPECT_EQ(plan.amount, 5830000ul);
+    EXPECT_EQ(plan.change, 0ul);
+}
+
+TEST(CardanoSigning, PlanMaxAmountForceFeeExceedsInputs) {
+    // the fee would consume the whole balance, leaving nothing to send
+    auto input = createSampleInput(0, 1);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.mutable_transfer_message()->set_force_fee(5000000);
+    EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+}
+
+TEST(CardanoSigning, PlanSumOverflow) {
+    {
+        // extra outputs sum wraps around uint64
+        auto input = createSampleInput(1000000);
+        for (auto i = 0; i < 2; ++i) {
+            auto* extra = input.add_extra_outputs();
+            extra->set_address(ownAddress1);
+            extra->set_amount(1ull << 63);
+        }
+        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+    }
+    {
+        // UTXO amounts sum wraps around uint64
+        auto input = createSampleInput(1000000, 2);
+        input.mutable_utxos(0)->set_amount(1ull << 63);
+        input.mutable_utxos(1)->set_amount(1ull << 63);
+        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_invalid_utxo_amount);
+    }
+}
+
 TEST(CardanoSigning, SelectInputsTokenAcrossUtxos) {
     const auto policy = std::string(sundaeTokenPolicy);
     const auto name = parse_hex("aa");
