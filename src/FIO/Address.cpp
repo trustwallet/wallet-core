@@ -78,6 +78,9 @@ Address::Address(const std::string& string) {
 
 /// Initializes a FIO address from a public key.
 Address::Address(const PublicKey& publicKey) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1 && publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+        throw std::invalid_argument("Invalid public key type");
+    }
     // copy the raw, compressed key data
     Data data = publicKey.compressed().bytes;
 

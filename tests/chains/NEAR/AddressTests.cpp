@@ -45,4 +45,12 @@ TEST(NEARAddress, FromPrivateKey) {
     ASSERT_EQ(address.string(), "917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d");
 }
 
+TEST(NEARAddress, FromPublicKeyInvalidType) {
+    const auto cardanoKey = PublicKey(Data(PublicKey::cardanoKeySize, 0x41), TWPublicKeyTypeED25519Cardano);
+    EXPECT_THROW(Address{cardanoKey}, std::invalid_argument);
+
+    const auto secpKey = PrivateKey(Data(32, 1)).getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_THROW(Address{secpKey}, std::invalid_argument);
+}
+
 } // namespace TW::NEAR::tests

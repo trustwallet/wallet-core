@@ -51,6 +51,9 @@ Address::Address(const std::string& string) {
 
 /// Initializes a NEAR address from a public key.
 Address::Address(const PublicKey& publicKey) {
+    if (publicKey.type != TWPublicKeyTypeED25519) {
+        throw std::invalid_argument("Invalid public key type");
+    }
     // copy the raw, compressed key data
     auto data = publicKey.compressed().bytes;
     std::copy(std::begin(data), std::end(data), std::begin(bytes));

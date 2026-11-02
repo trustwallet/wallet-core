@@ -53,6 +53,17 @@ TEST(FIOAddress, FromPublicKey) {
     auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+
+    auto extendedAddress = Address(key.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
+    ASSERT_EQ(extendedAddress.string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+}
+
+TEST(FIOAddress, FromPublicKeyInvalidType) {
+    const auto cardanoKey = PublicKey(Data(PublicKey::cardanoKeySize, 0x41), TWPublicKeyTypeED25519Cardano);
+    EXPECT_THROW(Address{cardanoKey}, std::invalid_argument);
+
+    const auto ed25519Key = PrivateKey(Data(32, 1)).getPublicKey(TWPublicKeyTypeED25519);
+    EXPECT_THROW(Address{ed25519Key}, std::invalid_argument);
 }
 
 TEST(FIOAddress, GetPublicKey) {
