@@ -376,18 +376,14 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     return addressUpdated;
 }
 
-std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+ZeroizingString StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
     if (encodedPayload) {
-        auto data = encodedPayload->decrypt(password);
-        const auto dataString = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-        memzero(data.data(), data.size());
-        return dataString;
+        const auto data = ZeroizingData(encodedPayload->decrypt(password));
+        return ZeroizingString(std::string(reinterpret_cast<const char*>(data.get().data()), data.get().size()));
     }
 
-    auto data = payload.decrypt(password);
-    const auto dataHex = TW::hex(data);
-    memzero(data.data(), data.size());
-    return dataHex;
+    const auto data = ZeroizingData(payload.decrypt(password));
+    return ZeroizingString(TW::hex(data.get()));
 }
 
 // -----------------
