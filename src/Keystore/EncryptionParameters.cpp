@@ -181,7 +181,7 @@ EncryptedPayload::~EncryptedPayload() {
     memzero(_mac.data(), _mac.size());
 }
 
-Data EncryptedPayload::decrypt(const Data& password) const {
+ZeroizingData EncryptedPayload::decrypt(const Data& password) const {
     auto derivedKey = Data();
     auto mac = Data();
 
@@ -237,7 +237,7 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         throw DecryptionError::unsupportedCipher;
     }
 
-    return decrypted;
+    return ZeroizingData(std::move(decrypted));
 }
 
 EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password) const {
@@ -247,7 +247,7 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
         return *this;
     }
 
-    const auto decryptedData = ZeroizingData(decrypt(password));
+    const auto decryptedData = decrypt(password);
 
     // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
     const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
@@ -257,7 +257,7 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
 
     // Try to decrypt the new payload to verify the full backward compatibility, before returning it.
     {
-        auto reDecryptedData = ZeroizingData(reEncryptedPayload.decrypt(password));
+        const auto reDecryptedData = reEncryptedPayload.decrypt(password);
         if (!isEqualConstantTime(decryptedData.get(), reDecryptedData.get())) {
             throw DecryptionError::invalidKeyFile;
         }

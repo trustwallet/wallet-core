@@ -241,7 +241,7 @@ bool TWStoredKeyStoreWithTemporaryFile(struct TWStoredKey* _Nonnull key, TWStrin
 TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        const auto data = TW::ZeroizingData(key->impl.payload.decrypt(passwordData));
+        const auto data = key->impl.payload.decrypt(passwordData);
         return TWDataCreateWithBytes(data.get().data(), data.get().size());
     } catch (...) {
         return nullptr;
@@ -265,7 +265,7 @@ bool TWStoredKeyHasPrivateKeyEncoded(struct TWStoredKey* _Nonnull key) {
 TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        const auto data = TW::ZeroizingData(key->impl.payload.decrypt(passwordData));
+        const auto data = key->impl.payload.decrypt(passwordData);
         const auto string = TW::ZeroizingString(std::string(data.get().begin(), data.get().end()));
         return TWStringCreateWithUTF8Bytes(string.get().c_str());
     } catch (...) {
