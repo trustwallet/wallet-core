@@ -121,7 +121,6 @@ fn test_binance_sign_send_order() {
         memo: "test".into(),
         private_key: ACCOUNT_19_PRIVATE_KEY.decode_hex().unwrap().into(),
         order_oneof: OrderEnum::send_order(send_order),
-        ..Proto::SigningInput::default()
     };
 
     let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();

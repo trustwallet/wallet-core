@@ -741,7 +741,7 @@ mod tests {
 
     #[test]
     fn comprehensive_test2() {
-        let encoded = encode_tokens(&vec![
+        let encoded = encode_tokens(&[
             Token::i256(1_u64.into()),
             Token::String("gavofyork".to_owned()),
             Token::i256(2_u64.into()),

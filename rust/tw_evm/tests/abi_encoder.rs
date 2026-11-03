@@ -742,7 +742,7 @@ fn test_decode_params_max_recursion_depth() {
 
 #[test]
 fn test_encode_params_too_long_array() {
-    let array_tokens: Vec<_> = (0..4097).map(|i| u_number_n::<256>(i)).collect();
+    let array_tokens: Vec<_> = (0..4097).map(u_number_n::<256>).collect();
     let input = Proto::FunctionEncodingInput {
         function_name: "transfer".into(),
         tokens: vec![named_token(

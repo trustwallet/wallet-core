@@ -67,7 +67,7 @@ fn test_sui_message_signer_verify_different_public_key() {
 
     let input_data = TWDataHelper::create(serialize(&input).unwrap());
     let verified = unsafe { tw_message_signer_verify(CoinType::Sui as u32, input_data.ptr()) };
-    assert_eq!(verified, false);
+    assert!(!verified);
 }
 
 #[test]

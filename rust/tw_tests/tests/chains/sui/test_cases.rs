@@ -31,6 +31,7 @@ pub(super) mod transfer_d4ay9tdb {
                 SENDER_54E80D76.into(),
             ],
             amounts: vec![1000, 50_000],
+            ..Default::default()
         };
 
         Proto::SigningInput {

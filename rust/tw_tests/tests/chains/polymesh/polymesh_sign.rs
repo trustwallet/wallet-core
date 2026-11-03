@@ -211,7 +211,7 @@ fn test_polymesh_encode_bond_and_nominate() {
                 staking_call(StakingVariant::bond(Bond {
                     controller: "2EYbDVDVWiFbXZWJgqGDJsiH5MfNeLr5fxqH3tX84LQZaETG".into(),
                     value: Cow::Owned(U256::from(4000000u64).to_big_endian().to_vec()), // 4.0 POLYX
-                    reward_destination: RewardDestination::STAKED.into(),
+                    reward_destination: RewardDestination::STAKED,
                     call_indices: None,
                 })),
                 staking_call(StakingVariant::nominate(Nominate {
