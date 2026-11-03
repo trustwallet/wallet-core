@@ -203,16 +203,15 @@ static SigningResult writeAction(Data& data, const Proto::Action& action) {
     }
 }
 
-Result<Data, Common::Proto::SigningError> transactionData(const Proto::SigningInput& input) {
+// Serializes the transaction with `signerKey` as the signer's ED25519 public key.
+static Result<Data, Common::Proto::SigningError> serializeTransaction(const Proto::SigningInput& input, const Data& signerKey) {
     if (input.block_hash().size() != 32) {
         return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
     }
     Data data;
     writeString(data, input.signer_id());
-    auto key = PrivateKey(input.private_key(), TWCurveED25519);
-    auto public_key = key.getPublicKey(TWPublicKeyTypeED25519);
     auto public_key_proto = Proto::PublicKey();
-    public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
+    public_key_proto.set_data(signerKey.data(), signerKey.size());
     auto keyResult = writePublicKey(data, public_key_proto);
     if (!keyResult) {
         return Result<Data, Common::Proto::SigningError>::failure(keyResult.error());
@@ -230,29 +229,13 @@ Result<Data, Common::Proto::SigningError> transactionData(const Proto::SigningIn
     return Result<Data, Common::Proto::SigningError>::success(std::move(data));
 }
 
+Result<Data, Common::Proto::SigningError> transactionData(const Proto::SigningInput& input) {
+    auto key = PrivateKey(input.private_key(), TWCurveED25519);
+    return serializeTransaction(input, key.getPublicKey(TWPublicKeyTypeED25519).bytes);
+}
+
 Result<Data, Common::Proto::SigningError> transactionDataWithPublicKey(const Proto::SigningInput& input) {
-    if (input.block_hash().size() != 32) {
-        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
-    }
-    Data data;
-    writeString(data, input.signer_id());
-    auto public_key_proto = Proto::PublicKey();
-    public_key_proto.set_data(input.public_key().data(), input.public_key().size());
-    auto keyResult = writePublicKey(data, public_key_proto);
-    if (!keyResult) {
-        return Result<Data, Common::Proto::SigningError>::failure(keyResult.error());
-    }
-    writeU64(data, input.nonce());
-    writeString(data, input.receiver_id());
-    writeRawBuffer(data, input.block_hash());
-    writeU32(data, input.actions_size());
-    for (const auto& action : input.actions()) {
-        auto result = writeAction(data, action);
-        if (!result) {
-            return Result<Data, Common::Proto::SigningError>::failure(result.error());
-        }
-    }
-    return Result<Data, Common::Proto::SigningError>::success(std::move(data));
+    return serializeTransaction(input, Data(input.public_key().begin(), input.public_key().end()));
 }
 
 Data signedTransactionData(const Data& transactionData, const Data& signatureData) {
