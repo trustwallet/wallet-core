@@ -13,6 +13,7 @@
 #include <TrezorCrypto/memzero.h>
 
 #include <cassert>
+#include <cstddef>
 #include <fstream>
 #include <stdexcept>
 
@@ -376,8 +377,9 @@ static ZeroizingString hexZeroizing(const Data& data) {
     constexpr char digits[] = "0123456789abcdef";
     std::string out(data.size() * 2, '\0');
     for (std::size_t i = 0; i < data.size(); ++i) {
-        out[2 * i] = digits[data[i] >> 4];
-        out[2 * i + 1] = digits[data[i] & 0x0f];
+        const auto byte = static_cast<std::byte>(data[i]);
+        out[2 * i] = digits[std::to_integer<std::size_t>(byte >> 4)];
+        out[2 * i + 1] = digits[std::to_integer<std::size_t>(byte & std::byte{0x0f})];
     }
     return ZeroizingString(std::move(out));
 }
