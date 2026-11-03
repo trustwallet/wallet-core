@@ -249,6 +249,48 @@ TEST(NEARSerialization, SerializeCreateAccountTransaction) {
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef60100000000");
 }
 
+TEST(NEARSerialization, SerializeDeployContractTransaction) {
+    auto input = Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
+
+    auto code = parse_hex("010203");
+    input.add_actions()->mutable_deploy_contract()->set_code(code.data(), code.size());
+
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    input.set_private_key(privateKey.data(), 32);
+
+    auto serialized = transactionData(input).payload();
+    auto serializedHex = hex(serialized);
+
+    // Action tag 1, then `code` as a Borsh `Vec<u8>`: u32 length (3) followed by the bytes.
+    ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000103000000010203");
+}
+
+TEST(NEARSerialization, EmptyActionRejected) {
+    auto input = Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
+    input.add_actions();
+
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    input.set_private_key(privateKey.data(), 32);
+    input.set_public_key(Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC").data(), 32);
+
+    for (const auto& result : {transactionData(input), transactionDataWithPublicKey(input)}) {
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), Common::Proto::Error_invalid_params);
+    }
+}
+
 TEST(NEARSerialization, SerializeDeleteAccountTransaction) {
     auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 

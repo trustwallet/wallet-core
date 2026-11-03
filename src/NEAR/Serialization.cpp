@@ -6,6 +6,7 @@
 
 #include "../BinaryCoding.h"
 #include "../PrivateKey.h"
+#include "../PublicKey.h"
 
 #include <nlohmann/json.hpp>
 
@@ -19,7 +20,7 @@ static constexpr auto tokenTransferMethodName = "ft_transfer";
 // NEAR `KeyType` values and their fixed Borsh-encoded key sizes.
 static constexpr uint32_t keyTypeED25519 = 0;
 static constexpr uint32_t keyTypeSECP256K1 = 1;
-static constexpr std::size_t ed25519KeySize = 32;
+// SECP256K1 keys are uncompressed, without the 0x04 prefix.
 static constexpr std::size_t secp256k1KeySize = 64;
 
 static void writeU8(Data& data, uint8_t number) {
@@ -57,7 +58,7 @@ static SigningResult writePublicKey(Data& data, const Proto::PublicKey& publicKe
     const auto& keyData = publicKey.data();
     switch (publicKey.key_type()) {
     case keyTypeED25519:
-        if (keyData.size() != ed25519KeySize) {
+        if (keyData.size() != PublicKey::ed25519Size) {
             return SigningResult::failure(Common::Proto::Error_invalid_params);
         }
         break;
@@ -72,6 +73,11 @@ static SigningResult writePublicKey(Data& data, const Proto::PublicKey& publicKe
     writeU8(data, static_cast<uint8_t>(publicKey.key_type()));
     writeRawBuffer(data, keyData);
     return SigningResult::success();
+}
+
+static void writeDeployContract(Data& data, const Proto::DeployContract& deployContract) {
+    writeU32(data, static_cast<uint32_t>(deployContract.code().size()));
+    writeRawBuffer(data, deployContract.code());
 }
 
 static SigningResult writeTransfer(Data& data, const Proto::Transfer& transfer) {
@@ -171,6 +177,11 @@ static SigningResult writeAction(Data& data, const Proto::Action& action) {
 
     writeU8(data, actionByte);
     switch (action.payload_case()) {
+    case Proto::Action::kCreateAccount:
+        return SigningResult::success();
+    case Proto::Action::kDeployContract:
+        writeDeployContract(data, action.deploy_contract());
+        return SigningResult::success();
     case Proto::Action::kFunctionCall:
         return writeFunctionCall(data, action.function_call());
     case Proto::Action::kTransfer:
@@ -187,7 +198,8 @@ static SigningResult writeAction(Data& data, const Proto::Action& action) {
     case Proto::Action::kTokenTransfer:
         return writeTokenTransfer(data, action.token_transfer());
     default:
-        return SigningResult::success();
+        // An action with no payload has no valid encoding.
+        return SigningResult::failure(Common::Proto::Error_invalid_params);
     }
 }
 

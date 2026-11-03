@@ -175,8 +175,11 @@ TEST(NEARCompiler, PreImageHashes_InvalidPublicKeyLength) {
     append(overlong, Data(84, 0x41));
     // Short: one byte missing.
     const auto shortKey = Data(publicKey.begin(), publicKey.end() - 1);
+    // 0x01-prefixed form accepted by `PublicKey`, but not a valid Borsh-encoded NEAR key.
+    auto prefixed = Data{0x01};
+    append(prefixed, publicKey);
 
-    for (const auto& key : {overlong, shortKey, Data()}) {
+    for (const auto& key : {overlong, shortKey, prefixed, Data()}) {
         const auto inputString = compilerInputWithPublicKey(key).SerializeAsString();
         const auto inputStrData = TW::Data(inputString.begin(), inputString.end());
 
