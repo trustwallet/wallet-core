@@ -273,4 +273,77 @@ TEST(NEARSerialization, SerializeDeleteAccountTransaction) {
     ASSERT_EQ(serializedHex, "09000000746573742e6e65617200917b3d268d4b58f7fec1b150bd68d69be3ee5d4cc39855e341538465bb77860d01000000000000000d00000077686174657665722e6e6561720fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6010000000703000000313233");
 }
 
+namespace {
+
+Proto::SigningInput inputWithActionKey(uint32_t keyType, const Data& keyData, Proto::Action::PayloadCase payload) {
+    auto input = Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+    auto privateKey = Base58::decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    input.set_private_key(privateKey.data(), 32);
+    input.set_public_key(Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC").data(), 32);
+
+    auto& action = *input.add_actions();
+    Proto::PublicKey* pKey = nullptr;
+    switch (payload) {
+    case Proto::Action::kStake: {
+        auto& stake = *action.mutable_stake();
+        auto amount = Data(16, 0);
+        stake.set_stake(amount.data(), amount.size());
+        pKey = stake.mutable_public_key();
+        break;
+    }
+    case Proto::Action::kAddKey: {
+        auto& addKey = *action.mutable_add_key();
+        addKey.mutable_access_key()->mutable_full_access();
+        pKey = addKey.mutable_public_key();
+        break;
+    }
+    default:
+        pKey = action.mutable_delete_key()->mutable_public_key();
+        break;
+    }
+    pKey->set_key_type(keyType);
+    pKey->set_data(keyData.data(), keyData.size());
+    return input;
+}
+
+} // namespace
+
+TEST(NEARSerialization, ActionPublicKeyLengthValidation) {
+    const auto ed25519Key = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+    auto overlong = ed25519Key;
+    append(overlong, Data(84, 0x41));
+    const auto shortKey = Data(ed25519Key.begin(), ed25519Key.end() - 1);
+    const auto secp256k1Key = Data(64, 0x02);
+
+    for (const auto payload : {Proto::Action::kStake, Proto::Action::kAddKey, Proto::Action::kDeleteKey}) {
+        // Well-formed keys of both types are accepted.
+        EXPECT_TRUE(transactionData(inputWithActionKey(0, ed25519Key, payload)));
+        EXPECT_TRUE(transactionDataWithPublicKey(inputWithActionKey(0, ed25519Key, payload)));
+        EXPECT_TRUE(transactionData(inputWithActionKey(1, secp256k1Key, payload)));
+
+        const std::vector<std::pair<uint32_t, Data>> invalid = {
+            {0, overlong},
+            {0, shortKey},
+            {0, Data()},
+            {0, secp256k1Key},
+            {1, ed25519Key},
+            // Would be truncated to ED25519 (0) by the u8 cast.
+            {256, ed25519Key},
+            {2, ed25519Key},
+        };
+        for (const auto& [keyType, keyData] : invalid) {
+            const auto input = inputWithActionKey(keyType, keyData, payload);
+            for (const auto& result : {transactionData(input), transactionDataWithPublicKey(input)}) {
+                ASSERT_FALSE(result);
+                EXPECT_EQ(result.error(), Common::Proto::Error_invalid_params);
+            }
+        }
+    }
+}
+
 }

@@ -16,6 +16,12 @@ using SigningResult = Result<void, Common::Proto::SigningError>;
 
 static constexpr auto tokenTransferMethodName = "ft_transfer";
 
+// NEAR `KeyType` values and their fixed Borsh-encoded key sizes.
+static constexpr uint32_t keyTypeED25519 = 0;
+static constexpr uint32_t keyTypeSECP256K1 = 1;
+static constexpr std::size_t ed25519KeySize = 32;
+static constexpr std::size_t secp256k1KeySize = 64;
+
 static void writeU8(Data& data, uint8_t number) {
     data.push_back(number);
 }
@@ -46,10 +52,26 @@ static void writeString(Data& data, const std::string& str) {
     writeRawBuffer(data, str);
 }
 
-static void writePublicKey(Data& data, const Proto::PublicKey& publicKey) {
-    writeU8(data, static_cast<uint8_t>(publicKey.key_type()));
+// Public key data is not length-prefixed in Borsh, so its size must match the key type exactly.
+static SigningResult writePublicKey(Data& data, const Proto::PublicKey& publicKey) {
     const auto& keyData = publicKey.data();
+    switch (publicKey.key_type()) {
+    case keyTypeED25519:
+        if (keyData.size() != ed25519KeySize) {
+            return SigningResult::failure(Common::Proto::Error_invalid_params);
+        }
+        break;
+    case keyTypeSECP256K1:
+        if (keyData.size() != secp256k1KeySize) {
+            return SigningResult::failure(Common::Proto::Error_invalid_params);
+        }
+        break;
+    default:
+        return SigningResult::failure(Common::Proto::Error_invalid_params);
+    }
+    writeU8(data, static_cast<uint8_t>(publicKey.key_type()));
     writeRawBuffer(data, keyData);
+    return SigningResult::success();
 }
 
 static SigningResult writeTransfer(Data& data, const Proto::Transfer& transfer) {
@@ -71,8 +93,7 @@ static SigningResult writeStake(Data& data, const Proto::Stake& stake) {
     if (!result) {
         return result;
     }
-    writePublicKey(data, stake.public_key());
-    return SigningResult::success();
+    return writePublicKey(data, stake.public_key());
 }
 
 static SigningResult writeFunctionCallPermission(Data& data, const Proto::FunctionCallPermission& functionCallPermission) {
@@ -109,12 +130,15 @@ static SigningResult writeAccessKey(Data& data, const Proto::AccessKey& accessKe
 }
 
 static SigningResult writeAddKey(Data& data, const Proto::AddKey& addKey) {
-    writePublicKey(data, addKey.public_key());
+    auto result = writePublicKey(data, addKey.public_key());
+    if (!result) {
+        return result;
+    }
     return writeAccessKey(data, addKey.access_key());
 }
 
-static void writeDeleteKey(Data& data, const Proto::DeleteKey& deleteKey) {
-    writePublicKey(data, deleteKey.public_key());
+static SigningResult writeDeleteKey(Data& data, const Proto::DeleteKey& deleteKey) {
+    return writePublicKey(data, deleteKey.public_key());
 }
 
 static void writeDeleteAccount(Data& data, const Proto::DeleteAccount& deleteAccount) {
@@ -156,8 +180,7 @@ static SigningResult writeAction(Data& data, const Proto::Action& action) {
     case Proto::Action::kAddKey:
         return writeAddKey(data, action.add_key());
     case Proto::Action::kDeleteKey:
-        writeDeleteKey(data, action.delete_key());
-        return SigningResult::success();
+        return writeDeleteKey(data, action.delete_key());
     case Proto::Action::kDeleteAccount:
         writeDeleteAccount(data, action.delete_account());
         return SigningResult::success();
@@ -178,7 +201,10 @@ Result<Data, Common::Proto::SigningError> transactionData(const Proto::SigningIn
     auto public_key = key.getPublicKey(TWPublicKeyTypeED25519);
     auto public_key_proto = Proto::PublicKey();
     public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
-    writePublicKey(data, public_key_proto);
+    auto keyResult = writePublicKey(data, public_key_proto);
+    if (!keyResult) {
+        return Result<Data, Common::Proto::SigningError>::failure(keyResult.error());
+    }
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
     writeRawBuffer(data, input.block_hash());
@@ -200,7 +226,10 @@ Result<Data, Common::Proto::SigningError> transactionDataWithPublicKey(const Pro
     writeString(data, input.signer_id());
     auto public_key_proto = Proto::PublicKey();
     public_key_proto.set_data(input.public_key().data(), input.public_key().size());
-    writePublicKey(data, public_key_proto);
+    auto keyResult = writePublicKey(data, public_key_proto);
+    if (!keyResult) {
+        return Result<Data, Common::Proto::SigningError>::failure(keyResult.error());
+    }
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
     writeRawBuffer(data, input.block_hash());
