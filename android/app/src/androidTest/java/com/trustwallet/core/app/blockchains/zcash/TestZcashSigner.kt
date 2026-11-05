@@ -57,6 +57,7 @@ class TestZcashSigner {
             // Set ZCash specific extra parameters.
             .setZcashExtraData(Zcash.TransactionBuilderExtraData.newBuilder().apply {
                 branchId = ByteString.copyFrom(sapplingBranchId)
+                txVersion = Zcash.TransactionVersion.V4
             })
         val signingInput = BitcoinV2.SigningInput.newBuilder()
             .setBuilder(builder)

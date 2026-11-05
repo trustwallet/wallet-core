@@ -54,6 +54,7 @@ fn test_zcash_plan_eip_0317_many_utxo() {
         branch_id: NU6_BRANCH_ID.into(),
         zip_0317: true,
         expiry_height: 0,
+        tx_version: ZcashProto::TransactionVersion::V4,
     };
 
     let builder = Proto::TransactionBuilder {

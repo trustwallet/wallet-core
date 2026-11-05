@@ -17,6 +17,8 @@ pub const SAPLING_BRANCH_ID: &[u8] = &[0xbb, 0x09, 0xb8, 0x76];
 pub const BLOSSOM_BRANCH_ID: &[u8] = &[0x60, 0x0e, 0xb4, 0x2b];
 /// See https://github.com/zcash/zips/blob/main/zips/zip-0253.md#nu6-deployment CONSENSUS_BRANCH_ID section
 pub const NU6_BRANCH_ID: &[u8] = &[0x55, 0x10, 0xe7, 0xc8];
+/// NU6.3 consensus branch ID 0x37A5165B.
+pub const NU6_3_BRANCH_ID: &[u8] = &[0x5b, 0x16, 0xa5, 0x37];
 pub const ZCASH_P2PKH_PREFIX: u8 = 184;
 pub const ZCASH_P2SH_PREFIX: u8 = 189;
 

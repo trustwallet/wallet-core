@@ -3,13 +3,17 @@
 // Copyright © 2017 Trust Wallet.
 
 use crate::modules::zcash_fee_estimator::ZcashFeeEstimator;
-use crate::transaction::{ZcashTransaction, TRANSACTION_VERSION_4};
+use crate::transaction::{
+    ZcashTransaction, TRANSACTION_VERSION_4, TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID,
+    TRANSACTION_VERSION_GROUP_ID,
+};
 use tw_bitcoin::modules::signing_request::SigningRequestBuilder;
 use tw_bitcoin::modules::tx_builder::output_protobuf::OutputProtobuf;
 use tw_bitcoin::modules::tx_builder::utxo_protobuf::UtxoProtobuf;
 use tw_coin_entry::coin_context::CoinContext;
 use tw_coin_entry::error::prelude::*;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Zcash::Proto::TransactionVersion as ZcashTransactionVersion;
 use tw_utxo::fee::fee_estimator::StandardFeeEstimator;
 use tw_utxo::fee::FeePolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
@@ -23,14 +27,22 @@ use tw_utxo::constants::check_max_input_output_count;
 use tw_utxo::context::UtxoContext;
 
 pub struct ZcashExtraData {
+    /// Transaction version without the overwintered flag.
+    pub version: u32,
+    pub version_group_id: u32,
     pub branch_id: H32,
     pub expiry_height: u32,
     pub zip_0317: bool,
 }
 
-pub struct ZcashSigningRequestBuilder;
+/// Zcash-like signing request builder.
+///
+/// `SUPPORTS_V5` - whether the chain supports v5 transactions (NU5+).
+/// If so, v5 is used by default. Otherwise, v4 is the only supported version.
+pub struct ZcashSigningRequestBuilder<const SUPPORTS_V5: bool = true>;
 
-impl<Context> SigningRequestBuilder<Context> for ZcashSigningRequestBuilder
+impl<Context, const SUPPORTS_V5: bool> SigningRequestBuilder<Context>
+    for ZcashSigningRequestBuilder<SUPPORTS_V5>
 where
     Context: UtxoContext<Transaction = ZcashTransaction, FeeEstimator = ZcashFeeEstimator>,
 {
@@ -45,7 +57,8 @@ where
         let dust_policy =
             StandardSigningRequestBuilder::dust_policy(&transaction_builder.dust_policy)?;
         let fee_estimator = Self::fee_estimator(transaction_builder, &extra_data)?;
-        let version = StandardSigningRequestBuilder::expect_transaction_version(
+        // Zcash transaction version is configured via `zcash_extra_data.tx_version`.
+        StandardSigningRequestBuilder::expect_transaction_version(
             &transaction_builder.version,
             TRANSACTION_VERSION_4,
         )?;
@@ -54,7 +67,8 @@ where
 
         let mut builder = ZcashTransactionBuilder::default();
         builder
-            .overwintered_version(version)
+            .overwintered_version(extra_data.version)
+            .version_group_id(extra_data.version_group_id)
             .lock_time(transaction_builder.lock_time)
             .expiry_height(extra_data.expiry_height)
             .branch_id(extra_data.branch_id);
@@ -136,7 +150,7 @@ where
     }
 }
 
-impl ZcashSigningRequestBuilder {
+impl<const SUPPORTS_V5: bool> ZcashSigningRequestBuilder<SUPPORTS_V5> {
     pub fn fee_estimator(
         proto: &Proto::TransactionBuilder,
         extra_data: &ZcashExtraData,
@@ -164,7 +178,20 @@ impl ZcashSigningRequestBuilder {
         let branch_id = H32::try_from(extra_data.branch_id.as_ref())
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'branchId', expected 4-byte array")?;
+        let v4 = (TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID);
+        let v5 = (TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID);
+        let (version, version_group_id) = match extra_data.tx_version {
+            ZcashTransactionVersion::UseDefault if SUPPORTS_V5 => v5,
+            ZcashTransactionVersion::UseDefault | ZcashTransactionVersion::V4 => v4,
+            ZcashTransactionVersion::V5 if SUPPORTS_V5 => v5,
+            ZcashTransactionVersion::V5 => {
+                return SigningError::err(SigningErrorType::Error_not_supported)
+                    .context("Transaction version 5 is not supported by the chain")
+            },
+        };
         Ok(ZcashExtraData {
+            version,
+            version_group_id,
             branch_id,
             expiry_height: extra_data.expiry_height,
             zip_0317: extra_data.zip_0317,

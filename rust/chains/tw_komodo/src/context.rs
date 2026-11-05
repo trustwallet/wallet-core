@@ -32,7 +32,8 @@ impl UtxoContext for KomodoContext {
 }
 
 impl BitcoinSigningContext for KomodoContext {
-    type SigningRequestBuilder = ZcashSigningRequestBuilder;
+    /// Komodo doesn't support Zcash v5 transactions.
+    type SigningRequestBuilder = ZcashSigningRequestBuilder<false>;
     type ProtobufBuilder = ZcashProtobufBuilder;
     type PsbtRequestHandler = NoPsbtRequestBuilder;
 }

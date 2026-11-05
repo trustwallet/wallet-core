@@ -5,9 +5,21 @@ option java_package = "wallet.core.jni.proto";
 
 import "Utxo.proto";
 
+// Zcash transparent transaction format.
+enum TransactionVersion {
+    // Version 5 is used by default.
+    // Komodo doesn't support version 5, so version 4 is used by default there.
+    UseDefault = 0;
+    // Sapling transaction format (0x80000004), version group ID 0x892F2085.
+    // Version 4 transactions are not valid after NU7 activation, see https://zips.z.cash/zip-2003
+    V4 = 4;
+    // NU5 transaction format (0x80000005), version group ID 0x26A7270A.
+    // See https://zips.z.cash/zip-0225 and https://zips.z.cash/zip-0244
+    V5 = 5;
+}
+
 message TransactionBuilderExtraData {
-    // Currently, `branch_id` is the only configurable Zcash specific parameter.
-    // There can also be `version_group_id` configured in the future.
+    // Consensus branch ID for the epoch of the block containing the transaction.
     bytes branch_id = 1;
 
     // Zero in most cases.
@@ -16,13 +28,17 @@ message TransactionBuilderExtraData {
     // Whether to calculate the fee according to ZIP-0317 for the given transaction
     // https://zips.z.cash/zip-0317#fee-calculation
     bool zip_0317 = 3;
+
+    // Transaction version. The version group ID is derived from it.
+    // Version 5 is used by default (version 4 for Komodo).
+    TransactionVersion tx_version = 4;
 }
 
 message Transaction {
     /// Transaction version.
-    /// Currently, version 4 (0x80000004) is supported only.
+    /// Version 4 (0x80000004) and version 5 (0x80000005) are supported.
     uint32 version = 1;
-    // If transaction version is 4 (0x80000004), version group ID is 0x892F2085.
+    // Version 4 group ID is 0x892F2085, version 5 group ID is 0x26A7270A.
     uint32 version_group_id = 2;
     // The transaction inputs.
     repeated Utxo.Proto.TransactionInput inputs = 3;
