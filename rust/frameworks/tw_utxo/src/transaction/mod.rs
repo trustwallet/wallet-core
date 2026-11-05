@@ -28,10 +28,10 @@ pub trait TransactionPreimage {
 
 pub struct UtxoTaprootPreimageArgs {
     /// All UTXO amounts spending by this transaction.
-    /// Used in Taproot signing only.
+    /// Used in Taproot and Zcash v5 (ZIP-244) signing.
     pub spent_amounts: Vec<Amount>,
     /// All UTXO scriptPubkey's.
-    /// Used in Taproot signing only.
+    /// Used in Taproot and Zcash v5 (ZIP-244) signing.
     pub spent_script_pubkeys: Vec<Script>,
     pub leaf_hash_code_separator: Option<(H256, u32)>,
 }

@@ -112,3 +112,117 @@ pub struct Zip32Derivation {
     /// [ZIP 320]: https://zips.z.cash/zip-0320
     pub derivation_path: Vec<u32>,
 }
+
+/// Determines the lock time for the transaction.
+///
+/// Ported from `pczt::common::determine_lock_time`, which follows [BIP 370].
+/// Returns `None` if the inputs require incompatible lock time types.
+///
+/// [BIP 370]: https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#determining-lock-time
+pub fn determine_lock_time(
+    global: &Global,
+    inputs: &[crate::modules::pczt::transparent::Input],
+) -> Option<u32> {
+    let have_required_lock_time = inputs.iter().any(|input| {
+        input.required_time_lock_time.is_some() || input.required_height_lock_time.is_some()
+    });
+    let time_lock_time_unsupported = inputs
+        .iter()
+        .any(|input| input.required_height_lock_time.is_some());
+    let height_lock_time_unsupported = inputs
+        .iter()
+        .any(|input| input.required_time_lock_time.is_some());
+
+    match (
+        have_required_lock_time,
+        time_lock_time_unsupported,
+        height_lock_time_unsupported,
+    ) {
+        (true, true, true) => None,
+        (true, false, true) => inputs
+            .iter()
+            .filter_map(|input| input.required_time_lock_time)
+            .max(),
+        // Upstream comment: if both lock time types are possible, the height lock time must be chosen.
+        (true, _, false) => inputs
+            .iter()
+            .filter_map(|input| input.required_height_lock_time)
+            .max(),
+        // Fallback lock time is assumed to be 0 if not provided.
+        (false, _, _) => Some(global.fallback_lock_time.unwrap_or(0)),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::modules::pczt::transparent::Input;
+
+    fn global(fallback_lock_time: Option<u32>) -> Global {
+        Global {
+            tx_version: 5,
+            version_group_id: 0x26A7270A,
+            consensus_branch_id: 0xC8E71055,
+            fallback_lock_time,
+            expiry_height: 0,
+            coin_type: 133,
+            tx_modifiable: 0,
+            proprietary: BTreeMap::default(),
+        }
+    }
+
+    fn input(time: Option<u32>, height: Option<u32>) -> Input {
+        Input {
+            prevout_txid: [0; 32],
+            prevout_index: 0,
+            sequence: None,
+            required_time_lock_time: time,
+            required_height_lock_time: height,
+            script_sig: None,
+            value: 0,
+            script_pubkey: Vec::default(),
+            redeem_script: None,
+            partial_signatures: BTreeMap::default(),
+            sighash_type: 1,
+            bip32_derivation: BTreeMap::default(),
+            ripemd160_preimages: BTreeMap::default(),
+            sha256_preimages: BTreeMap::default(),
+            hash160_preimages: BTreeMap::default(),
+            hash256_preimages: BTreeMap::default(),
+            proprietary: BTreeMap::default(),
+        }
+    }
+
+    #[test]
+    fn test_determine_lock_time() {
+        // Fallback lock time is used if no input requires a lock time.
+        assert_eq!(
+            determine_lock_time(&global(None), &[input(None, None)]),
+            Some(0)
+        );
+        assert_eq!(
+            determine_lock_time(&global(Some(100)), &[input(None, None)]),
+            Some(100)
+        );
+        // The maximum required lock time of the chosen type is used.
+        let inputs = [
+            input(None, Some(10)),
+            input(None, Some(20)),
+            input(None, None),
+        ];
+        assert_eq!(determine_lock_time(&global(Some(100)), &inputs), Some(20));
+        let inputs = [
+            input(Some(600_000_000), None),
+            input(Some(500_000_001), None),
+        ];
+        assert_eq!(
+            determine_lock_time(&global(None), &inputs),
+            Some(600_000_000)
+        );
+        // Incompatible lock time types (same behaviour as upstream `pczt`).
+        let inputs = [input(Some(600_000_000), None), input(None, Some(10))];
+        assert_eq!(determine_lock_time(&global(None), &inputs), None);
+        let inputs = [input(Some(600_000_000), Some(10))];
+        assert_eq!(determine_lock_time(&global(None), &inputs), None);
+    }
+}
