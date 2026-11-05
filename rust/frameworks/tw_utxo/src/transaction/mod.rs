@@ -24,15 +24,15 @@ pub mod unsigned_transaction;
 pub trait TransactionPreimage {
     /// Preimages a transaction for a specific UTXO signing.
     fn preimage_tx(&self, args: &UtxoPreimageArgs) -> SigningResult<H256>;
+
+    /// Preimages a transaction for all UTXOs, in the same order as `args`.
+    /// Override it to share intermediate hashes between inputs.
+    fn preimage_all(&self, args: &[UtxoPreimageArgs]) -> SigningResult<Vec<H256>> {
+        args.iter().map(|args| self.preimage_tx(args)).collect()
+    }
 }
 
 pub struct UtxoTaprootPreimageArgs {
-    /// All UTXO amounts spending by this transaction.
-    /// Used in Taproot and Zcash v5 (ZIP-244) signing.
-    pub spent_amounts: Vec<Amount>,
-    /// All UTXO scriptPubkey's.
-    /// Used in Taproot and Zcash v5 (ZIP-244) signing.
-    pub spent_script_pubkeys: Vec<Script>,
     pub leaf_hash_code_separator: Option<(H256, u32)>,
 }
 
@@ -47,6 +47,12 @@ pub struct UtxoPreimageArgs {
     pub tx_hasher: Hasher,
     /// Signing method needs to be used to sign the [`UtxoPreimageArgs::input_index`] index.
     pub signing_method: SigningMethod,
+    /// All UTXO amounts spending by this transaction.
+    /// Used in Taproot and Zcash v5 (ZIP-244) signing.
+    pub spent_amounts: Vec<Amount>,
+    /// All UTXO scriptPubkey's spending by this transaction.
+    /// Used in Taproot and Zcash v5 (ZIP-244) signing.
+    pub spent_script_pubkeys: Vec<Script>,
     /// Taproot transaction pre-image extra arguments.
     pub taproot_args: UtxoTaprootPreimageArgs,
 }

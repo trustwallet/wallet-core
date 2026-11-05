@@ -41,12 +41,23 @@ pub trait ZcashTxVersionSupport {
     /// Whether the chain supports v5 transactions (NU5+).
     fn supports_v5() -> bool;
 
-    /// Transaction version used if `TransactionVersion::UseDefault` is specified.
-    fn default_version() -> ZcashTransactionVersion {
-        if Self::supports_v5() {
-            ZcashTransactionVersion::V5
-        } else {
-            ZcashTransactionVersion::V4
+    /// Resolves the requested transaction version into `(version, version_group_id)`.
+    /// `TransactionVersion::UseDefault` resolves to v5 if supported, otherwise to v4.
+    fn resolve(tx_version: ZcashTransactionVersion) -> SigningResult<(u32, u32)> {
+        match tx_version {
+            ZcashTransactionVersion::V4 => {
+                Ok((TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID))
+            },
+            ZcashTransactionVersion::V5 | ZcashTransactionVersion::UseDefault
+                if Self::supports_v5() =>
+            {
+                Ok((TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID))
+            },
+            ZcashTransactionVersion::UseDefault => {
+                Ok((TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID))
+            },
+            ZcashTransactionVersion::V5 => SigningError::err(SigningErrorType::Error_not_supported)
+                .context("Transaction version 5 is not supported by the chain"),
         }
     }
 }
@@ -213,22 +224,7 @@ impl<Versions: ZcashTxVersionSupport> ZcashSigningRequestBuilder<Versions> {
         let branch_id = H32::try_from(extra_data.branch_id.as_ref())
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'branchId', expected 4-byte array")?;
-        let tx_version = match extra_data.tx_version {
-            ZcashTransactionVersion::UseDefault => Versions::default_version(),
-            explicit => explicit,
-        };
-        let (version, version_group_id) = match tx_version {
-            ZcashTransactionVersion::V5 if Versions::supports_v5() => {
-                (TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID)
-            },
-            ZcashTransactionVersion::V5 => {
-                return SigningError::err(SigningErrorType::Error_not_supported)
-                    .context("Transaction version 5 is not supported by the chain")
-            },
-            ZcashTransactionVersion::V4 | ZcashTransactionVersion::UseDefault => {
-                (TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID)
-            },
-        };
+        let (version, version_group_id) = Versions::resolve(extra_data.tx_version)?;
         Ok(ZcashExtraData {
             version,
             version_group_id,

@@ -12,9 +12,10 @@
 use crate::transaction::ZcashTransaction;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::blake2::blake2_b_personal;
-use tw_hash::{H128, H256};
+use tw_hash::{H128, H256, H32};
 use tw_utxo::encode::stream::Stream;
-use tw_utxo::sighash::{SighashBase, SighashType};
+use tw_utxo::sighash::SighashBase;
+use tw_utxo::transaction::standard_transaction::TransactionOutput;
 use tw_utxo::transaction::UtxoPreimageArgs;
 
 const TX_PERSONALIZATION_PREFIX: &[u8; 12] = b"ZcashTxHash_";
@@ -32,7 +33,18 @@ const TRANSPARENT_SCRIPTS_HASH_PERSONALIZATION: &[u8; 16] = b"ZTxTrScriptsHash";
 /// Raw sighash types allowed by ZIP-244 (other values are consensus-invalid in v5).
 const VALID_SIGHASH_TYPES: [u32; 6] = [0x01, 0x02, 0x03, 0x81, 0x82, 0x83];
 
-pub struct ZcashSighashV5;
+/// ZIP-244 digests shared by all transparent inputs of a transaction.
+/// Computed once per transaction so that signing `N` inputs costs `O(N)` hashing.
+pub struct ZcashSighashV5 {
+    header: H256,
+    prevouts: H256,
+    sequence: H256,
+    outputs: H256,
+    amounts: H256,
+    scripts: H256,
+    sapling: H256,
+    orchard: H256,
+}
 
 impl ZcashSighashV5 {
     /// ZIP-244 transaction identifier in the internal byte order.
@@ -45,14 +57,71 @@ impl ZcashSighashV5 {
                 stream
                     .append(&prevouts_digest(tx))
                     .append(&sequence_digest(tx))
-                    .append(&outputs_digest(tx, None));
+                    .append(&outputs_digest(&tx.transparent_outputs));
                 hash(TRANSPARENT_HASH_PERSONALIZATION, &stream.out())
             };
-        root_hash(tx, &transparent_digest)
+        root_hash(
+            &tx.branch_id,
+            &header_digest(tx),
+            &transparent_digest,
+            &hash(SAPLING_HASH_PERSONALIZATION, &[]),
+            &hash(ORCHARD_HASH_PERSONALIZATION, &[]),
+        )
     }
 
     /// ZIP-244 signature digest for the transparent input `args.input_index`.
     pub fn sighash_tx(tx: &ZcashTransaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
+        Self::new(tx, args)?.sighash_input(tx, args)
+    }
+
+    /// ZIP-244 signature digests for all transparent inputs, in the same order as `args`.
+    ///
+    /// All `args` must share the same `spent_amounts` and `spent_script_pubkeys`,
+    /// which holds for transparent Zcash inputs (there are no Taproot reveal scripts).
+    pub fn sighash_all(
+        tx: &ZcashTransaction,
+        args: &[UtxoPreimageArgs],
+    ) -> SigningResult<Vec<H256>> {
+        let Some(first) = args.first() else {
+            return Ok(Vec::new());
+        };
+        let digests = Self::new(tx, first)?;
+        args.iter()
+            .map(|args| digests.sighash_input(tx, args))
+            .collect()
+    }
+
+    fn new(tx: &ZcashTransaction, args: &UtxoPreimageArgs) -> SigningResult<Self> {
+        check_spent_outputs(tx, args)?;
+
+        let mut amounts_stream = Stream::default();
+        for amount in &args.spent_amounts {
+            amounts_stream.append(amount);
+        }
+        let mut scripts_stream = Stream::default();
+        for script in &args.spent_script_pubkeys {
+            scripts_stream.append(script);
+        }
+
+        Ok(ZcashSighashV5 {
+            header: header_digest(tx),
+            prevouts: prevouts_digest(tx),
+            sequence: sequence_digest(tx),
+            outputs: outputs_digest(&tx.transparent_outputs),
+            amounts: hash(
+                TRANSPARENT_AMOUNTS_HASH_PERSONALIZATION,
+                &amounts_stream.out(),
+            ),
+            scripts: hash(
+                TRANSPARENT_SCRIPTS_HASH_PERSONALIZATION,
+                &scripts_stream.out(),
+            ),
+            sapling: hash(SAPLING_HASH_PERSONALIZATION, &[]),
+            orchard: hash(ORCHARD_HASH_PERSONALIZATION, &[]),
+        })
+    }
+
+    fn sighash_input(&self, tx: &ZcashTransaction, args: &UtxoPreimageArgs) -> SigningResult<H256> {
         let sighash_ty = args.sighash_ty;
         let raw_sighash = sighash_ty.raw_sighash();
         if !VALID_SIGHASH_TYPES.contains(&raw_sighash) {
@@ -65,19 +134,10 @@ impl ZcashSighashV5 {
             .get(args.input_index)
             .or_tw_err(SigningErrorType::Error_internal)
             .context("Zcash sighash error: input_index is out of bounds")?;
+        check_spent_outputs(tx, args)?;
 
-        let spent_amounts = &args.taproot_args.spent_amounts;
-        let spent_script_pubkeys = &args.taproot_args.spent_script_pubkeys;
-        if spent_amounts.len() != tx.transparent_inputs.len()
-            || spent_script_pubkeys.len() != tx.transparent_inputs.len()
-        {
-            return SigningError::err(SigningErrorType::Error_internal)
-                .context("ZIP-244 requires amounts and scriptPubKeys of all inputs");
-        }
-
-        let anyone_can_pay = sighash_ty.anyone_can_pay();
-
-        let (prevouts, amounts, scripts, sequence) = if anyone_can_pay {
+        // S.2b - S.2e
+        let (prevouts, amounts, scripts, sequence) = if sighash_ty.anyone_can_pay() {
             (
                 hash(PREVOUTS_HASH_PERSONALIZATION, &[]),
                 hash(TRANSPARENT_AMOUNTS_HASH_PERSONALIZATION, &[]),
@@ -85,36 +145,33 @@ impl ZcashSighashV5 {
                 hash(SEQUENCE_HASH_PERSONALIZATION, &[]),
             )
         } else {
-            let mut amounts_stream = Stream::default();
-            for amount in spent_amounts {
-                amounts_stream.append(amount);
-            }
-            let mut scripts_stream = Stream::default();
-            for script in spent_script_pubkeys {
-                scripts_stream.append(script);
-            }
-            (
-                prevouts_digest(tx),
-                hash(
-                    TRANSPARENT_AMOUNTS_HASH_PERSONALIZATION,
-                    &amounts_stream.out(),
-                ),
-                hash(
-                    TRANSPARENT_SCRIPTS_HASH_PERSONALIZATION,
-                    &scripts_stream.out(),
-                ),
-                sequence_digest(tx),
-            )
+            (self.prevouts, self.amounts, self.scripts, self.sequence)
         };
 
-        let outputs = outputs_digest(tx, Some((sighash_ty, args.input_index)));
+        // S.2f
+        let outputs = match sighash_ty.base_type() {
+            SighashBase::All => self.outputs,
+            SighashBase::None => outputs_digest(&[]),
+            SighashBase::Single => {
+                // Refuse to sign SIGHASH_SINGLE without a corresponding output,
+                // as such a signature doesn't commit to any output.
+                let output = tx
+                    .transparent_outputs
+                    .get(args.input_index)
+                    .or_tw_err(SigningErrorType::Error_invalid_params)
+                    .context(
+                        "SIGHASH_SINGLE requires an output with the same index as the input",
+                    )?;
+                outputs_digest(std::slice::from_ref(output))
+            },
+        };
 
         // S.2g: prevout, value, scriptPubKey and nSequence of the input being signed.
         let mut txin_stream = Stream::default();
         txin_stream
             .append(&input.previous_output)
-            .append(&spent_amounts[args.input_index])
-            .append(&spent_script_pubkeys[args.input_index])
+            .append(&args.spent_amounts[args.input_index])
+            .append(&args.spent_script_pubkeys[args.input_index])
             .append(&input.sequence);
         let txin_sig_digest = hash(TRANSPARENT_INPUT_HASH_PERSONALIZATION, &txin_stream.out());
 
@@ -129,8 +186,23 @@ impl ZcashSighashV5 {
             .append(&txin_sig_digest);
         let transparent_sig_digest = hash(TRANSPARENT_HASH_PERSONALIZATION, &stream.out());
 
-        Ok(root_hash(tx, &transparent_sig_digest))
+        Ok(root_hash(
+            &tx.branch_id,
+            &self.header,
+            &transparent_sig_digest,
+            &self.sapling,
+            &self.orchard,
+        ))
     }
+}
+
+fn check_spent_outputs(tx: &ZcashTransaction, args: &UtxoPreimageArgs) -> SigningResult<()> {
+    let inputs_len = tx.transparent_inputs.len();
+    if args.spent_amounts.len() != inputs_len || args.spent_script_pubkeys.len() != inputs_len {
+        return SigningError::err(SigningErrorType::Error_internal)
+            .context("ZIP-244 requires amounts and scriptPubKeys of all inputs");
+    }
+    Ok(())
 }
 
 /// T.1: header digest.
@@ -163,18 +235,8 @@ fn sequence_digest(tx: &ZcashTransaction) -> H256 {
     hash(SEQUENCE_HASH_PERSONALIZATION, &stream.out())
 }
 
-/// T.2c / S.2f: outputs digest.
-/// `signing` is `None` when computing the txid, otherwise the sighash type and the input index.
-fn outputs_digest(tx: &ZcashTransaction, signing: Option<(SighashType, usize)>) -> H256 {
-    let outputs = match signing.map(|(ty, index)| (ty.base_type(), index)) {
-        Some((SighashBase::None, _)) => &[][..],
-        Some((SighashBase::Single, index)) => match tx.transparent_outputs.get(index) {
-            Some(output) => std::slice::from_ref(output),
-            None => &[][..],
-        },
-        _ => tx.transparent_outputs.as_slice(),
-    };
-
+/// T.2c / S.2f: digest of the given outputs.
+fn outputs_digest(outputs: &[TransactionOutput]) -> H256 {
     let mut stream = Stream::default();
     for output in outputs {
         stream.append(output);
@@ -183,25 +245,27 @@ fn outputs_digest(tx: &ZcashTransaction, signing: Option<(SighashType, usize)>) 
 }
 
 /// Combines the header, transparent and (empty) shielded digests into the root hash.
-fn root_hash(tx: &ZcashTransaction, transparent_digest: &H256) -> H256 {
+fn root_hash(
+    branch_id: &H32,
+    header_digest: &H256,
+    transparent_digest: &H256,
+    sapling_digest: &H256,
+    orchard_digest: &H256,
+) -> H256 {
     let mut personalisation = H128::new();
     personalisation[..TX_PERSONALIZATION_PREFIX.len()].copy_from_slice(TX_PERSONALIZATION_PREFIX);
-    personalisation[TX_PERSONALIZATION_PREFIX.len()..].copy_from_slice(tx.branch_id.as_slice());
+    personalisation[TX_PERSONALIZATION_PREFIX.len()..].copy_from_slice(branch_id.as_slice());
 
     let mut stream = Stream::default();
     stream
-        .append(&header_digest(tx))
+        .append(header_digest)
         .append(transparent_digest)
-        .append(&hash(SAPLING_HASH_PERSONALIZATION, &[]))
-        .append(&hash(ORCHARD_HASH_PERSONALIZATION, &[]));
-    hash_personal(personalisation.as_slice(), &stream.out())
+        .append(sapling_digest)
+        .append(orchard_digest);
+    hash(personalisation.as_slice(), &stream.out())
 }
 
-fn hash(personalisation: &[u8; 16], data: &[u8]) -> H256 {
-    hash_personal(personalisation, data)
-}
-
-fn hash_personal(personalisation: &[u8], data: &[u8]) -> H256 {
+fn hash(personalisation: &[u8], data: &[u8]) -> H256 {
     let digest = blake2_b_personal(data, H256::LEN, personalisation)
         .expect("Hash length and personalisation length are valid");
     H256::try_from(digest.as_slice()).expect("Blake2b output is 32 bytes")
@@ -215,6 +279,7 @@ mod tests {
     use tw_hash::H32;
     use tw_utxo::encode::Encodable;
     use tw_utxo::script::{Script, Witness};
+    use tw_utxo::sighash::SighashType;
     use tw_utxo::signing_mode::SigningMethod;
     use tw_utxo::transaction::standard_transaction::{TransactionInput, TransactionOutput};
     use tw_utxo::transaction::transaction_interface::TransactionInterface;
@@ -370,9 +435,9 @@ mod tests {
             sighash_ty,
             tx_hasher: Hasher::Sha256d,
             signing_method: SigningMethod::Legacy,
+            spent_amounts: vector.amounts.to_vec(),
+            spent_script_pubkeys,
             taproot_args: UtxoTaprootPreimageArgs {
-                spent_amounts: vector.amounts.to_vec(),
-                spent_script_pubkeys,
                 leaf_hash_code_separator: None,
             },
         }
@@ -422,5 +487,43 @@ mod tests {
             checked += 1;
         }
         assert!(checked > 0);
+    }
+
+    #[test]
+    fn test_zip244_sighash_single_without_output() {
+        // Vector 2 signs input 2, but there are fewer outputs.
+        let vector = &VECTORS[2];
+        let tx = parse_tx(&vector.tx.decode_hex().unwrap());
+        assert!(tx.transparent_outputs.len() <= vector.transparent_input);
+        for raw_sighash in [0x03, 0x83] {
+            let args = preimage_args(vector, raw_sighash);
+            let err = ZcashSighashV5::sighash_tx(&tx, &args).unwrap_err();
+            assert_eq!(err.error_type(), &SigningErrorType::Error_invalid_params);
+        }
+    }
+
+    #[test]
+    fn test_zip244_sighash_all_matches_per_input() {
+        for vector in VECTORS {
+            let tx = parse_tx(&vector.tx.decode_hex().unwrap());
+            let args: Vec<_> = vector
+                .sighashes
+                .iter()
+                .map(|(raw_sighash, _)| preimage_args(vector, *raw_sighash))
+                .collect();
+            let all = ZcashSighashV5::sighash_all(&tx, &args).unwrap();
+            let expected: Vec<_> = vector
+                .sighashes
+                .iter()
+                .map(|(_, sighash)| sighash.to_string())
+                .collect();
+            let actual: Vec<_> = all.iter().map(|h| h.to_hex()).collect();
+            assert_eq!(actual, expected);
+        }
+        assert!(
+            ZcashSighashV5::sighash_all(&parse_tx(&VECTORS[0].tx.decode_hex().unwrap()), &[])
+                .unwrap()
+                .is_empty()
+        );
     }
 }

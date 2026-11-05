@@ -243,4 +243,14 @@ impl TransactionPreimage for ZcashTransaction {
         }
         ZcashSighash::sighash_tx(self, args)
     }
+
+    fn preimage_all(&self, args: &[UtxoPreimageArgs]) -> SigningResult<Vec<H256>> {
+        if self.is_v5() {
+            // Share the ZIP-244 transaction-wide digests between inputs.
+            return ZcashSighashV5::sighash_all(self, args);
+        }
+        args.iter()
+            .map(|args| ZcashSighash::sighash_tx(self, args))
+            .collect()
+    }
 }

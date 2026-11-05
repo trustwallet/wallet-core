@@ -115,7 +115,8 @@ pub struct Zip32Derivation {
 
 /// Determines the lock time for the transaction.
 ///
-/// Ported from `pczt::common::determine_lock_time`, which follows [BIP 370].
+/// Based on `pczt::common::determine_lock_time`, following [BIP 370]:
+/// inputs that specify both lock time types support either of them.
 /// Returns `None` if the inputs require incompatible lock time types.
 ///
 /// [BIP 370]: https://github.com/bitcoin/bips/blob/master/bip-0370.mediawiki#determining-lock-time
@@ -126,12 +127,13 @@ pub fn determine_lock_time(
     let have_required_lock_time = inputs.iter().any(|input| {
         input.required_time_lock_time.is_some() || input.required_height_lock_time.is_some()
     });
-    let time_lock_time_unsupported = inputs
-        .iter()
-        .any(|input| input.required_height_lock_time.is_some());
-    let height_lock_time_unsupported = inputs
-        .iter()
-        .any(|input| input.required_time_lock_time.is_some());
+    // An input that specifies only one lock time type doesn't support the other one.
+    let time_lock_time_unsupported = inputs.iter().any(|input| {
+        input.required_height_lock_time.is_some() && input.required_time_lock_time.is_none()
+    });
+    let height_lock_time_unsupported = inputs.iter().any(|input| {
+        input.required_time_lock_time.is_some() && input.required_height_lock_time.is_none()
+    });
 
     match (
         have_required_lock_time,
@@ -143,7 +145,7 @@ pub fn determine_lock_time(
             .iter()
             .filter_map(|input| input.required_time_lock_time)
             .max(),
-        // Upstream comment: if both lock time types are possible, the height lock time must be chosen.
+        // If both lock time types are possible, the height lock time must be chosen.
         (true, _, false) => inputs
             .iter()
             .filter_map(|input| input.required_height_lock_time)
@@ -219,10 +221,21 @@ mod tests {
             determine_lock_time(&global(None), &inputs),
             Some(600_000_000)
         );
-        // Incompatible lock time types (same behaviour as upstream `pczt`).
+        // Incompatible lock time types.
         let inputs = [input(Some(600_000_000), None), input(None, Some(10))];
         assert_eq!(determine_lock_time(&global(None), &inputs), None);
+        // An input with both lock time types supports either of them, height is preferred.
         let inputs = [input(Some(600_000_000), Some(10))];
-        assert_eq!(determine_lock_time(&global(None), &inputs), None);
+        assert_eq!(determine_lock_time(&global(None), &inputs), Some(10));
+        let inputs = [input(Some(600_000_000), Some(10)), input(None, Some(20))];
+        assert_eq!(determine_lock_time(&global(None), &inputs), Some(20));
+        let inputs = [
+            input(Some(600_000_000), Some(10)),
+            input(Some(700_000_000), None),
+        ];
+        assert_eq!(
+            determine_lock_time(&global(None), &inputs),
+            Some(700_000_000)
+        );
     }
 }
