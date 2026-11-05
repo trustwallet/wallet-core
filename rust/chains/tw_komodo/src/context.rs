@@ -9,7 +9,7 @@ use tw_utxo::address::legacy::LegacyAddress;
 use tw_utxo::context::{AddressPrefixes, UtxoContext};
 use tw_utxo::script::Script;
 use tw_zcash::modules::protobuf_builder::ZcashProtobufBuilder;
-use tw_zcash::modules::signing_request::ZcashSigningRequestBuilder;
+use tw_zcash::modules::signing_request::{ZcashSigningRequestBuilder, ZcashTxVersionV4};
 use tw_zcash::modules::zcash_fee_estimator::ZcashFeeEstimator;
 use tw_zcash::transaction::ZcashTransaction;
 
@@ -33,7 +33,7 @@ impl UtxoContext for KomodoContext {
 
 impl BitcoinSigningContext for KomodoContext {
     /// Komodo doesn't support Zcash v5 transactions.
-    type SigningRequestBuilder = ZcashSigningRequestBuilder<false>;
+    type SigningRequestBuilder = ZcashSigningRequestBuilder<ZcashTxVersionV4>;
     type ProtobufBuilder = ZcashProtobufBuilder;
     type PsbtRequestHandler = NoPsbtRequestBuilder;
 }

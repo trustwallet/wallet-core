@@ -19,6 +19,7 @@ use tw_utxo::fee::FeePolicy;
 use tw_utxo::modules::tx_planner::{PlanRequest, RequestType};
 
 use crate::modules::transaction_builder::ZcashTransactionBuilder;
+use std::marker::PhantomData;
 use tw_bitcoin::modules::signing_request::standard_signing_request::{
     chain_info, StandardSigningRequestBuilder,
 };
@@ -35,16 +36,50 @@ pub struct ZcashExtraData {
     pub zip_0317: bool,
 }
 
+/// Transaction versions supported by a Zcash-like chain.
+pub trait ZcashTxVersionSupport {
+    /// Whether the chain supports v5 transactions (NU5+).
+    fn supports_v5() -> bool;
+
+    /// Transaction version used if `TransactionVersion::UseDefault` is specified.
+    fn default_version() -> ZcashTransactionVersion {
+        if Self::supports_v5() {
+            ZcashTransactionVersion::V5
+        } else {
+            ZcashTransactionVersion::V4
+        }
+    }
+}
+
+/// Chain supports v4 and v5 transactions, v5 is used by default (e.g. Zcash).
+pub struct ZcashTxVersionV4V5;
+
+impl ZcashTxVersionSupport for ZcashTxVersionV4V5 {
+    fn supports_v5() -> bool {
+        true
+    }
+}
+
+/// Chain supports v4 transactions only (e.g. Komodo).
+pub struct ZcashTxVersionV4;
+
+impl ZcashTxVersionSupport for ZcashTxVersionV4 {
+    fn supports_v5() -> bool {
+        false
+    }
+}
+
 /// Zcash-like signing request builder.
 ///
-/// `SUPPORTS_V5` - whether the chain supports v5 transactions (NU5+).
-/// If so, v5 is used by default. Otherwise, v4 is the only supported version.
-pub struct ZcashSigningRequestBuilder<const SUPPORTS_V5: bool = true>;
+/// `Versions` - transaction versions supported by the chain.
+pub struct ZcashSigningRequestBuilder<Versions> {
+    _phantom: PhantomData<Versions>,
+}
 
-impl<Context, const SUPPORTS_V5: bool> SigningRequestBuilder<Context>
-    for ZcashSigningRequestBuilder<SUPPORTS_V5>
+impl<Context, Versions> SigningRequestBuilder<Context> for ZcashSigningRequestBuilder<Versions>
 where
     Context: UtxoContext<Transaction = ZcashTransaction, FeeEstimator = ZcashFeeEstimator>,
+    Versions: ZcashTxVersionSupport,
 {
     fn build(
         coin: &dyn CoinContext,
@@ -150,7 +185,7 @@ where
     }
 }
 
-impl<const SUPPORTS_V5: bool> ZcashSigningRequestBuilder<SUPPORTS_V5> {
+impl<Versions: ZcashTxVersionSupport> ZcashSigningRequestBuilder<Versions> {
     pub fn fee_estimator(
         proto: &Proto::TransactionBuilder,
         extra_data: &ZcashExtraData,
@@ -178,15 +213,20 @@ impl<const SUPPORTS_V5: bool> ZcashSigningRequestBuilder<SUPPORTS_V5> {
         let branch_id = H32::try_from(extra_data.branch_id.as_ref())
             .tw_err(SigningErrorType::Error_invalid_params)
             .context("Invalid 'branchId', expected 4-byte array")?;
-        let v4 = (TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID);
-        let v5 = (TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID);
-        let (version, version_group_id) = match extra_data.tx_version {
-            ZcashTransactionVersion::UseDefault if SUPPORTS_V5 => v5,
-            ZcashTransactionVersion::UseDefault | ZcashTransactionVersion::V4 => v4,
-            ZcashTransactionVersion::V5 if SUPPORTS_V5 => v5,
+        let tx_version = match extra_data.tx_version {
+            ZcashTransactionVersion::UseDefault => Versions::default_version(),
+            explicit => explicit,
+        };
+        let (version, version_group_id) = match tx_version {
+            ZcashTransactionVersion::V5 if Versions::supports_v5() => {
+                (TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID)
+            },
             ZcashTransactionVersion::V5 => {
                 return SigningError::err(SigningErrorType::Error_not_supported)
                     .context("Transaction version 5 is not supported by the chain")
+            },
+            ZcashTransactionVersion::V4 | ZcashTransactionVersion::UseDefault => {
+                (TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID)
             },
         };
         Ok(ZcashExtraData {
