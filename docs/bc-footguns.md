@@ -35,3 +35,26 @@ assigned in memory from a signed literal (`j["n"] = 16384`) as `number_integer`.
 `is_number_unsigned()` rejects the in-memory form while accepting the same document after a
 `dump()`/`parse()` round trip. Use `Keystore/JsonParsing.h` (`parseUnsigned` / `parseU32`), which
 accepts both and rejects negatives, floats, strings, booleans and null.
+
+---
+
+## Scrypt cost parameters are capped at load (PR #4899, 2026-11)
+
+`ScryptParameters::validate()` now also rejects `log2(n) >= 19 * r`, total scrypt memory
+`128*r*n + 128*r*p + 256*r + 64 > 512 MiB` (`maxScryptMemory`), and `n * r * p > 2^25`
+(`maxScryptWork`, 16x the Standard preset, ~16 s to open). Before, only the 4 GiB `uint32_t`
+overflow bound applied, so a third-party file with larger parameters decrypted before this PR and
+fails to load after it. This breaks the rule above on purpose: the caps exist to stop an imported
+file from forcing a multi-GiB allocation or hours of CPU, and no cap can do that without rejecting
+some file that used to open. Boundary shapes: `n=2^18, r=8, p=1` (Standard, geth, `livepeer.json`)
+and `n=2^18, r=1, p=8` pass; `n=2^19, r=8, p=1` (needs just over 512 MiB) and `n=2^19, r=1` are
+rejected. The memory sum covers `B` and `XY` as well as `V`, since `n=2, r=1, p=33554431` has a tiny
+`V` but a 4 GiB `B`.
+
+`EncryptedPayload` re-runs `validate()` before encrypting, so a caller that builds `ScryptParameters`
+by hand with such values now gets `std::invalid_argument`. The preset levels (minimal, weak,
+standard) are all well inside the caps, so `StoredKey::create*` is unaffected.
+
+**Rule:** the 512 MiB and 2^25 limits are the new contract. Raise them only if a real emitter above
+them turns up, and raise the work and memory caps together, because each alone leaves the other
+as the way in. Do not tighten them: the Standard preset already uses half of the memory cap.
