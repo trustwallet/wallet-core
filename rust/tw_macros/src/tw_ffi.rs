@@ -9,6 +9,7 @@ use syn::{
 use std::env;
 use std::fmt;
 use std::fs;
+use std::io;
 use std::path::Path;
 
 use crate::code_gen::{TWArg, TWConfig, TWFunction};
@@ -109,6 +110,84 @@ fn update_or_append_function(functions: &mut Option<Vec<TWFunction>>, function: 
     }
 }
 
+/// The lock file serializing updates of the bindings.
+/// It lives next to the `bindings` directory, not inside it:
+/// `codegen-v2` parses every file in `bindings/` as a YAML manifest.
+const BINDINGS_LOCK_FILE: &str = ".tw_ffi_bindings.lock";
+
+/// Adds `function` to the `<workspace_dir>/bindings/<class>.yaml` manifest.
+///
+/// The macro is expanded concurrently: `cargo build` compiles a crate for several targets at once
+/// (see `tools/rust-bindgen`), and every `rustc` process updates the same manifests.
+/// An unsynchronized read-modify-write loses functions (or reads a half-written file), so
+/// the update is done under an exclusive file lock and the manifest is replaced atomically.
+fn update_bindings(
+    workspace_dir: &Path,
+    class: &str,
+    ty: Option<TWFFIType>,
+    function: TWFunction,
+) -> io::Result<()> {
+    let bindings_dir = workspace_dir.join("bindings");
+    fs::create_dir_all(&bindings_dir)?;
+
+    let lock = fs::OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .write(true)
+        .open(workspace_dir.join(BINDINGS_LOCK_FILE))?;
+    // The lock is released when `lock` is dropped, or by the OS if the process dies.
+    lock.lock()?;
+
+    let yaml_file_path = bindings_dir.join(format!("{class}.yaml"));
+    let new_config = || TWConfig {
+        class: class.to_string(),
+        ..Default::default()
+    };
+
+    let mut config = match fs::read_to_string(&yaml_file_path) {
+        Ok(contents) => serde_yaml::from_str(&contents).unwrap_or_else(|_| new_config()),
+        Err(_) => new_config(),
+    };
+    match ty {
+        Some(TWFFIType::StaticFunction) => {
+            if let Some(idx) = config
+                .static_functions
+                .iter()
+                .position(|f| f.name == function.name)
+            {
+                config.static_functions[idx] = function;
+            } else {
+                config.static_functions.push(function);
+            }
+        },
+        Some(TWFFIType::Constructor) => {
+            update_or_append_function(&mut config.constructors, function);
+        },
+        Some(TWFFIType::Destructor) => {
+            config.destructor = Some(function);
+        },
+        Some(TWFFIType::Method) => {
+            update_or_append_function(&mut config.methods, function);
+        },
+        Some(TWFFIType::Property) => {
+            update_or_append_function(&mut config.properties, function);
+        },
+        None => {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "Invalid FFI type",
+            ))
+        },
+    }
+
+    let yaml_output = serde_yaml::to_string(&config)
+        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+    // Write to a temporary file next to the lock file, then move it into place.
+    let tmp_file_path = workspace_dir.join(format!(".{class}.yaml.{}.tmp", std::process::id()));
+    fs::write(&tmp_file_path, yaml_output)?;
+    fs::rename(&tmp_file_path, &yaml_file_path)
+}
+
 pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
     let args = parse2::<TWFFIAttrArgs>(attr)?;
 
@@ -168,62 +247,13 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
         docs,
     };
 
-    let out_dir = env::var("CARGO_WORKSPACE_DIR").unwrap_or_default();
-    let bindings_dir = Path::new(&out_dir).join("bindings");
-    fs::create_dir_all(&bindings_dir).expect("Failed to create bindings directory");
-    let yaml_file_path = bindings_dir.join(format!("{}.yaml", class));
-
-    let mut config = if yaml_file_path.exists() {
-        match fs::read_to_string(&yaml_file_path) {
-            Ok(contents) => match serde_yaml::from_str(&contents) {
-                Ok(config) => config,
-                Err(_) => {
-                    let _ = fs::remove_file(&yaml_file_path);
-                    TWConfig {
-                        class,
-                        ..Default::default()
-                    }
-                },
-            },
-            Err(_) => TWConfig {
-                class,
-                ..Default::default()
-            },
-        }
-    } else {
-        TWConfig {
-            class,
-            ..Default::default()
-        }
-    };
-    match args.ty {
-        Some(TWFFIType::StaticFunction) => {
-            if let Some(idx) = config
-                .static_functions
-                .iter()
-                .position(|f| f.name == function.name)
-            {
-                config.static_functions[idx] = function;
-            } else {
-                config.static_functions.push(function);
-            }
-        },
-        Some(TWFFIType::Constructor) => {
-            update_or_append_function(&mut config.constructors, function);
-        },
-        Some(TWFFIType::Destructor) => {
-            config.destructor = Some(function);
-        },
-        Some(TWFFIType::Method) => {
-            update_or_append_function(&mut config.methods, function);
-        },
-        Some(TWFFIType::Property) => {
-            update_or_append_function(&mut config.properties, function);
-        },
-        _ => panic!("Invalid FFI type"),
-    }
-    let yaml_output: String = serde_yaml::to_string(&config).expect("Failed to serialize to YAML");
-    fs::write(&yaml_file_path, yaml_output).expect("Failed to write YAML file");
+    let workspace_dir = env::var("CARGO_WORKSPACE_DIR").unwrap_or_default();
+    update_bindings(Path::new(&workspace_dir), &class, args.ty, function).map_err(|e| {
+        syn::Error::new(
+            proc_macro2::Span::call_site(),
+            format!("Failed to update the '{class}' bindings: {e}"),
+        )
+    })?;
 
     Ok(item)
 }
@@ -243,5 +273,113 @@ mod tests {
         .unwrap();
         assert_eq!(args.class, Some(Ident::new("MyClass", Span::call_site())));
         assert_eq!(args.name, Some(Ident::new("MyName", Span::call_site())));
+    }
+
+    fn test_function(name: &str) -> TWFunction {
+        TWFunction {
+            name: name.to_string(),
+            rust_name: format!("tw_race_{}", name.to_lowercase()),
+            args: vec![],
+            return_type: "void".to_string(),
+            docs: vec![],
+        }
+    }
+
+    fn test_workspace_dir(test: &str) -> std::path::PathBuf {
+        let dir = env::temp_dir().join(format!("tw_ffi_{test}_{}", std::process::id()));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        dir
+    }
+
+    /// Several `rustc` processes expand `#[tw_ffi]` for the same class at the same time.
+    /// None of the functions must be lost.
+    #[test]
+    fn test_concurrent_updates_do_not_lose_functions() {
+        const THREADS: usize = 32;
+
+        let dir = test_workspace_dir("race");
+        let barrier = std::sync::Arc::new(std::sync::Barrier::new(THREADS));
+
+        let handles = (0..THREADS)
+            .map(|i| {
+                let dir = dir.clone();
+                let barrier = barrier.clone();
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    update_bindings(
+                        &dir,
+                        "Race",
+                        Some(TWFFIType::StaticFunction),
+                        test_function(&format!("Function{i}")),
+                    )
+                    .unwrap();
+                })
+            })
+            .collect::<Vec<_>>();
+        for handle in handles {
+            handle.join().unwrap();
+        }
+
+        let yaml = fs::read_to_string(dir.join("bindings/Race.yaml")).unwrap();
+        let config: TWConfig = serde_yaml::from_str(&yaml).unwrap();
+        let mut names = config
+            .static_functions
+            .into_iter()
+            .map(|f| f.name)
+            .collect::<Vec<_>>();
+        names.sort();
+        let mut expected = (0..THREADS)
+            .map(|i| format!("Function{i}"))
+            .collect::<Vec<_>>();
+        expected.sort();
+        assert_eq!(names, expected);
+
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    /// `codegen-v2` parses every file in `bindings/` as a manifest, so it must contain manifests only.
+    #[test]
+    fn test_bindings_dir_contains_manifests_only() {
+        let dir = test_workspace_dir("only_manifests");
+        update_bindings(
+            &dir,
+            "Only",
+            Some(TWFFIType::StaticFunction),
+            test_function("First"),
+        )
+        .unwrap();
+        update_bindings(
+            &dir,
+            "Only",
+            Some(TWFFIType::Method),
+            test_function("Second"),
+        )
+        .unwrap();
+
+        let files = fs::read_dir(dir.join("bindings"))
+            .unwrap()
+            .map(|e| e.unwrap().file_name().into_string().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(files, vec!["Only.yaml".to_string()]);
+
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn test_update_replaces_function_with_the_same_name() {
+        let dir = test_workspace_dir("replace");
+        for rust_name in ["old", "new"] {
+            let mut function = test_function("Same");
+            function.rust_name = rust_name.to_string();
+            update_bindings(&dir, "Replace", Some(TWFFIType::StaticFunction), function).unwrap();
+        }
+
+        let yaml = fs::read_to_string(dir.join("bindings/Replace.yaml")).unwrap();
+        let config: TWConfig = serde_yaml::from_str(&yaml).unwrap();
+        assert_eq!(config.static_functions.len(), 1);
+        assert_eq!(config.static_functions[0].rust_name, "new");
+
+        fs::remove_dir_all(&dir).unwrap();
     }
 }
