@@ -155,6 +155,10 @@ impl ZcashSighashV5 {
             SighashBase::Single => {
                 // Refuse to sign SIGHASH_SINGLE without a corresponding output,
                 // as such a signature doesn't commit to any output.
+                //
+                // This is a deliberate divergence from ZIP-244 (S.2f), which uses the hash
+                // of an empty string as `outputs_digest` in that case, so consensus accepts
+                // such signatures. We never produce them; verifying them is out of scope.
                 let output = tx
                     .transparent_outputs
                     .get(args.input_index)
