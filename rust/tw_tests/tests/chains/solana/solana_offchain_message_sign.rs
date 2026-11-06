@@ -401,6 +401,12 @@ fn test_solana_offchain_refuses_a_forged_line() {
             "A statement.",
         ),
         (
+            "a colon in a label, which would render like a different label and value",
+            IDENTITY_HEADER,
+            field("Amount: 999 SOL", "to Alice"),
+            "A statement.",
+        ),
+        (
             "an empty label",
             IDENTITY_HEADER,
             field("", "session"),

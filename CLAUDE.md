@@ -148,6 +148,14 @@ The `// #coin-list#` comments are markers that `codegen-v2` uses to insert new e
 - `deriveAddress()` — derive address from public key
 - `sign()` — serialize a `SigningInput` proto → sign → serialize `SigningOutput` proto
 
+### Code comments: short
+
+Keep comments to a minimum, in C++, Rust and protos alike. When you write or change code:
+- Do not add section headers, "what this does" narration, history ("used to", "no longer"), ticket ids or examples.
+- Comment only what a reader could not infer from the code and whose absence risks a real bug, a security hole or a contract break (a frozen byte layout, a non-obvious ordering, a deliberately surprising choice). One or two lines.
+- The longer "why" belongs in the commit or PR description, not in the code.
+- Treat new verbose comments as a defect in review, and shorten an existing comment when you touch it.
+
 ### Signing data flow
 
 All transaction signing uses Protocol Buffers. Each chain has `src/proto/{Blockchain}.proto` defining `SigningInput` and `SigningOutput`. The universal entry point is `TWAnySigner`:

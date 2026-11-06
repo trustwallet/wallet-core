@@ -398,7 +398,8 @@ enum MessageFormat {
 
 // One "<label>: <value>" line of a `StructuredMessage`.
 message StructuredField {
-    // Rendered before ": ". Must not be empty, and must carry no control character.
+    // Rendered before ": ". Must not be empty, must not contain ':' (so a rendered line splits
+    // uniquely at its first colon), and must carry no control character.
     string label = 1;
 
     // Rendered after ": ". Must not be empty, and must carry no control character: a value
