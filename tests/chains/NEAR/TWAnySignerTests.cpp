@@ -183,4 +183,29 @@ TEST(TWAnySignerNEAR, Sign_InvalidBlockHash) {
     EXPECT_TRUE(output.signed_transaction().empty());
 }
 
+TEST(TWAnySignerNEAR, Sign_InvalidActionPublicKey) {
+    auto privateKey = parse_hex("8737b99bf16fba78e1e753e23ba00c4b5423ac9c45d9b9caae9a519434786568");
+    auto blockHash = parse_hex("0fa473fd26901df296be6adc4cc4df34d040efa2435224b6986910e630c2fef6");
+
+    Proto::SigningInput input;
+    input.set_signer_id("test.near");
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_block_hash(blockHash.data(), blockHash.size());
+
+    // 33 bytes: one more than an ED25519 key
+    auto overlongKey = Data(33, 0x01);
+    auto& addKey = *input.add_actions()->mutable_add_key();
+    addKey.mutable_public_key()->set_key_type(0);
+    addKey.mutable_public_key()->set_data(overlongKey.data(), overlongKey.size());
+    addKey.mutable_access_key()->mutable_full_access();
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeNEAR);
+
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(output.signed_transaction().empty());
+}
+
 } // namespace TW::NEAR
