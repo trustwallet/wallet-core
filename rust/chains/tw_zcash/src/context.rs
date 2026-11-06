@@ -6,7 +6,7 @@ use crate::address::ZcashAddress;
 use crate::modules::pczt;
 use crate::modules::pczt_request::zcash_pczt_request_handler::PcztRequestHandler;
 use crate::modules::protobuf_builder::ZcashProtobufBuilder;
-use crate::modules::signing_request::ZcashSigningRequestBuilder;
+use crate::modules::signing_request::{ZcashSigningRequestBuilder, ZcashTxVersionV4V5};
 use crate::modules::zcash_fee_estimator::ZcashFeeEstimator;
 use crate::transaction::ZcashTransaction;
 use tw_bitcoin::context::BitcoinSigningContext;
@@ -35,7 +35,7 @@ impl UtxoContext for ZcashContext {
 }
 
 impl BitcoinSigningContext for ZcashContext {
-    type SigningRequestBuilder = ZcashSigningRequestBuilder;
+    type SigningRequestBuilder = ZcashSigningRequestBuilder<ZcashTxVersionV4V5>;
     type ProtobufBuilder = ZcashProtobufBuilder;
     type PsbtRequestHandler = PcztRequestHandler;
 }

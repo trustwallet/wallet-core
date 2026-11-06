@@ -6,11 +6,16 @@ use crate::modules::pczt;
 use crate::modules::pczt_request::output_pczt::OutputPczt;
 use crate::modules::pczt_request::utxo_pczt::UtxoPczt;
 use crate::modules::transaction_builder::ZcashTransactionBuilder;
-use crate::transaction::{ZcashTransaction, TRANSACTION_VERSION_4, TRANSACTION_VERSION_GROUP_ID};
+use crate::transaction::{
+    ZcashTransaction, TRANSACTION_VERSION_4, TRANSACTION_VERSION_5, TRANSACTION_VERSION_5_GROUP_ID,
+    TRANSACTION_VERSION_GROUP_ID,
+};
 use std::marker::PhantomData;
 use tw_bitcoin::modules::psbt_request::{PsbtRequest, PsbtRequestHandler};
 use tw_bitcoin::modules::signing_request::standard_signing_request::StandardSigningRequestBuilder;
-use tw_coin_entry::error::prelude::{ResultContext, SigningError, SigningErrorType, SigningResult};
+use tw_coin_entry::error::prelude::{
+    OrTWError, ResultContext, SigningError, SigningErrorType, SigningResult,
+};
 use tw_hash::H32;
 use tw_memory::Data;
 use tw_proto::BitcoinV2::Proto;
@@ -32,17 +37,23 @@ where
         let version = pczt.global.tx_version;
         let version_group_id = pczt.global.version_group_id;
 
-        if version != TRANSACTION_VERSION_4 {
-            return SigningError::err(SigningErrorType::Error_not_supported)
-                .context(format!("PCZT with unsupported version: {version}"));
-        }
-        if version_group_id != TRANSACTION_VERSION_GROUP_ID {
+        let expected_version_group_id = match version {
+            TRANSACTION_VERSION_4 => TRANSACTION_VERSION_GROUP_ID,
+            TRANSACTION_VERSION_5 => TRANSACTION_VERSION_5_GROUP_ID,
+            _ => {
+                return SigningError::err(SigningErrorType::Error_not_supported)
+                    .context(format!("PCZT with unsupported version: {version}"))
+            },
+        };
+        if version_group_id != expected_version_group_id {
             return SigningError::err(SigningErrorType::Error_not_supported).context(format!(
                 "PCZT with unsupported version group ID: {version_group_id}"
             ));
         }
 
-        // No `locktime` in PCZT, default to 0.
+        let lock_time = pczt::common::determine_lock_time(&pczt.global, &pczt.transparent.inputs)
+            .or_tw_err(SigningErrorType::Error_invalid_params)
+            .context("PCZT inputs require incompatible lock time types")?;
         let expiry_height = pczt.global.expiry_height;
         let branch_id = H32::from_array(pczt.global.consensus_branch_id.to_le_bytes());
 
@@ -59,8 +70,9 @@ where
 
         let mut builder = ZcashTransactionBuilder::default();
         builder
-            .overwintered_version(TRANSACTION_VERSION_4)
-            .version_group_id(TRANSACTION_VERSION_GROUP_ID)
+            .overwintered_version(version)
+            .version_group_id(version_group_id)
+            .lock_time(lock_time)
             .expiry_height(expiry_height)
             .branch_id(branch_id);
 
