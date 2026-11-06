@@ -10,7 +10,7 @@ use std::env;
 use std::fmt;
 use std::fs;
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::code_gen::{TWArg, TWConfig, TWFunction};
 use crate::utils::is_uint;
@@ -110,31 +110,51 @@ fn update_or_append_function(functions: &mut Option<Vec<TWFunction>>, function: 
     }
 }
 
-/// The lock file serializing updates of the bindings.
-/// It lives next to the `bindings` directory, not inside it:
-/// `codegen-v2` parses every file in `bindings/` as a YAML manifest.
-const BINDINGS_LOCK_FILE: &str = ".tw_ffi_bindings.lock";
+/// The subdirectory of the Cargo target directory with the lock and temporary files.
+/// They are kept out of `bindings/` because `codegen-v2` parses every file there as a YAML manifest,
+/// and `cargo clean` removes them together with the other build artifacts.
+const STATE_DIR_NAME: &str = "tw_ffi";
+const BINDINGS_LOCK_FILE: &str = "bindings.lock";
 
-/// Adds `function` to the `<workspace_dir>/bindings/<class>.yaml` manifest.
+/// Returns the directory for the lock and temporary files.
+/// `rustc` runs from the workspace root, so the default Cargo target directory is `target`.
+fn state_dir(workspace_dir: &Path) -> PathBuf {
+    let target_dir = env::var_os("CARGO_TARGET_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| workspace_dir.join("target"));
+    target_dir.join(STATE_DIR_NAME)
+}
+
+/// Moves `from` to `to`. Falls back to copying if the files are on different filesystems,
+/// which is possible if `CARGO_TARGET_DIR` points elsewhere.
+fn replace_file(from: &Path, to: &Path) -> io::Result<()> {
+    fs::rename(from, to).or_else(|_| {
+        fs::copy(from, to)?;
+        fs::remove_file(from)
+    })
+}
+
+/// Adds `function` to the `<bindings_dir>/<class>.yaml` manifest.
 ///
 /// The macro is expanded concurrently: `cargo build` compiles a crate for several targets at once
 /// (see `tools/rust-bindgen`), and every `rustc` process updates the same manifests.
 /// An unsynchronized read-modify-write loses functions (or reads a half-written file), so
 /// the update is done under an exclusive file lock and the manifest is replaced atomically.
 fn update_bindings(
-    workspace_dir: &Path,
+    bindings_dir: &Path,
+    state_dir: &Path,
     class: &str,
     ty: Option<TWFFIType>,
     function: TWFunction,
 ) -> io::Result<()> {
-    let bindings_dir = workspace_dir.join("bindings");
-    fs::create_dir_all(&bindings_dir)?;
+    fs::create_dir_all(bindings_dir)?;
+    fs::create_dir_all(state_dir)?;
 
     let lock = fs::OpenOptions::new()
         .create(true)
         .truncate(false)
         .write(true)
-        .open(workspace_dir.join(BINDINGS_LOCK_FILE))?;
+        .open(state_dir.join(BINDINGS_LOCK_FILE))?;
     // The lock is released when `lock` is dropped, or by the OS if the process dies.
     lock.lock()?;
 
@@ -183,9 +203,9 @@ fn update_bindings(
     let yaml_output = serde_yaml::to_string(&config)
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
     // Write to a temporary file next to the lock file, then move it into place.
-    let tmp_file_path = workspace_dir.join(format!(".{class}.yaml.{}.tmp", std::process::id()));
+    let tmp_file_path = state_dir.join(format!("{class}.yaml.{}.tmp", std::process::id()));
     fs::write(&tmp_file_path, yaml_output)?;
-    fs::rename(&tmp_file_path, &yaml_file_path)
+    replace_file(&tmp_file_path, &yaml_file_path)
 }
 
 pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
@@ -248,7 +268,16 @@ pub fn tw_ffi(attr: TokenStream2, item: TokenStream2) -> Result<TokenStream2> {
     };
 
     let workspace_dir = env::var("CARGO_WORKSPACE_DIR").unwrap_or_default();
-    update_bindings(Path::new(&workspace_dir), &class, args.ty, function).map_err(|e| {
+    let workspace_dir = Path::new(&workspace_dir);
+    let bindings_dir = workspace_dir.join("bindings");
+    update_bindings(
+        &bindings_dir,
+        &state_dir(workspace_dir),
+        &class,
+        args.ty,
+        function,
+    )
+    .map_err(|e| {
         syn::Error::new(
             proc_macro2::Span::call_site(),
             format!("Failed to update the '{class}' bindings: {e}"),
@@ -285,6 +314,21 @@ mod tests {
         }
     }
 
+    fn update(
+        dir: &Path,
+        class: &str,
+        ty: Option<TWFFIType>,
+        function: TWFunction,
+    ) -> io::Result<()> {
+        update_bindings(
+            &dir.join("bindings"),
+            &dir.join("target").join(STATE_DIR_NAME),
+            class,
+            ty,
+            function,
+        )
+    }
+
     fn test_workspace_dir(test: &str) -> std::path::PathBuf {
         let dir = env::temp_dir().join(format!("tw_ffi_{test}_{}", std::process::id()));
         let _ = fs::remove_dir_all(&dir);
@@ -307,7 +351,7 @@ mod tests {
                 let barrier = barrier.clone();
                 std::thread::spawn(move || {
                     barrier.wait();
-                    update_bindings(
+                    update(
                         &dir,
                         "Race",
                         Some(TWFFIType::StaticFunction),
@@ -342,14 +386,14 @@ mod tests {
     #[test]
     fn test_bindings_dir_contains_manifests_only() {
         let dir = test_workspace_dir("only_manifests");
-        update_bindings(
+        update(
             &dir,
             "Only",
             Some(TWFFIType::StaticFunction),
             test_function("First"),
         )
         .unwrap();
-        update_bindings(
+        update(
             &dir,
             "Only",
             Some(TWFFIType::Method),
@@ -363,6 +407,13 @@ mod tests {
             .collect::<Vec<_>>();
         assert_eq!(files, vec!["Only.yaml".to_string()]);
 
+        // The lock file is kept in the target directory, and no temporary files are left behind.
+        let state_files = fs::read_dir(dir.join("target").join(STATE_DIR_NAME))
+            .unwrap()
+            .map(|e| e.unwrap().file_name().into_string().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(state_files, vec![BINDINGS_LOCK_FILE.to_string()]);
+
         fs::remove_dir_all(&dir).unwrap();
     }
 
@@ -372,7 +423,7 @@ mod tests {
         for rust_name in ["old", "new"] {
             let mut function = test_function("Same");
             function.rust_name = rust_name.to_string();
-            update_bindings(&dir, "Replace", Some(TWFFIType::StaticFunction), function).unwrap();
+            update(&dir, "Replace", Some(TWFFIType::StaticFunction), function).unwrap();
         }
 
         let yaml = fs::read_to_string(dir.join("bindings/Replace.yaml")).unwrap();
