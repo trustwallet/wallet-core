@@ -43,9 +43,7 @@ add_library(tw::defaults_features ALIAS tw_defaults_features)
 add_library(tw_optimize_settings INTERFACE)
 add_library(tw::optimize_settings ALIAS tw_optimize_settings)
 
-target_compile_options(
-        tw_error_settings
-        INTERFACE
+set(TW_PROJECT_WARNING_FLAGS
         -Wall
         -Wextra # reasonable and standard
         -Wfatal-errors # short error report
@@ -64,22 +62,34 @@ target_compile_options(
         -Wformat=2 # warn on security issues around functions that format output
 )
 
+if (WIN32 AND MSVC)
+    list(TRANSFORM TW_PROJECT_WARNING_FLAGS PREPEND "/clang:")
+endif ()
+target_compile_options(tw_error_settings INTERFACE ${TW_PROJECT_WARNING_FLAGS})
+
 if (TW_WARNINGS_AS_ERRORS)
     target_compile_options(
             tw_error_settings
             INTERFACE
-            -Werror
+            $<IF:$<BOOL:${MSVC}>,/WX,-Werror>
     )
 endif ()
 
 target_compile_features(tw_defaults_features INTERFACE cxx_std_20)
 
-target_compile_options(tw_optimize_settings INTERFACE
+if (WIN32 AND MSVC)
+    target_compile_options(tw_optimize_settings INTERFACE /utf-8
+            $<$<CONFIG:Debug>:/Od>
+            $<$<CONFIG:Debug>:/Zi>
+            $<$<CONFIG:Release>:/O2>)
+else ()
+    target_compile_options(tw_optimize_settings INTERFACE
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang>>:-O0 -g>
         $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:AppleClang>>:-O0 -g>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang>>:-O2>
         $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:AppleClang>>:-O2>
         )
+endif ()
 
 function(set_project_warnings project_name)
     target_link_libraries(${project_name} INTERFACE tw::error_settings tw::defaults_features tw::optimize_settings)

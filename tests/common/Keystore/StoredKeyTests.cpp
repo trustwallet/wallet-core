@@ -1055,13 +1055,14 @@ TEST(StoredKey, LoadScryptWithoutSalt) {
 
 TEST(StoredKey, BackwardCompatibility) {
     const auto dir = testDataPath("BackwardCompatibility");
-    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+    for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::u8path(dir))) {
         if (!entry.is_regular_file()) {
             continue;
         }
         SCOPED_TRACE(entry.path().filename().string());
 
-        const auto key = StoredKey::load(entry.path().string());
+        const auto utf8Path = entry.path().u8string();
+        const auto key = StoredKey::load(std::string(utf8Path.begin(), utf8Path.end()));
         ASSERT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
         const Data& decrypted = key.payload.decrypt(gPassword);

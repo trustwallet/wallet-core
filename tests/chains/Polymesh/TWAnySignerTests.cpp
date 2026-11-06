@@ -19,7 +19,6 @@
 
 #include "TestUtilities.h"
 #include <gtest/gtest.h>
-#include <pthread.h>
 
 using namespace TW;
 using namespace TW::Polymesh;

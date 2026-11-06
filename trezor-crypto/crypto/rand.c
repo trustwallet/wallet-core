@@ -23,8 +23,31 @@
 
 #include <TrezorCrypto/rand.h>
 
-#include <fcntl.h>
 #include <stdlib.h>
+
+#if defined(_WIN32)
+#include <limits.h>
+#include <windows.h>
+#include <bcrypt.h>
+
+void random_buffer(uint8_t *buf, size_t len) {
+    while (len != 0) {
+        const ULONG count = len > ULONG_MAX ? ULONG_MAX : (ULONG)len;
+        if (BCryptGenRandom(NULL, buf, count, BCRYPT_USE_SYSTEM_PREFERRED_RNG) < 0) {
+            abort();  // Critical: cannot proceed without a secure random source
+        }
+        buf += count;
+        len -= count;
+    }
+}
+
+uint32_t random32(void) {
+    uint32_t result;
+    random_buffer((uint8_t *)&result, sizeof(result));
+    return result;
+}
+#else
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
@@ -57,3 +80,4 @@ void __attribute__((weak)) random_buffer(uint8_t *buf, size_t len) {
         abort();  // Critical: failed to read random data
     }
 }
+#endif
