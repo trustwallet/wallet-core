@@ -25,7 +25,11 @@ string Entry::normalizeAddress([[maybe_unused]] TWCoinType coin, const string& a
 }
 
 std::string Entry::deriveAddress([[maybe_unused]] TWCoinType coin, const PublicKey& publicKey, [[maybe_unused]] TWDerivation derivation, [[maybe_unused]] const PrefixVariant& addressPrefix) const {
-    return Address(publicKey).string();
+    const auto address = Address::fromPublicKey(publicKey);
+    if (!address) {
+        return {};
+    }
+    return address.payload().string();
 }
 
 Data Entry::addressToData([[maybe_unused]] TWCoinType coin, const std::string& address) const {

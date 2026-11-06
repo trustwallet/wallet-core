@@ -148,6 +148,10 @@ The `// #coin-list#` comments are markers that `codegen-v2` uses to insert new e
 - `deriveAddress()` — derive address from public key
 - `sign()` — serialize a `SigningInput` proto → sign → serialize `SigningOutput` proto
 
+### Error handling (C++)
+
+Do not add new `throw` statements. A C++ exception that escapes through the `TW*` C ABI aborts the host app. Return `Result<T>` (`src/Result.h`) for operations that can fail, and add a static factory (for example `static Result<Address> fromPublicKey(const PublicKey&)`) instead of a throwing constructor. At the `CoinEntry` boundary, turn a failed `Result` into the existing failure convention (an empty string or empty `Data`). Existing throwing code may stay until it is touched; prefer converting it when you change it.
+
 ### Signing data flow
 
 All transaction signing uses Protocol Buffers. Each chain has `src/proto/{Blockchain}.proto` defining `SigningInput` and `SigningOutput`. The universal entry point is `TWAnySigner`:

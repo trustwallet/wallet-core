@@ -182,11 +182,11 @@ TEST(FIOEncryption, encryptAndEncode) {
 TEST(FIOEncryption, encryptEncodeDecodeDecrypt) {
     const PrivateKey privateKeyAlice(parse_hex("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90"));
     const PublicKey publicKeyAlice = privateKeyAlice.getPublicKey(TWPublicKeyTypeSECP256k1);
-    const Address addressAlice(publicKeyAlice);
+    const auto addressAlice = Address::fromPublicKey(publicKeyAlice).payload();
     EXPECT_EQ(addressAlice.string(), "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv");
     const PrivateKey privateKeyBob(parse_hex("81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9"));
     const PublicKey publicKeyBob = privateKeyBob.getPublicKey(TWPublicKeyTypeSECP256k1);
-    const Address addressBob(publicKeyBob);
+    const auto addressBob = Address::fromPublicKey(publicKeyBob).payload();
     EXPECT_EQ(addressBob.string(), "FIO5VE6Dgy9FUmd1mFotXwF88HkQN1KysCWLPqpVnDMjRvGRi1YrM");
     const Data message = parse_hex("0b70757273652e616c69636501310a66696f2e7265716f6274000000");
     const Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");
