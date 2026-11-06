@@ -326,6 +326,91 @@ TEST(CardanoSigning, ErrorDoPlan) {
     }
 }
 
+TEST(CardanoSigning, PlanDepositExceedsInputs) {
+    // 1.5 ADA in the only UTXO, 2 ADA staking deposit
+    auto input = createSampleInput(1000000, 1);
+    input.mutable_register_staking_key()->set_staking_address(ownAddress1);
+    input.mutable_register_staking_key()->set_deposit_amount(2000000);
+    EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+
+    // same with max amount
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+}
+
+TEST(CardanoSigning, PlanMaxAmountExtraOutputsExceedInputs) {
+    auto input = createSampleInput(1000000, 1);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    auto* extra = input.add_extra_outputs();
+    extra->set_address(ownAddress1);
+    extra->set_amount(1400000); // leaves less than the fee
+    EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+}
+
+TEST(CardanoSigning, PlanForceFeeAmountAndExtraExceedInputs) {
+    // 8 ADA available, 6.5 ADA + 2 ADA extra requested: the fee is kept, the amount is reduced
+    auto input = createSampleInput(6500000);
+    auto* extra = input.add_extra_outputs();
+    extra->set_address(ownAddress1);
+    extra->set_amount(2000000);
+    input.mutable_transfer_message()->set_force_fee(170000);
+    const auto plan = Signer(input).doPlan();
+    EXPECT_EQ(plan.error, Common::Proto::OK);
+    EXPECT_EQ(plan.fee, 170000ul);
+    EXPECT_EQ(plan.amount, 5830000ul);
+    EXPECT_EQ(plan.change, 0ul);
+}
+
+TEST(CardanoSigning, PlanMaxAmountForceFeeExceedsInputs) {
+    // the fee would consume the whole balance, leaving nothing to send
+    auto input = createSampleInput(0, 1);
+    input.mutable_transfer_message()->set_use_max_amount(true);
+    input.mutable_transfer_message()->set_force_fee(5000000);
+    EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+}
+
+TEST(CardanoSigning, PlanSumOverflow) {
+    {
+        // extra outputs sum wraps around uint64
+        auto input = createSampleInput(1000000);
+        for (auto i = 0; i < 2; ++i) {
+            auto* extra = input.add_extra_outputs();
+            extra->set_address(ownAddress1);
+            extra->set_amount(1ull << 63);
+        }
+        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+    }
+    {
+        // UTXO amounts sum wraps around uint64
+        auto input = createSampleInput(1000000, 2);
+        input.mutable_utxos(0)->set_amount(1ull << 63);
+        input.mutable_utxos(1)->set_amount(1ull << 63);
+        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_invalid_utxo_amount);
+    }
+}
+
+TEST(CardanoSigning, SelectInputsTokenAcrossUtxos) {
+    const auto policy = std::string(sundaeTokenPolicy);
+    const auto name = parse_hex("aa");
+    const auto token = [&](uint64_t amount) { return TokenBundle({TokenAmount(policy, name, uint256_t(amount))}); };
+    const auto inputs = std::vector<TxInput>({
+        TxInput{{parse_hex("0001"), 0}, "ad01", 5000000, token(40)},
+        TxInput{{parse_hex("0002"), 1}, "ad02", 3000000, token(30)},
+        TxInput{{parse_hex("0003"), 2}, "ad03", 2000000, token(20)},
+        TxInput{{parse_hex("0004"), 3}, "ad04", 1000000, {}},
+    });
+    const auto requested = token(80);
+
+    // ADA is covered by the first UTXO, the 80 tokens need three UTXOs
+    const auto selected = Signer::selectInputsWithTokens(inputs, 1000000, requested);
+    uint256_t tokenSum = 0;
+    for (const auto& i : selected) {
+        tokenSum += i.tokenBundle.getAmount(requested.bundle.begin()->first);
+    }
+    EXPECT_EQ(tokenSum, uint256_t(90));
+    EXPECT_EQ(selected.size(), 3ul);
+}
+
 TEST(CardanoSigning, PlanForceFee) {
     auto requestedAmount = 6500000ul;
     auto availableAmount = 8000000ul;
