@@ -13,6 +13,7 @@
 #include <TrezorCrypto/memzero.h>
 
 #include <cassert>
+#include <cstddef>
 #include <fstream>
 #include <stdexcept>
 
@@ -118,14 +119,9 @@ HDWallet<> StoredKey::wallet(const Data& password) const {
     if (type != StoredKeyType::mnemonicPhrase) {
         throw std::invalid_argument("Invalid account requested.");
     }
-    auto data = payload.decrypt(password);
-    auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-    const HDWallet<> wallet = {mnemonic, ""};
-
-    // clear decrypted data from memory
-    memzero(data.data(), data.size());
-    memzero(mnemonic.data(), mnemonic.size());
-    return wallet;
+    const auto data = payload.decrypt(password);
+    const auto mnemonic = ZeroizingString(std::string(reinterpret_cast<const char*>(data.get().data()), data.get().size()));
+    return HDWallet<>(mnemonic.get(), "");
 }
 
 std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
@@ -303,7 +299,7 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, [[maybe_unused]] TWDeriv
         return wallet.getKey(coin, account.derivationPath);
     }
     // type == StoredKeyType::privateKey
-    return PrivateKey(payload.decrypt(password), TWCoinTypeCurve(coin));
+    return PrivateKey(payload.decrypt(password).get(), TWCoinTypeCurve(coin));
 }
 
 void StoredKey::fixAddresses(const Data& password) {
@@ -322,7 +318,7 @@ void StoredKey::fixAddresses(const Data& password) {
     } break;
 
     case StoredKeyType::privateKey: {
-        auto key = PrivateKey(payload.decrypt(password));
+        auto key = PrivateKey(payload.decrypt(password).get());
         for (auto& account : accounts) {
             if (!account.address.empty() && !account.publicKey.empty() &&
                 TW::validateAddress(account.coin, account.address)) {
@@ -376,18 +372,26 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     return addressUpdated;
 }
 
-std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+// Lowercase hex like `TW::hex`, which leaves an unwiped copy on the Rust heap.
+static ZeroizingString hexZeroizing(const Data& data) {
+    constexpr char digits[] = "0123456789abcdef";
+    std::string out(data.size() * 2, '\0');
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        const auto byte = static_cast<std::byte>(data[i]);
+        out[2 * i] = digits[std::to_integer<std::size_t>(byte >> 4)];
+        out[2 * i + 1] = digits[std::to_integer<std::size_t>(byte & std::byte{0x0f})];
+    }
+    return ZeroizingString(std::move(out));
+}
+
+ZeroizingString StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
     if (encodedPayload) {
-        auto data = encodedPayload->decrypt(password);
-        const auto dataString = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-        memzero(data.data(), data.size());
-        return dataString;
+        const auto data = encodedPayload->decrypt(password);
+        return ZeroizingString(std::string(reinterpret_cast<const char*>(data.get().data()), data.get().size()));
     }
 
-    auto data = payload.decrypt(password);
-    const auto dataHex = TW::hex(data);
-    memzero(data.data(), data.size());
-    return dataHex;
+    const auto data = payload.decrypt(password);
+    return hexZeroizing(data.get());
 }
 
 // -----------------

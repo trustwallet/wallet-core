@@ -181,8 +181,10 @@ EncryptedPayload::~EncryptedPayload() {
     memzero(_mac.data(), _mac.size());
 }
 
-Data EncryptedPayload::decrypt(const Data& password) const {
-    auto derivedKey = Data();
+ZeroizingData EncryptedPayload::decrypt(const Data& password) const {
+    // Wiped on every exit path, including throws.
+    ZeroizingData derivedKeyHolder;
+    auto& derivedKey = derivedKeyHolder.get();
     auto mac = Data();
 
     if (auto* scryptParams = std::get_if<ScryptParameters>(&params.kdfParams); scryptParams) {
@@ -190,9 +192,6 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         if (scrypt(password.data(), password.size(), scryptParams->salt.data(),
                    scryptParams->salt.size(), scryptParams->n, scryptParams->r, scryptParams->p, derivedKey.data(),
                    ScryptParameters::defaultDesiredKeyLength) != 0) {
-            // Usually nothing was derived, but on one late path (munmap failing after derivation)
-            // the buffer already holds the real key. Wipe it either way before the throw frees it.
-            memzero(derivedKey.data(), derivedKey.size());
             throw DecryptionError::derivationFailed;
         }
         mac = computeMAC(derivedKey.end() - params.getKeyBytesSize(), derivedKey.end(), encrypted);
@@ -207,7 +206,6 @@ Data EncryptedPayload::decrypt(const Data& password) const {
     }
 
     if (!isEqualConstantTime(mac, _mac)) {
-        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::invalidPassword;
     }
 
@@ -231,13 +229,11 @@ Data EncryptedPayload::decrypt(const Data& password) const {
         aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
         memzero(&ctx, sizeof(ctx));
-        memzero(derivedKey.data(), derivedKey.size());
     } else {
-        memzero(derivedKey.data(), derivedKey.size());
         throw DecryptionError::unsupportedCipher;
     }
 
-    return decrypted;
+    return ZeroizingData(std::move(decrypted));
 }
 
 EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& password) const {
@@ -247,7 +243,7 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
         return *this;
     }
 
-    const auto decryptedData = ZeroizingData(decrypt(password));
+    const auto decryptedData = decrypt(password);
 
     // Regenerate only necessary Scrypt parameters, while leaving other settings as is.
     const auto fixedScryptParams = std::get<ScryptParameters>(params.kdfParams).regenerateWithRecommendedParams();
@@ -257,7 +253,7 @@ EncryptedPayload EncryptedPayload::regenerateWithRecommendedParams(const Data& p
 
     // Try to decrypt the new payload to verify the full backward compatibility, before returning it.
     {
-        auto reDecryptedData = ZeroizingData(reEncryptedPayload.decrypt(password));
+        const auto reDecryptedData = reEncryptedPayload.decrypt(password);
         if (!isEqualConstantTime(decryptedData.get(), reDecryptedData.get())) {
             throw DecryptionError::invalidKeyFile;
         }

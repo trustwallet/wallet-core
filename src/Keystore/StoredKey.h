@@ -8,6 +8,7 @@
 #include "EncryptionParameters.h"
 #include "Data.h"
 #include "../HDWallet.h"
+#include "../memory/memzero_wrapper.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWDerivation.h>
@@ -188,7 +189,7 @@ public:
     ///
     /// \returns the decoded private key.
     /// \throws DecryptionError
-    [[nodiscard]] std::string decryptPrivateKeyEncoded(const Data& password) const;
+    [[nodiscard]] ZeroizingString decryptPrivateKeyEncoded(const Data& password) const;
 
 private:
     /// Default constructor, private
