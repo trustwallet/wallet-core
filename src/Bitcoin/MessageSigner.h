@@ -7,6 +7,7 @@
 #include "Data.h"
 #include "PrivateKey.h"
 
+#include <optional>
 #include <string>
 
 namespace TW::Bitcoin {
@@ -28,7 +29,10 @@ class MessageSigner {
     /// Returns the signature, Base64-encoded.
     /// Throws on invalid input.
     static std::string signMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed = true);
-  
+
+    /// Same as signMessage, but returns std::nullopt on invalid input instead of throwing.
+    static std::optional<std::string> trySignMessage(const PrivateKey& privateKey, const std::string& address, const std::string& message, bool compressed = true);
+
     /// Verify signature for a message.
     /// address: address to use, only legacy is supported
     /// message: the message signed (without prefix)
@@ -45,6 +49,9 @@ class MessageSigner {
 
     /// Recover address from signature and message. May throw.
     static std::string recoverAddressFromMessage(const std::string& message, const Data& signature);
+
+    /// Same as recoverAddressFromMessage, but returns std::nullopt on invalid input instead of throwing.
+    static std::optional<std::string> tryRecoverAddressFromMessage(const std::string& message, const Data& signature);
 
     /// Append prefix and compute hash for a message
     static Data messageToHash(const std::string& message);

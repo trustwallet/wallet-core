@@ -101,6 +101,28 @@ TEST(BitcoinMessageSigner, SignNegative) {
     EXPECT_EXCEPTION(MessageSigner::signMessage(gPrivateKey, "bc1qpjult34k9spjfym8hss2jrwjgf0xjf40ze0pp8", msg), "Address is not valid (legacy) address");
     // Use valid, but not matching key
     EXPECT_EXCEPTION(MessageSigner::signMessage(gPrivateKey, "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr", msg), "Address does not match key");
+    // Private key out of range for secp256k1
+    EXPECT_EXCEPTION(MessageSigner::signMessage(PrivateKey(parse_hex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")), address, msg), "Invalid private key");
+}
+
+TEST(BitcoinMessageSigner, TrySignAndRecover) {
+    const auto* const address = "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X";
+    const auto* const msg = "test signature";
+    const auto signature = MessageSigner::trySignMessage(gPrivateKey, address, msg);
+    ASSERT_TRUE(signature.has_value());
+    EXPECT_EQ(*signature, MessageSigner::signMessage(gPrivateKey, address, msg));
+    const auto signatureData = Base64::decode(*signature);
+    EXPECT_EQ(MessageSigner::tryRecoverAddressFromMessage(msg, signatureData).value_or(""), address);
+
+    EXPECT_FALSE(MessageSigner::trySignMessage(gPrivateKey, "bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt", msg).has_value());
+    EXPECT_FALSE(MessageSigner::trySignMessage(gPrivateKey, "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr", msg).has_value());
+    EXPECT_FALSE(MessageSigner::tryRecoverAddressFromMessage(msg, subData(signatureData, 0, 64)).has_value());
+
+    auto badRecId = signatureData;
+    badRecId[0] = 35; // recovery id 4
+    EXPECT_FALSE(MessageSigner::tryRecoverAddressFromMessage(msg, badRecId).has_value());
+    EXPECT_EXCEPTION(MessageSigner::recoverAddressFromMessage(msg, badRecId), "recover failed");
+    EXPECT_EXCEPTION(MessageSigner::verifyMessage(address, msg, badRecId), "recover failed");
 }
 
 TEST(BitcoinMessageSigner, VerifyNegative) {
@@ -160,6 +182,45 @@ TEST(TWBitcoinMessageSigner, SignAndVerify) {
     EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "ILH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=");
 
     EXPECT_TRUE(TWBitcoinMessageSignerVerifyMessage(address.get(), message.get(), signature.get()));
+}
+
+// Invalid input must return "" / false without throwing: WASM builds cannot catch exceptions.
+TEST(TWBitcoinMessageSigner, SignInvalidAddress) {
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5").get()));
+    const auto message = STRING("test signature");
+    for (const auto* address : {
+             "bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt", // segwit address of the same key
+             "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr",         // legacy address of another key
+             "__THIS_IS_NOT_A_VALID_ADDRESS__",
+         }) {
+        const auto signature = WRAPS(TWBitcoinMessageSignerSignMessage(privateKey.get(), STRING(address).get(), message.get()));
+        EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "") << address;
+    }
+}
+
+TEST(TWBitcoinMessageSigner, SignInvalidPrivateKey) {
+    // Out of range for secp256k1, but accepted by TWPrivateKeyCreateWithData.
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").get()));
+    ASSERT_NE(privateKey.get(), nullptr);
+    const auto signature = WRAPS(TWBitcoinMessageSignerSignMessage(privateKey.get(), STRING("19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X").get(), STRING("test signature").get()));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "");
+}
+
+TEST(TWBitcoinMessageSigner, VerifyInvalidInput) {
+    const auto address = STRING("19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X");
+    const auto message = STRING("test signature");
+    const auto signature = STRING("ILH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=");
+
+    // Valid signature, but only legacy addresses are supported.
+    EXPECT_FALSE(TWBitcoinMessageSignerVerifyMessage(STRING("bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt").get(), message.get(), signature.get()));
+    for (const auto* invalid : {
+             "ILH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXA==", // 64 bytes
+             "!!!not-base64!!!",
+             "I7H5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=", // recovery id out of range
+             "HwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", // r = 0
+         }) {
+        EXPECT_FALSE(TWBitcoinMessageSignerVerifyMessage(address.get(), message.get(), STRING(invalid).get())) << invalid;
+    }
 }
 
 } // namespace TW::Bitcoin
