@@ -8,6 +8,13 @@ Trust Wallet Core is a cross-platform C++ library implementing cryptographic wal
 
 ---
 
+## Development Principles
+
+1. **Mainnet-proven transactions.** For every new transaction type, or any change to transaction generation or signing, build and sign a transaction with WalletCore using a one-time private key and broadcast it to mainnet. It must land on chain. Then reproduce that exact transaction in a unit test, with a comment pointing to the explorer, e.g. `// Successfully broadcasted tx - https://...`. Never commit a test fixture that has not been proven this way, and never commit the one-time private key if it ever held value (use a throwaway key with only dust).
+2. **Minimal duplication, optimal coverage.** Keep code duplication as low as possible. Keep unit test coverage high in both C++ and Rust, but keep the tests optimal: cover distinct behaviors and error paths, not every permutation.
+3. **Reuse first.** Reuse existing helpers, encoding algorithms, signing flows and shared wiring (nonce, priority fee, memo, fee payer, etc.) before writing new ones. Make a solution generic enough to be reused later, without over-engineering for hypothetical cases.
+4. **Keep it simple.** Avoid complex functions, deep class hierarchies and "super classes". Prefer small, focused functions and clean, readable code. Add genericity only where a second use is realistic.
+
 ## Commands
 
 ### C++ (primary)
