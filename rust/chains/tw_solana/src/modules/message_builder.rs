@@ -164,7 +164,7 @@ impl<'a> MessageBuilder<'a> {
         let transfer_ix = SystemInstructionBuilder::transfer(from, to, transfer.value)
             .with_references(references);
 
-        self.instructions_with_common_options(from, transfer.memo.as_ref(), [transfer_ix])
+        self.instructions_with_common_options(from, Some(transfer.memo.as_ref()), [transfer_ix])
     }
 
     fn delegate_stake_from_proto(
@@ -194,7 +194,7 @@ impl<'a> MessageBuilder<'a> {
             space: DEFAULT_SPACE,
         });
 
-        self.instructions_with_common_options(sender, "", deposit_ixs)
+        self.instructions_with_common_options(sender, None, deposit_ixs)
     }
 
     fn deactivate_stake_from_proto(
@@ -208,7 +208,7 @@ impl<'a> MessageBuilder<'a> {
 
         let deactivate_ix = StakeInstructionBuilder::deactivate(stake_account, sender);
 
-        self.instructions_with_common_options(sender, "", [deactivate_ix])
+        self.instructions_with_common_options(sender, None, [deactivate_ix])
     }
 
     fn deactivate_all_stake_from_proto(
@@ -226,7 +226,7 @@ impl<'a> MessageBuilder<'a> {
             .collect::<SigningResult<Vec<_>>>()
             .context("Invalid stake account(s)")?;
 
-        self.instructions_with_common_options(sender, "", deactivate_ixs)
+        self.instructions_with_common_options(sender, None, deactivate_ixs)
     }
 
     fn withdraw_from_proto(
@@ -248,7 +248,7 @@ impl<'a> MessageBuilder<'a> {
             custodian_account,
         );
 
-        self.instructions_with_common_options(sender, "", [withdraw_ix])
+        self.instructions_with_common_options(sender, None, [withdraw_ix])
     }
 
     fn withdraw_all_from_proto(
@@ -276,7 +276,7 @@ impl<'a> MessageBuilder<'a> {
             })
             .collect::<SigningResult<Vec<_>>>()?;
 
-        self.instructions_with_common_options(sender, "", withdraw_ixs)
+        self.instructions_with_common_options(sender, None, withdraw_ixs)
     }
 
     fn create_token_account_from_proto(
@@ -304,7 +304,7 @@ impl<'a> MessageBuilder<'a> {
             token_address,
             match_program_id(create_token_acc.token_program_id),
         );
-        self.instructions_with_common_options(funding_account, "", [instruction])
+        self.instructions_with_common_options(funding_account, None, [instruction])
     }
 
     fn token_transfer_from_proto(
@@ -347,7 +347,7 @@ impl<'a> MessageBuilder<'a> {
 
         self.instructions_with_common_options(
             signer,
-            token_transfer.memo.as_ref(),
+            Some(token_transfer.memo.as_ref()),
             [transfer_instruction],
         )
     }
@@ -382,7 +382,7 @@ impl<'a> MessageBuilder<'a> {
 
         self.instructions_with_common_options(
             signer,
-            transfer.memo.as_ref(),
+            Some(transfer.memo.as_ref()),
             [transfer_instruction],
         )
     }
@@ -474,7 +474,7 @@ impl<'a> MessageBuilder<'a> {
 
         self.instructions_with_common_options(
             signer,
-            "",
+            None,
             SystemInstructionBuilder::create_nonce_account(
                 signer,
                 new_nonce_account,
@@ -499,7 +499,7 @@ impl<'a> MessageBuilder<'a> {
 
         self.instructions_with_common_options(
             signer,
-            "",
+            None,
             [SystemInstructionBuilder::withdraw_nonce_account(
                 withdraw_from_nonce,
                 signer,
@@ -665,7 +665,7 @@ impl<'a> MessageBuilder<'a> {
     fn instructions_with_common_options<I>(
         &self,
         signer: SolanaAddress,
-        memo: &str,
+        memo: Option<&str>,
         instructions: I,
     ) -> SigningResult<Vec<Instruction>>
     where
@@ -676,7 +676,7 @@ impl<'a> MessageBuilder<'a> {
             .maybe_advance_nonce(self.nonce_account()?, signer)
             .maybe_priority_fee_price(self.priority_fee_price())
             .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_memo(memo)
+            .maybe_memo(memo.unwrap_or_default())
             .add_instructions(instructions)
             .maybe_add_instruction(self.transfer_to_fee_payer()?);
         Ok(builder.output())
