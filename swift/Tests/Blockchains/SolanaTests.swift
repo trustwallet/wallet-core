@@ -180,6 +180,24 @@ class SolanaTests: XCTestCase {
         XCTAssertEqual(output.encoded, expectedString)
     }
 
+    func testTransferCoreAssetSigner() throws {
+        let transferMessage = SolanaTransferCoreAsset.with {
+            $0.assetAddress = "DdC5i5AFrHCvcaEUEcCktFBiytHoGbMgUQ7JBwfRGihL"
+            $0.recipientAddress = "ArgPLJSF7ujjPZgooHGpRcnFDmftpDSzvhLRNsH94zmo"
+            $0.collectionAddress = "CCryptUfeFSZ3Fgc9FLeKrhLVAP67FSqi1GuVoj9CRac"
+        }
+        let input = SolanaSigningInput.with {
+            $0.transferCoreAssetTransaction = transferMessage
+            $0.recentBlockhash = "4G8PGaBMdz3Sqi43W9xL1rQHqhorF1ZbVZoabVejs7uv"
+            $0.privateKey = Data(Base58.decodeNoCheck(string: "EhdjS476DfVStvrEa7waGoi81o8KvQGEMkRsXbE6TkgP")!)
+        }
+
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
+
+        // Successfully broadcasted tx - https://solscan.io/tx/3DxmEtgGHpY8mm1QfzgRzBLL4TLQ1Q96mcYE2LdKG6gZuyWQQjnDCAXFqrhKvGvmEQriZuLpZWHsAkXcLJRSAiMC
+        XCTAssertEqual(output.encoded, "hq79tP91qTbzV6Qbe7FKZ8ru8wba2gVEN48LBaARqTLZGVZMja8xj9S8v7gKuUpQk6EgaWTk3t8znG9Z7qKvWdNujkJjUbtVmffnkyMi8GdjhgTRc4i1wSytyZpgJaUD8vhCRAJEmcZBzrq4kTCi3iJT776jYuAgB1u3KPC3pPzEpk8ktpz8ocSkKo1A9oXiU6hkhgs8bj8FbCEoLbvAmg67Ut7GoyK8kb9gAYD8SZYNKPN39oerw5EaP3md3DBDGDJ1aLaHPsUwtbG66PyoLYnCWGbgbcRW2WPTBqDc8RdJWUR28VdAj7wTEJ7jSeBaHLiFtYexNCPon8omyVV5KU5eqwHMGNCWMLkWjd6RrwB1p92M42E1M")
+    }
+
     func testCreateAndTransferTokenSigner() throws {
         let createAndTransferTokenMessage = SolanaCreateAndTransferToken.with {
             $0.recipientMainAddress = "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd"

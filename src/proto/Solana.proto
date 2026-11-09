@@ -146,6 +146,28 @@ message CreateAndTransferToken {
     TokenProgramId token_program_id = 9;
 }
 
+// Transfer a Metaplex Core asset (mpl-core `TransferV1`).
+// Core assets have no mint or token account, so the transfer only changes the asset owner.
+// The signer must be the current owner of the asset.
+message TransferCoreAsset {
+    // Address of the Core asset.
+    string asset_address = 1;
+
+    // Address of the new owner (a wallet address).
+    string recipient_address = 2;
+
+    // Address of the collection the asset belongs to.
+    // Required if the asset belongs to a collection, otherwise leave empty.
+    // A missing or wrong collection makes the transaction fail on chain.
+    string collection_address = 3;
+
+    // optional memo
+    string memo = 4;
+
+    // optional referenced public keys
+    repeated string references = 5;
+}
+
 // Transfer tokens to the feepayer
 message TokenTransferToFeePayer {
     // Mint address of the fee token
@@ -288,6 +310,7 @@ message SigningInput {
         CreateNonceAccount create_nonce_account = 13;
         WithdrawNonceAccount withdraw_nonce_account = 16;
         AdvanceNonceAccount advance_nonce_account = 19;
+        TransferCoreAsset transfer_core_asset_transaction = 26;
     }
     // Required for building pre-signing hash of a transaction
     string sender = 14;
