@@ -149,6 +149,8 @@ message CreateAndTransferToken {
 // Transfer a Metaplex Core asset (mpl-core `TransferV1`).
 // Core assets have no mint or token account, so the transfer only changes the asset owner.
 // The signer must be the current owner of the asset.
+// Not supported: assets or collections with external plugin adapters (e.g. Oracle, LifecycleHook),
+// which need extra accounts. Such a transaction is signed but fails on chain.
 message TransferCoreAsset {
     // Address of the Core asset.
     string asset_address = 1;
