@@ -344,9 +344,12 @@ Proto::SigningInput inputWithActionKey(uint32_t keyType, const Data& keyData, Pr
         pKey = addKey.mutable_public_key();
         break;
     }
-    default:
+    case Proto::Action::kDeleteKey:
         pKey = action.mutable_delete_key()->mutable_public_key();
         break;
+    default:
+        ADD_FAILURE() << "Unsupported payload case: " << payload;
+        return input;
     }
     pKey->set_key_type(keyType);
     pKey->set_data(keyData.data(), keyData.size());
@@ -363,10 +366,16 @@ TEST(NEARSerialization, ActionPublicKeyLengthValidation) {
     const auto secp256k1Key = Data(64, 0x02);
 
     for (const auto payload : {Proto::Action::kStake, Proto::Action::kAddKey, Proto::Action::kDeleteKey}) {
-        // Well-formed keys of both types are accepted.
+        // Well-formed keys of both types are accepted, except that staking keys must be ED25519.
         EXPECT_TRUE(transactionData(inputWithActionKey(0, ed25519Key, payload)));
         EXPECT_TRUE(transactionDataWithPublicKey(inputWithActionKey(0, ed25519Key, payload)));
-        EXPECT_TRUE(transactionData(inputWithActionKey(1, secp256k1Key, payload)));
+        const auto secp256k1Result = transactionData(inputWithActionKey(1, secp256k1Key, payload));
+        if (payload == Proto::Action::kStake) {
+            ASSERT_FALSE(secp256k1Result);
+            EXPECT_EQ(secp256k1Result.error(), Common::Proto::Error_invalid_params);
+        } else {
+            EXPECT_TRUE(secp256k1Result);
+        }
 
         const std::vector<std::pair<uint32_t, Data>> invalid = {
             {0, overlong},

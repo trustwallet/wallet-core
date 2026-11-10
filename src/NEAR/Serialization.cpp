@@ -95,6 +95,10 @@ static SigningResult writeFunctionCall(Data& data, const Proto::FunctionCall& fu
 }
 
 static SigningResult writeStake(Data& data, const Proto::Stake& stake) {
+    // NEAR only accepts ED25519 validator staking keys.
+    if (stake.public_key().key_type() != keyTypeED25519) {
+        return SigningResult::failure(Common::Proto::Error_invalid_params);
+    }
     auto result = writeU128(data, stake.stake());
     if (!result) {
         return result;
@@ -197,10 +201,12 @@ static SigningResult writeAction(Data& data, const Proto::Action& action) {
         return SigningResult::success();
     case Proto::Action::kTokenTransfer:
         return writeTokenTransfer(data, action.token_transfer());
-    default:
-        // An action with no payload has no valid encoding.
-        return SigningResult::failure(Common::Proto::Error_invalid_params);
+    case Proto::Action::PAYLOAD_NOT_SET:
+        break;
     }
+    // No `default` above, so a new action added to the proto triggers -Wswitch until it is encoded here.
+    // An action with no payload (or an unknown one) has no valid encoding.
+    return SigningResult::failure(Common::Proto::Error_invalid_params);
 }
 
 // Serializes the transaction with `signerKey` as the signer's ED25519 public key.
