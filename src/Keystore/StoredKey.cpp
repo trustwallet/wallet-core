@@ -10,7 +10,6 @@
 #include "PrivateKey.h"
 
 #include <nlohmann/json.hpp>
-#include <TrezorCrypto/memzero.h>
 
 #include <cassert>
 #include <cstddef>
@@ -26,20 +25,16 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
         throw std::invalid_argument("Invalid mnemonic");
     }
 
-    Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
-    memzero(mnemonicData.data(), mnemonic.size());
-    return key;
+    const auto mnemonicData = ZeroizingData(Data(mnemonic.begin(), mnemonic.end()));
+    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData.get(), encryptionLevel, encryption);
 }
 
 StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption) {
     const auto wallet = TW::HDWallet<>(128, "");
     const auto& mnemonic = wallet.getMnemonic();
     assert(Mnemonic::isValid(mnemonic));
-    Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
-    memzero(mnemonicData.data(), mnemonic.size());
-    return key;
+    const auto mnemonicData = ZeroizingData(Data(mnemonic.begin(), mnemonic.end()));
+    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData.get(), encryptionLevel, encryption);
 }
 
 StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin, TWStoredKeyEncryption encryption) {
@@ -102,13 +97,13 @@ StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password,
 
     if (encodedStr) {
         const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
-        const auto encodedData = Data(bytes, bytes + encodedStr->size());
+        const auto encodedData = ZeroizingData(Data(bytes, bytes + encodedStr->size()));
 
         // Generate new parameters with random iv and salt for the encoded private key.
         const auto cipherParamsEncoded = AESParameters::AESParametersFromEncryption(encryption);
         const auto scryptParamsEncoded = ScryptParameters::getPreset(encryptionLevel);
 
-        encodedPayload = EncryptedPayload(password, encodedData, cipherParamsEncoded, scryptParamsEncoded);
+        encodedPayload = EncryptedPayload(password, encodedData.get(), cipherParamsEncoded, scryptParamsEncoded);
     }
     const char* uuid_ptr = Rust::tw_uuid_random();
     id = std::make_optional<std::string>(uuid_ptr);

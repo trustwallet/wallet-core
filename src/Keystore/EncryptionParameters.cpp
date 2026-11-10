@@ -121,17 +121,17 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
 
     // Derive exactly `defaultDesiredKeyLength` bytes, the same constant `decrypt()` uses, so that the
     // buffer size never depends on caller-controlled state.
-    auto derivedKey = Data(ScryptParameters::defaultDesiredKeyLength);
+    // Wiped on every exit path, including throws.
+    auto derivedKeyHolder = ZeroizingData(Data(ScryptParameters::defaultDesiredKeyLength));
+    auto& derivedKey = derivedKeyHolder.get();
     // scrypt() returns non-zero (with errno set) on a parameter or allocation failure, leaving the
-    // buffer all zeros; proceeding would encrypt the payload under an all-zero key. On one late path
-    // (munmap failing after derivation) the buffer already holds the real key, so wipe it either way
-    // before the throw frees it. Parameters were validated above, so what remains is a resource
-    // failure; it is thrown as std::system_error carrying errno.
+    // buffer all zeros; proceeding would encrypt the payload under an all-zero key. Parameters were
+    // validated above, so what remains is a resource failure; it is thrown as std::system_error
+    // carrying errno.
     if (scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
                scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
                ScryptParameters::defaultDesiredKeyLength) != 0) {
         const auto scryptErrno = errno;
-        memzero(derivedKey.data(), derivedKey.size());
         throw std::system_error(scryptErrno, std::generic_category(), "scrypt key derivation failed");
     }
 
@@ -161,7 +161,6 @@ EncryptedPayload::EncryptedPayload(const Data& password, const Data& data, const
     }
 
     memzero(&ctx, sizeof(ctx));
-    memzero(derivedKey.data(), derivedKey.size());
 }
 
 EncryptedPayload& EncryptedPayload::operator=(EncryptedPayload&& other) noexcept {
