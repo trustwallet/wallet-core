@@ -11,11 +11,10 @@ use crate::transaction::transaction_builder::TransactionBuilder;
 use crate::transaction::transaction_type::TransactionType;
 use crate::transaction::RippleTransaction;
 use crate::types::account_id::AccountId;
-use crate::types::amount::issued_currency::{verify_scale_in_range, IssuedCurrency};
+use crate::types::amount::issued_currency::{parse_ic_value, IssuedCurrency};
 use crate::types::amount::native_amount::NativeAmount;
 use crate::types::amount::Amount;
 use crate::types::currency::Currency;
-use bigdecimal::BigDecimal;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
@@ -404,10 +403,8 @@ impl<'a> ProtobufBuilder<'a> {
     }
 
     fn issued_currency(input: &Proto::CurrencyAmount) -> SigningResult<IssuedCurrency> {
-        let value = BigDecimal::from_str(input.value.as_ref())
-            .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
-            .context("Invalid 'CurrencyAmount.amount'")?;
-        verify_scale_in_range(&value).context("Invalid 'CurrencyAmount.amount'")?;
+        let value =
+            parse_ic_value(input.value.as_ref()).context("Invalid 'CurrencyAmount.amount'")?;
         let currency = Currency::from_str(input.currency.as_ref())
             .context("Invalid 'CurrencyAmount.currency'")?;
         let issuer = AccountId::from_str(input.issuer.as_ref())

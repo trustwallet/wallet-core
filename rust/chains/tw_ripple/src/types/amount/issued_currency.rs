@@ -11,9 +11,9 @@ use bigdecimal::{BigDecimal, Signed, ToPrimitive, Zero};
 use serde::de::Error as _;
 use serde::ser::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::str::FromStr;
 use tw_coin_entry::error::prelude::*;
 use tw_hash::H64;
-use tw_misc::serde::as_string;
 
 const ZERO_IC_VALUE: u64 = 0x8000000000000000;
 const MIN_MANTISSA: u128 = u128::pow(10, 15);
@@ -21,6 +21,7 @@ const MAX_MANTISSA: u128 = u128::pow(10, 16) - 1;
 const MIN_IOU_EXPONENT: i32 = -96;
 pub const MAX_IOU_EXPONENT: i32 = 80;
 pub const MAX_IOU_PRECISION: usize = 16;
+const MAX_IC_VALUE_LEN: usize = 256;
 
 /// Normally when using bigdecimal "serde_json" feature a `1` will be serialized as `1.000000000000000`.
 /// This function normalizes a `BigDecimal` before serializing to a string.
@@ -31,8 +32,21 @@ fn serialize_bigdecimal<S: Serializer>(value: &BigDecimal, s: S) -> Result<S::Ok
 }
 
 fn deserialize_bigdecimal<'de, D: Deserializer<'de>>(d: D) -> Result<BigDecimal, D::Error> {
-    let value = as_string::deserialize(d)?;
-    verify_scale_in_range(&value).map_err(|e| D::Error::custom(format!("{e:?}")))?;
+    let value = String::deserialize(d)?;
+    parse_ic_value(&value).map_err(|e| D::Error::custom(format!("{e:?}")))
+}
+
+/// Bounds the input length, then parses and range-checks the scale.
+pub(crate) fn parse_ic_value(value: &str) -> SigningResult<BigDecimal> {
+    if value.len() > MAX_IC_VALUE_LEN {
+        return SigningError::err(SigningErrorType::Error_invalid_requested_token_amount).context(
+            format!("Invalid Issued Currency value is too long (max: {MAX_IC_VALUE_LEN})"),
+        );
+    }
+    let value = BigDecimal::from_str(value)
+        .tw_err(SigningErrorType::Error_invalid_requested_token_amount)
+        .context("Invalid Issued Currency value")?;
+    verify_scale_in_range(&value)?;
     Ok(value)
 }
 
@@ -82,8 +96,8 @@ impl IssuedCurrency {
         }
 
         if exp < MIN_IOU_EXPONENT || mantissa < MIN_MANTISSA {
-            // Round to zero
-            Ok(H64::from_array(ZERO_IC_VALUE.to_be_bytes()))
+            SigningError::err(SigningErrorType::Error_invalid_requested_token_amount)
+                .context("Invalid Issued Currency amount is too small to be represented")
         } else if exp > MAX_IOU_EXPONENT || mantissa > MAX_MANTISSA {
             SigningError::err(SigningErrorType::Error_invalid_requested_token_amount)
                 .with_context(|| format!("Invalid Issued Currency amount overflow (max: {MAX_IOU_EXPONENT} found: {exp})"))
@@ -132,7 +146,7 @@ fn calculate_exponent(value: &BigDecimal) -> i64 {
 
 /// Rejects a scale that can't normalize into the valid exponent range.
 /// Must run before `BigDecimal::normalized()`, which never finishes on huge scales.
-pub(crate) fn verify_scale_in_range(ic_value: &BigDecimal) -> SigningResult<()> {
+fn verify_scale_in_range(ic_value: &BigDecimal) -> SigningResult<()> {
     let (int, scale) = ic_value.as_bigint_and_exponent();
     let digits = int.magnitude().to_str_radix(10).len() as i64;
     let min_scale = -i64::from(MAX_IOU_EXPONENT);
@@ -280,8 +294,28 @@ mod tests {
     }
 
     #[test]
+    fn test_tiny_value_rejected_not_zeroed() {
+        for value in ["1e-90", "1e-96", "-5e-85"] {
+            let ic = IssuedCurrency {
+                value: BigDecimal::from_str(value).unwrap(),
+                currency: Currency::from_str("USD").unwrap(),
+                issuer: AccountId::from_str("rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn").unwrap(),
+            };
+            assert!(ic.serialize_issued_currency_value().is_err(), "{value}");
+        }
+    }
+
+    #[test]
+    fn test_parse_ic_value_length_bounded() {
+        let long = format!("1{}", "0".repeat(MAX_IC_VALUE_LEN));
+        assert!(parse_ic_value(&long).is_err());
+        assert!(parse_ic_value("1e-4294967294").is_err());
+        assert!(parse_ic_value("123.45").is_ok());
+    }
+
+    #[test]
     fn test_boundary_values_accepted() {
-        for value in ["1e80", "1e-96", "100", "1.00000000000000000000000000000"] {
+        for value in ["1e80", "1e-81", "100", "1.00000000000000000000000000000"] {
             let value = BigDecimal::from_str(value).unwrap();
             let ic = IssuedCurrency {
                 value,
