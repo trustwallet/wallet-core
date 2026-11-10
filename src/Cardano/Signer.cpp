@@ -383,9 +383,23 @@ static Amount saturatingSub(Amount a, Amount b) {
     return a > b ? a - b : 0;
 }
 
-// True if the inputs cannot cover the deposits (overflow-safe).
-static bool depositExceeds(Amount available, Amount deposit, Amount undeposit) {
-    return deposit > undeposit && deposit - undeposit > available;
+// Unsigned addition that saturates at the maximum instead of wrapping around.
+static Amount saturatingAdd(Amount a, Amount b) {
+    return a > std::numeric_limits<Amount>::max() - b ? std::numeric_limits<Amount>::max() : a + b;
+}
+
+// Computes available + undeposit - deposit. Returns invalid_params on overflow, low_balance if the deposits are not covered.
+static Common::Proto::SigningError amountAfterDeposit(Amount available, Amount deposit, Amount undeposit, Amount& result) {
+    result = 0;
+    if (undeposit > std::numeric_limits<Amount>::max() - available) {
+        return Common::Proto::Error_invalid_params;
+    }
+    const Amount total = available + undeposit;
+    if (deposit > total) {
+        return Common::Proto::Error_low_balance;
+    }
+    result = total - deposit;
+    return Common::Proto::OK;
 }
 
 // Create a simple plan, used for estimation
@@ -400,7 +414,8 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
         }
     }
     plan.fee = PlaceholderFee; // placeholder value
-    const auto availAfterDeposit = saturatingSub(plan.availableAmount + plan.undeposit, plan.deposit);
+    Amount availAfterDeposit = 0;
+    amountAfterDeposit(plan.availableAmount, plan.deposit, plan.undeposit, availAfterDeposit);
     // adjust/compute output amount and output tokens
     if (!maxAmount) {
         // reduce amount if needed
@@ -507,11 +522,11 @@ TransactionPlan Signer::doPlan() const {
     // adjust inputSum with deposited/undeposited amount
     plan.deposit = sumDeposits(input);
     plan.undeposit = sumUndeposits(input);
-    if (depositExceeds(inputSum, plan.deposit, plan.undeposit)) {
-        plan.error = Common::Proto::Error_low_balance;
+    Amount inputSumAfterDeposit = 0;
+    plan.error = amountAfterDeposit(inputSum, plan.deposit, plan.undeposit, inputSumAfterDeposit);
+    if (plan.error != Common::Proto::OK) {
         return plan;
     }
-    const auto inputSumAfterDeposit = inputSum + plan.undeposit - plan.deposit;
 
     // Amounts requested
     plan.amount = input.transfer_message().amount();
@@ -522,7 +537,7 @@ TransactionPlan Signer::doPlan() const {
         const auto extraToAddress = AddressV3(output.address());
         extraOutputs.emplace_back(extraToAddress.data(), output.amount());
         if (output.amount() > std::numeric_limits<uint64_t>::max() - extraAmountSum) {
-            plan.error = Common::Proto::Error_low_balance;
+            plan.error = Common::Proto::Error_invalid_params;
             return plan;
         }
         extraAmountSum = extraAmountSum + output.amount();
@@ -550,7 +565,10 @@ TransactionPlan Signer::doPlan() const {
     // select UTXOs
     if (!maxAmount) {
         // aim for larger total input, enough for 4/3 of the target amount plus typical fee plus minimal ADA for change plus some extra
-        auto targetInputAmount = (plan.amount * 4) / 3 + plan.deposit - plan.undeposit + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
+        // (saturating, as it is only a selection target)
+        const auto scaledAmount = plan.amount > std::numeric_limits<Amount>::max() / 4 ? std::numeric_limits<Amount>::max() : (plan.amount * 4) / 3;
+        const auto extra = saturatingAdd(saturatingAdd(PlaceholderFee, requestedTokens.minAdaAmount()), ExtraInputAmount);
+        const auto targetInputAmount = saturatingAdd(saturatingSub(saturatingAdd(scaledAmount, plan.deposit), plan.undeposit), extra);
         plan.utxos = selectInputsWithTokens(utxos, targetInputAmount, requestedTokens);
     } else {
         // maxAmount, select all
@@ -572,11 +590,11 @@ TransactionPlan Signer::doPlan() const {
     }
     assert(plan.availableAmount > 0);
     // adjust availableAmount with deposited/undeposited amount
-    if (depositExceeds(plan.availableAmount, plan.deposit, plan.undeposit)) {
-        plan.error = Common::Proto::Error_low_balance;
+    Amount availableAmountAfterDeposit = 0;
+    plan.error = amountAfterDeposit(plan.availableAmount, plan.deposit, plan.undeposit, availableAmountAfterDeposit);
+    if (plan.error != Common::Proto::OK) {
         return plan;
     }
-    const auto availableAmountAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
 
     // check that there are enough coins in the inputs
     if (plan.amount > availableAmountAfterDeposit) {

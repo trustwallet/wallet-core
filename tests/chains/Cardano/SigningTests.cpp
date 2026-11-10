@@ -16,6 +16,7 @@
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
+#include <limits>
 #include <vector>
 
 using namespace TW;
@@ -378,7 +379,7 @@ TEST(CardanoSigning, PlanSumOverflow) {
             extra->set_address(ownAddress1);
             extra->set_amount(1ull << 63);
         }
-        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_low_balance);
+        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_invalid_params);
     }
     {
         // UTXO amounts sum wraps around uint64
@@ -386,6 +387,24 @@ TEST(CardanoSigning, PlanSumOverflow) {
         input.mutable_utxos(0)->set_amount(1ull << 63);
         input.mutable_utxos(1)->set_amount(1ull << 63);
         EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_invalid_utxo_amount);
+    }
+}
+
+TEST(CardanoSigning, PlanAmountsOverflow) {
+    const auto maxU64 = std::numeric_limits<uint64_t>::max();
+    {   // inputs + withdraw overflows
+        auto input = createSampleInput(1000000, 1);
+        input.mutable_withdraw()->set_staking_address(ownAddress1);
+        input.mutable_withdraw()->set_withdraw_amount(maxU64);
+        EXPECT_EQ(Signer(input).doPlan().error, Common::Proto::Error_invalid_params);
+    }
+    {   // large amount: UTXO selection target must not overflow
+        auto input = createSampleInput(12000000000000000000ull, 1);
+        input.mutable_utxos(0)->set_amount(15000000000000000000ull);
+        const auto plan = Signer(input).doPlan();
+        EXPECT_EQ(plan.error, Common::Proto::OK);
+        EXPECT_EQ(plan.amount, 12000000000000000000ull);
+        EXPECT_EQ(plan.amount + plan.change + plan.fee, 15000000000000000000ull);
     }
 }
 
