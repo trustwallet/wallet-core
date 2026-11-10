@@ -48,7 +48,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-latest-large
+    runs-on: macos-26-large
     if: github.event.pull_request.draft == false
     steps:
     - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1

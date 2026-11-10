@@ -9,6 +9,7 @@ use crate::instruction::Instruction;
 use crate::modules::compiled_instructions::compile_instructions;
 use crate::modules::compiled_keys::CompiledKeys;
 use crate::modules::instruction_builder::compute_budget_instruction::{UnitLimit, UnitPrice};
+use crate::modules::instruction_builder::mpl_core_instruction::MplCoreInstructionBuilder;
 use crate::modules::instruction_builder::stake_instruction::{
     DepositStakeArgs, StakeInstructionBuilder,
 };
@@ -132,6 +133,9 @@ impl<'a> MessageBuilder<'a> {
             ProtoTransactionType::create_and_transfer_token_transaction(
                 ref create_and_transfer,
             ) => self.create_and_transfer_token_from_proto(create_and_transfer),
+            ProtoTransactionType::transfer_core_asset_transaction(ref transfer) => {
+                self.transfer_core_asset_from_proto(transfer)
+            },
             ProtoTransactionType::create_nonce_account(ref create_nonce) => {
                 self.create_nonce_account_from_proto(create_nonce)
             },
@@ -160,15 +164,7 @@ impl<'a> MessageBuilder<'a> {
         let transfer_ix = SystemInstructionBuilder::transfer(from, to, transfer.value)
             .with_references(references);
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, from)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_memo(transfer.memo.as_ref())
-            .add_instruction(transfer_ix)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(from, Some(transfer.memo.as_ref()), [transfer_ix])
     }
 
     fn delegate_stake_from_proto(
@@ -198,14 +194,7 @@ impl<'a> MessageBuilder<'a> {
             space: DEFAULT_SPACE,
         });
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, sender)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(deposit_ixs)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(sender, None, deposit_ixs)
     }
 
     fn deactivate_stake_from_proto(
@@ -219,14 +208,7 @@ impl<'a> MessageBuilder<'a> {
 
         let deactivate_ix = StakeInstructionBuilder::deactivate(stake_account, sender);
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, sender)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(deactivate_ix)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(sender, None, [deactivate_ix])
     }
 
     fn deactivate_all_stake_from_proto(
@@ -244,14 +226,7 @@ impl<'a> MessageBuilder<'a> {
             .collect::<SigningResult<Vec<_>>>()
             .context("Invalid stake account(s)")?;
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, sender)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(deactivate_ixs)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(sender, None, deactivate_ixs)
     }
 
     fn withdraw_from_proto(
@@ -273,14 +248,7 @@ impl<'a> MessageBuilder<'a> {
             custodian_account,
         );
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, sender)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(withdraw_ix)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(sender, None, [withdraw_ix])
     }
 
     fn withdraw_all_from_proto(
@@ -308,14 +276,7 @@ impl<'a> MessageBuilder<'a> {
             })
             .collect::<SigningResult<Vec<_>>>()?;
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, sender)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(withdraw_ixs)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(sender, None, withdraw_ixs)
     }
 
     fn create_token_account_from_proto(
@@ -343,14 +304,7 @@ impl<'a> MessageBuilder<'a> {
             token_address,
             match_program_id(create_token_acc.token_program_id),
         );
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, funding_account)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(instruction)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(funding_account, None, [instruction])
     }
 
     fn token_transfer_from_proto(
@@ -391,15 +345,46 @@ impl<'a> MessageBuilder<'a> {
         )
         .with_references(references);
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, signer)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .maybe_memo(token_transfer.memo.as_ref())
-            .add_instruction(transfer_instruction)
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+        self.instructions_with_common_options(
+            signer,
+            Some(token_transfer.memo.as_ref()),
+            [transfer_instruction],
+        )
+    }
+
+    fn transfer_core_asset_from_proto(
+        &self,
+        transfer: &Proto::TransferCoreAsset,
+    ) -> SigningResult<Vec<Instruction>> {
+        let signer = self.signer_address()?;
+        let asset = Self::parse_address(&transfer.asset_address, "Invalid Core asset address")?;
+        let recipient =
+            Self::parse_address(&transfer.recipient_address, "Invalid recipient address")?;
+        let collection = if transfer.collection_address.is_empty() {
+            None
+        } else {
+            Some(Self::parse_address(
+                &transfer.collection_address,
+                "Invalid Core collection address",
+            )?)
+        };
+        let references = Self::parse_references(&transfer.references)?;
+
+        let transfer_instruction = MplCoreInstructionBuilder::transfer_v1(
+            asset,
+            collection,
+            // Can be different from the actual signer.
+            self.fee_payer()?,
+            signer,
+            recipient,
+        )
+        .with_references(references);
+
+        self.instructions_with_common_options(
+            signer,
+            Some(transfer.memo.as_ref()),
+            [transfer_instruction],
+        )
     }
 
     fn create_and_transfer_token_from_proto(
@@ -474,7 +459,6 @@ impl<'a> MessageBuilder<'a> {
         create_nonce: &Proto::CreateNonceAccount,
     ) -> SigningResult<Vec<Instruction>> {
         let signer = self.signer_address()?;
-        let prev_nonce_account = self.nonce_account()?;
 
         let new_nonce_account = if create_nonce.nonce_account.is_empty() {
             let nonce_key =
@@ -488,19 +472,16 @@ impl<'a> MessageBuilder<'a> {
                 .context("Invalid nonce account")?
         };
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(prev_nonce_account, signer)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instructions(SystemInstructionBuilder::create_nonce_account(
+        self.instructions_with_common_options(
+            signer,
+            None,
+            SystemInstructionBuilder::create_nonce_account(
                 signer,
                 new_nonce_account,
                 create_nonce.rent,
                 DEFAULT_CREATE_NONCE_SPACE,
-            ))
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+            ),
+        )
     }
 
     fn withdraw_nonce_from_proto(
@@ -516,19 +497,16 @@ impl<'a> MessageBuilder<'a> {
             .into_tw()
             .context("Invalid recipient")?;
 
-        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
-        builder
-            .maybe_advance_nonce(self.nonce_account()?, signer)
-            .maybe_priority_fee_price(self.priority_fee_price())
-            .maybe_priority_fee_limit(self.priority_fee_limit())
-            .add_instruction(SystemInstructionBuilder::withdraw_nonce_account(
+        self.instructions_with_common_options(
+            signer,
+            None,
+            [SystemInstructionBuilder::withdraw_nonce_account(
                 withdraw_from_nonce,
                 signer,
                 recipient,
                 withdraw_nonce.value,
-            ))
-            .maybe_add_instruction(self.transfer_to_fee_payer()?);
-        Ok(builder.output())
+            )],
+        )
     }
 
     fn advance_nonce_from_proto(
@@ -679,6 +657,35 @@ impl<'a> MessageBuilder<'a> {
             SystemInstructionBuilder::transfer(from, to, transfer_to_fee_payer.value)
                 .with_references(references),
         ))
+    }
+
+    /// Wraps the given instructions with the options shared by most transaction types:
+    /// the optional token transfer to the fee payer, durable nonce, priority fee, memo
+    /// and the optional SOL transfer to the fee payer (always last).
+    fn instructions_with_common_options<I>(
+        &self,
+        signer: SolanaAddress,
+        memo: Option<&str>,
+        instructions: I,
+    ) -> SigningResult<Vec<Instruction>>
+    where
+        I: IntoIterator<Item = Instruction>,
+    {
+        let mut builder = self.builder_with_token_transfer_to_fee_payer_if_applicable()?;
+        builder
+            .maybe_advance_nonce(self.nonce_account()?, signer)
+            .maybe_priority_fee_price(self.priority_fee_price())
+            .maybe_priority_fee_limit(self.priority_fee_limit())
+            .maybe_memo(memo.unwrap_or_default())
+            .add_instructions(instructions)
+            .maybe_add_instruction(self.transfer_to_fee_payer()?);
+        Ok(builder.output())
+    }
+
+    fn parse_address(addr: &str, error_context: &str) -> SigningResult<SolanaAddress> {
+        SolanaAddress::from_str(addr)
+            .map_err(SigningError::from)
+            .context(error_context)
     }
 
     fn parse_references(refs: &[Cow<'_, str>]) -> SigningResult<Vec<SolanaAddress>> {
