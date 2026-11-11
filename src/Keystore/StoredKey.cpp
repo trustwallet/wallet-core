@@ -16,6 +16,11 @@
 #include <fstream>
 #include <stdexcept>
 
+#ifdef _WIN32
+#include <filesystem>
+#include <windows.h>
+#endif
+
 using namespace TW;
 
 namespace TW::Keystore {
@@ -509,7 +514,11 @@ nlohmann::json StoredKey::json() const {
 void StoredKey::store(const std::string& path) const {
     const std::string jsonData = json().dump();
 
+#ifdef _WIN32
+    auto stream = std::ofstream(std::filesystem::u8path(path));
+#else
     auto stream = std::ofstream(path);
+#endif
     if (!stream) {
         throw std::invalid_argument("Can't open file for writing: " + path);
     }
@@ -521,6 +530,25 @@ void StoredKey::store(const std::string& path) const {
 }
 
 void StoredKey::storeWithTemporaryFile(const std::string& path, const std::string& tempFilePath) const {
+#ifdef _WIN32
+    const auto target = std::filesystem::u8path(path);
+    const auto temporary = std::filesystem::u8path(tempFilePath);
+    std::error_code error;
+    if (target.lexically_normal() == temporary.lexically_normal() || std::filesystem::equivalent(target, temporary, error)) {
+        throw std::invalid_argument("Temporary key file must differ from the destination");
+    }
+    try {
+        store(tempFilePath);
+    } catch (...) {
+        std::filesystem::remove(temporary, error);
+        throw;
+    }
+    if (!MoveFileExW(temporary.c_str(), target.c_str(), MOVEFILE_REPLACE_EXISTING)) {
+        const auto code = GetLastError();
+        std::filesystem::remove(temporary, error);
+        throw std::runtime_error("Failed to rename key file: Windows error=" + std::to_string(code));
+    }
+#else
     try {
         store(tempFilePath);
     } catch (...) {
@@ -532,10 +560,15 @@ void StoredKey::storeWithTemporaryFile(const std::string& path, const std::strin
         std::remove(tempFilePath.c_str());
         throw std::runtime_error("Failed to rename key file: temp=" + tempFilePath + ", target=" + path);
     }
+#endif
 }
 
 StoredKey StoredKey::load(const std::string& path) {
+#ifdef _WIN32
+    std::ifstream stream(std::filesystem::u8path(path));
+#else
     std::ifstream stream(path);
+#endif
     if (!stream.is_open()) {
         throw std::invalid_argument("Can't open file");
     }

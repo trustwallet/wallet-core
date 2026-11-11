@@ -535,7 +535,7 @@ TEST(CardanoSigning, AnySignWithInvalidAuxiliaryDataReturnsError) {
 }
 
 TEST(CardanoSigning, PlanAndSignTransfer1) {
-    uint amount = 6000000;
+    uint32_t amount = 6000000;
     auto input = createSampleInput(amount);
 
     {

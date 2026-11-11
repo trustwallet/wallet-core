@@ -22,15 +22,15 @@ fi
 
 # This script works in both Docker and normal build environments.
 # Protobuf and co. tools are taken from: $PREFIX if provided, or from $PWD/build/local if exists, or from /usr/bin
-if [ -z $PREFIX ]
+if [ -z "${PREFIX:-}" ]
 then
     # PREFIX not set
     ROOT="$PWD"
     PREFIX="$ROOT/build/local"
-    if  [ ! -d $PREFIX ] || \
-        [ ! -d $PREFIX/include ] || \
-        [ ! -f $PREFIX/bin/protoc ] || \
-        [ ! -f $PREFIX/bin/protoc-gen-c-typedef ]
+    if  [ ! -d "$PREFIX" ] || \
+        [ ! -d "$PREFIX/include" ] || \
+        { [ ! -f "$PREFIX/bin/protoc" ] && [ ! -f "$PREFIX/bin/protoc.exe" ]; } || \
+        { [ ! -f "$PREFIX/bin/protoc-gen-c-typedef" ] && [ ! -f "$PREFIX/bin/protoc-gen-c-typedef.exe" ]; }
     then
         echo $PREFIX does not exist or not complete, fallback to /usr/local
         PREFIX=/usr/local
@@ -43,8 +43,9 @@ export LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
 export DYLD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
 # protoc executable (protobuf compiler)
 PROTOC="$PREFIX/bin/protoc"
-which $PROTOC
-$PROTOC --version
+if [ -f "$PROTOC.exe" ]; then PROTOC="$PROTOC.exe"; fi
+which "$PROTOC"
+"$PROTOC" --version
 
 # Clean
 rm -rf swift/Sources/Generated
@@ -68,23 +69,27 @@ tools/doxygen_convert_comments
 # Generate Java, C++ and Swift Protobuf files
 
 if [ -x "$(command -v protoc-gen-swift)" ] && isTargetSpecified "ios"; then
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
+    "$PROTOC" -I="$PREFIX/include" -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
     # Replace SwiftProtobuf with WalletCoreSwiftProtobuf
      find swift/Sources/Generated/Protobuf -name "*.swift" -exec sed -i '' 's/import SwiftProtobuf/import WalletCoreSwiftProtobuf/g' {} \;
      find swift/Sources/Generated/Protobuf -name "*.swift" -exec sed -i '' 's/SwiftProtobuf./WalletCoreSwiftProtobuf./g' {} \;
 else
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto src/proto/*.proto
+    "$PROTOC" -I="$PREFIX/include" -I=src/proto --cpp_out=src/proto --java_out=lite:jni/proto src/proto/*.proto
 fi
 
 # Generate internal message protocol Protobuf files
-"$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
-"$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
-"$PROTOC" -I=$PREFIX/include -I=src/Hedera/Protobuf --cpp_out=src/Hedera/Protobuf src/Hedera/Protobuf/*.proto
-"$PROTOC" -I=$PREFIX/include -I=tests/chains/Cosmos/Protobuf --cpp_out=tests/chains/Cosmos/Protobuf tests/chains/Cosmos/Protobuf/*.proto
+"$PROTOC" -I="$PREFIX/include" -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
+"$PROTOC" -I="$PREFIX/include" -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
+"$PROTOC" -I="$PREFIX/include" -I=src/Hedera/Protobuf --cpp_out=src/Hedera/Protobuf src/Hedera/Protobuf/*.proto
+"$PROTOC" -I="$PREFIX/include" -I=tests/chains/Cosmos/Protobuf --cpp_out=tests/chains/Cosmos/Protobuf tests/chains/Cosmos/Protobuf/*.proto
 
 # Generate Proto interface file
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
+C_TYPEDEF_PLUGIN="$PREFIX/bin/protoc-gen-c-typedef"
+SWIFT_TYPEALIAS_PLUGIN="$PREFIX/bin/protoc-gen-swift-typealias"
+if [ -f "$C_TYPEDEF_PLUGIN.exe" ]; then C_TYPEDEF_PLUGIN=$(cygpath -m "$C_TYPEDEF_PLUGIN.exe"); fi
+if [ -f "$SWIFT_TYPEALIAS_PLUGIN.exe" ]; then SWIFT_TYPEALIAS_PLUGIN=$(cygpath -m "$SWIFT_TYPEALIAS_PLUGIN.exe"); fi
+"$PROTOC" -I="$PREFIX/include" -I=src/proto --plugin="protoc-gen-c-typedef=$C_TYPEDEF_PLUGIN" --c-typedef_out include/TrustWalletCore src/proto/*.proto
+"$PROTOC" -I="$PREFIX/include" -I=src/proto --plugin="protoc-gen-swift-typealias=$SWIFT_TYPEALIAS_PLUGIN" --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
 
 # Generate Xcode project
 if [ -x "$(command -v xcodegen)" ] && isTargetSpecified "ios"; then

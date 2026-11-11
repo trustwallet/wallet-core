@@ -4,7 +4,10 @@
 
 #include "CellSlice.h"
 
+#include <algorithm>
 #include <cassert>
+#include <iterator>
+#include <stdexcept>
 
 #include "BinaryCoding.h"
 
