@@ -10,9 +10,9 @@
 #include "PrivateKey.h"
 
 #include <nlohmann/json.hpp>
-#include <TrezorCrypto/memzero.h>
 
 #include <cassert>
+#include <cstddef>
 #include <fstream>
 #include <stdexcept>
 
@@ -25,20 +25,16 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& pas
         throw std::invalid_argument("Invalid mnemonic");
     }
 
-    Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
-    memzero(mnemonicData.data(), mnemonic.size());
-    return key;
+    const auto mnemonicData = ZeroizingData(Data(mnemonic.begin(), mnemonic.end()));
+    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData.get(), encryptionLevel, encryption);
 }
 
 StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption) {
     const auto wallet = TW::HDWallet<>(128, "");
     const auto& mnemonic = wallet.getMnemonic();
     assert(Mnemonic::isValid(mnemonic));
-    Data mnemonicData = TW::Data(mnemonic.begin(), mnemonic.end());
-    StoredKey key(StoredKeyType::mnemonicPhrase, name, password, mnemonicData, encryptionLevel, encryption);
-    memzero(mnemonicData.data(), mnemonic.size());
-    return key;
+    const auto mnemonicData = ZeroizingData(Data(mnemonic.begin(), mnemonic.end()));
+    return StoredKey(StoredKeyType::mnemonicPhrase, name, password, mnemonicData.get(), encryptionLevel, encryption);
 }
 
 StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin, TWStoredKeyEncryption encryption) {
@@ -101,13 +97,13 @@ StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password,
 
     if (encodedStr) {
         const auto bytes = reinterpret_cast<const uint8_t*>(encodedStr->c_str());
-        const auto encodedData = Data(bytes, bytes + encodedStr->size());
+        const auto encodedData = ZeroizingData(Data(bytes, bytes + encodedStr->size()));
 
         // Generate new parameters with random iv and salt for the encoded private key.
         const auto cipherParamsEncoded = AESParameters::AESParametersFromEncryption(encryption);
         const auto scryptParamsEncoded = ScryptParameters::getPreset(encryptionLevel);
 
-        encodedPayload = EncryptedPayload(password, encodedData, cipherParamsEncoded, scryptParamsEncoded);
+        encodedPayload = EncryptedPayload(password, encodedData.get(), cipherParamsEncoded, scryptParamsEncoded);
     }
     const char* uuid_ptr = Rust::tw_uuid_random();
     id = std::make_optional<std::string>(uuid_ptr);
@@ -118,14 +114,9 @@ HDWallet<> StoredKey::wallet(const Data& password) const {
     if (type != StoredKeyType::mnemonicPhrase) {
         throw std::invalid_argument("Invalid account requested.");
     }
-    auto data = payload.decrypt(password);
-    auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-    const HDWallet<> wallet = {mnemonic, ""};
-
-    // clear decrypted data from memory
-    memzero(data.data(), data.size());
-    memzero(mnemonic.data(), mnemonic.size());
-    return wallet;
+    const auto data = payload.decrypt(password);
+    const auto mnemonic = ZeroizingString(std::string(reinterpret_cast<const char*>(data.get().data()), data.get().size()));
+    return HDWallet<>(mnemonic.get(), "");
 }
 
 std::vector<Account> StoredKey::getAccounts(TWCoinType coin) const {
@@ -303,7 +294,7 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, [[maybe_unused]] TWDeriv
         return wallet.getKey(coin, account.derivationPath);
     }
     // type == StoredKeyType::privateKey
-    return PrivateKey(payload.decrypt(password), TWCoinTypeCurve(coin));
+    return PrivateKey(payload.decrypt(password).get(), TWCoinTypeCurve(coin));
 }
 
 void StoredKey::fixAddresses(const Data& password) {
@@ -322,7 +313,7 @@ void StoredKey::fixAddresses(const Data& password) {
     } break;
 
     case StoredKeyType::privateKey: {
-        auto key = PrivateKey(payload.decrypt(password));
+        auto key = PrivateKey(payload.decrypt(password).get());
         for (auto& account : accounts) {
             if (!account.address.empty() && !account.publicKey.empty() &&
                 TW::validateAddress(account.coin, account.address)) {
@@ -376,18 +367,26 @@ bool StoredKey::updateAddress(TWCoinType coin) {
     return addressUpdated;
 }
 
-std::string StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
+// Lowercase hex like `TW::hex`, which leaves an unwiped copy on the Rust heap.
+static ZeroizingString hexZeroizing(const Data& data) {
+    constexpr char digits[] = "0123456789abcdef";
+    std::string out(data.size() * 2, '\0');
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        const auto byte = static_cast<std::byte>(data[i]);
+        out[2 * i] = digits[std::to_integer<std::size_t>(byte >> 4)];
+        out[2 * i + 1] = digits[std::to_integer<std::size_t>(byte & std::byte{0x0f})];
+    }
+    return ZeroizingString(std::move(out));
+}
+
+ZeroizingString StoredKey::decryptPrivateKeyEncoded(const Data& password) const {
     if (encodedPayload) {
-        auto data = encodedPayload->decrypt(password);
-        const auto dataString = std::string(reinterpret_cast<const char*>(data.data()), data.size());
-        memzero(data.data(), data.size());
-        return dataString;
+        const auto data = encodedPayload->decrypt(password);
+        return ZeroizingString(std::string(reinterpret_cast<const char*>(data.get().data()), data.get().size()));
     }
 
-    auto data = payload.decrypt(password);
-    const auto dataHex = TW::hex(data);
-    memzero(data.data(), data.size());
-    return dataHex;
+    const auto data = payload.decrypt(password);
+    return hexZeroizing(data.get());
 }
 
 // -----------------

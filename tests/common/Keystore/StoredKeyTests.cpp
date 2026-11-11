@@ -37,7 +37,7 @@ const std::string testDataPath(const char* subpath) {
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
@@ -64,7 +64,7 @@ TEST(StoredKey, CreateWithMnemonicRandom) {
     const auto key = StoredKey::createWithMnemonicRandom("name", gPassword, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     // random mnemonic: check only length and validity
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_TRUE(mnemo2Data.size() >= 36);
     EXPECT_TRUE(Mnemonic::isValid(string(mnemo2Data.begin(), mnemo2Data.end())));
     EXPECT_EQ(key.accounts.size(), 0ul);
@@ -74,7 +74,7 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", gPassword, gMnemonic, coinTypeBc);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
 
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 1ul);
@@ -90,7 +90,7 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddressAes192Ctr) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     auto header = key.payload;
     EXPECT_EQ(header.params.cipher(), "aes-192-ctr");
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
 
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 1ul);
@@ -106,7 +106,7 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddressAes256Ctr) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     auto header = key.payload;
     EXPECT_EQ(header.params.cipher(), "aes-256-ctr");
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
 
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 1ul);
@@ -351,7 +351,7 @@ TEST(StoredKey, LoadLegacyPrivateKey) {
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "3051ca7d-3d36-4a4a-acc2-09e9083732b0");
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
-    EXPECT_EQ(hex(key.payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
+    EXPECT_EQ(hex(key.payload.decrypt(TW::data("testpassword")).get()), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
 
 TEST(StoredKey, LoadLivepeerKey) {
@@ -359,7 +359,7 @@ TEST(StoredKey, LoadLivepeerKey) {
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "70ea3601-ee21-4e94-a7e4-66255a987d22");
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
-    EXPECT_EQ(hex(key.payload.decrypt(TW::data("Radchenko"))), "09b4379d9a41a71d94ee36357bccb4d77b45e7fd9307e2c0f673dd54c0558c73");
+    EXPECT_EQ(hex(key.payload.decrypt(TW::data("Radchenko")).get()), "09b4379d9a41a71d94ee36357bccb4d77b45e7fd9307e2c0f673dd54c0558c73");
 }
 
 TEST(StoredKey, LoadPBKDF2Key) {
@@ -373,7 +373,7 @@ TEST(StoredKey, LoadPBKDF2Key) {
     EXPECT_EQ(std::get<PBKDF2Parameters>(payload.params.kdfParams).iterations, 262144ul);
     EXPECT_EQ(hex(std::get<PBKDF2Parameters>(payload.params.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
 
-    EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
+    EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword")).get()), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 
     auto j = std::get<PBKDF2Parameters>(payload.params.kdfParams).json();
     auto expected = R"|({"c":262144,"dklen":32,"salt":"ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd"})|";
@@ -390,7 +390,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
-    const auto data = key.payload.decrypt(gPassword);
+    const Data data = key.payload.decrypt(gPassword).get();
     const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 
@@ -408,7 +408,7 @@ TEST(StoredKey, LoadFromWeb3j) {
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.id, "86066d8c-8dba-4d81-afd4-934e2a2b72a2");
     const auto password = parse_hex("2d6eefbfbd4622efbfbdefbfbd516718efbfbdefbfbdefbfbdefbfbd59efbfbd30efbfbdefbfbd3a4348efbfbd2aefbfbdefbfbd49efbfbd27efbfbd0638efbfbdefbfbdefbfbd4cefbfbd6befbfbdefbfbd6defbfbdefbfbd63efbfbd5aefbfbd61262b70efbfbdefbfbdefbfbdefbfbdefbfbdc7aa373163417cefbfbdefbfbdefbfbd44efbfbdefbfbd1d10efbfbdefbfbdefbfbd61dc9e5b124befbfbd11efbfbdefbfbd2fefbfbdefbfbd3d7c574868efbfbdefbfbdefbfbd37043b7b5c1a436471592f02efbfbd18efbfbdefbfbd2befbfbdefbfbd7218efbfbd6a68efbfbdcb8e5f3328773ec48174efbfbd67efbfbdefbfbdefbfbdefbfbdefbfbd2a31efbfbd7f60efbfbdd884efbfbd57efbfbd25efbfbd590459efbfbd37efbfbd2bdca20fefbfbdefbfbdefbfbdefbfbd39450113efbfbdefbfbdefbfbd454671efbfbdefbfbdd49fefbfbd47efbfbdefbfbdefbfbdefbfbd00efbfbdefbfbdefbfbdefbfbd05203f4c17712defbfbd7bd1bbdc967902efbfbdc98a77efbfbd707a36efbfbd12efbfbdefbfbd57c78cefbfbdefbfbdefbfbd10efbfbdefbfbdefbfbde1a1bb08efbfbdefbfbd26efbfbdefbfbd58efbfbdefbfbdc4b1efbfbd295fefbfbd0eefbfbdefbfbdefbfbd0e6eefbfbd");
-    const auto data = key.payload.decrypt(password);
+    const Data data = key.payload.decrypt(password).get();
     EXPECT_EQ(hex(data), "043c5429c7872502531708ec0d821c711691402caf37ef7ba78a8c506f10653b");
 }
 
@@ -460,7 +460,7 @@ TEST(StoredKey, EmptyAccounts) {
 
 TEST(StoredKey, Decrypt) {
     const auto key = StoredKey::load(testDataPath("key.json"));
-    const auto privateKey = key.payload.decrypt(TW::data("testpassword"));
+    const Data privateKey = key.payload.decrypt(TW::data("testpassword")).get();
 
     EXPECT_EQ(hex(privateKey), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
@@ -468,7 +468,7 @@ TEST(StoredKey, Decrypt) {
 TEST(StoredKey, CreateWallet) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
     const auto key = StoredKey::createWithPrivateKey("name", gPassword, privateKey);
-    const auto decrypted = key.payload.decrypt(gPassword);
+    const Data decrypted = key.payload.decrypt(gPassword).get();
 
     EXPECT_EQ(hex(decrypted), hex(privateKey));
 }
@@ -573,7 +573,7 @@ TEST(StoredKey, FixScryptWithEmptySaltAes256Ctr) {
     EXPECT_NE(jsonAfter["crypto"]["cipherparams"]["iv"].get<std::string>(), ivBefore);
 
     // The mnemonic must still be recoverable after re-encryption.
-    const Data& decrypted = key.payload.decrypt(gPassword);
+    const Data decrypted = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(decrypted.begin(), decrypted.end()), string(gMnemonic));
 }
 
@@ -647,18 +647,18 @@ TEST(StoredKey, FixScryptWithEmptySaltWithEncodedPrivateKey) {
     EXPECT_NE(jsonAfter["encodedCrypto"]["cipherparams"]["iv"].get<std::string>(), encIvBefore);
 
     // Both payloads must decrypt to the same private key after re-encryption.
-    const Data& decryptedKey = key.payload.decrypt(gPassword);
+    const Data decryptedKey = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(hex(decryptedKey), privateKeyHex);
 
     ASSERT_TRUE(key.encodedPayload.has_value());
-    const Data& decryptedEncoded = key.encodedPayload->decrypt(gPassword);
+    const Data decryptedEncoded = key.encodedPayload->decrypt(gPassword).get();
     EXPECT_EQ(string(decryptedEncoded.begin(), decryptedEncoded.end()), privateKeyHex);
 }
 
 TEST(StoredKey, FixScryptWithValidParams) {
     auto key = StoredKey::load(testDataPath("legacy-mnemonic.json"));
 
-    const Data& dataBefore = key.payload.decrypt(gPassword);
+    const Data dataBefore = key.payload.decrypt(gPassword).get();
     const auto mnemonicBefore = string(dataBefore.begin(), dataBefore.end());
 
     const auto jsonBefore = key.json();
@@ -669,7 +669,7 @@ TEST(StoredKey, FixScryptWithValidParams) {
     EXPECT_EQ(key.json(), jsonBefore);
 
     // The mnemonic must still decrypt to the same value.
-    const Data& dataAfter = key.payload.decrypt(gPassword);
+    const Data dataAfter = key.payload.decrypt(gPassword).get();
     const auto mnemonicAfter = string(dataAfter.begin(), dataAfter.end());
     EXPECT_EQ(mnemonicAfter, mnemonicBefore);
 }
@@ -688,7 +688,7 @@ TEST(StoredKey, FixPBKDF2WithEmptySalt) {
     EXPECT_EQ(jsonBefore["crypto"]["kdfparams"]["salt"].get<std::string>(), "");
     EXPECT_EQ(jsonBefore["crypto"]["ciphertext"].get<std::string>(), "dc6ea8644326bd86f1cbc102578b44e7645a66a1eb700334e9a819df05ee26ac410be4a9e3fd2f151849555da9b23bcc3b598e62dab23d2e8d431d29a9a4eefbb7d500c14497b67a9577e4f7");
 
-    const Data& dataBefore = key.payload.decrypt(gPassword);
+    const Data dataBefore = key.payload.decrypt(gPassword).get();
     const auto mnemonicBefore = string(dataBefore.begin(), dataBefore.end());
 
     // fixEncryption is a no-op for PBKDF2 — re-encryption is not supported.
@@ -697,7 +697,7 @@ TEST(StoredKey, FixPBKDF2WithEmptySalt) {
     // The full JSON representation must be identical — no field may have changed.
     EXPECT_EQ(key.json(), jsonBefore);
 
-    const Data& dataAfter = key.payload.decrypt(gPassword);
+    const Data dataAfter = key.payload.decrypt(gPassword).get();
     const auto mnemonicAfter = string(dataAfter.begin(), dataAfter.end());
     EXPECT_EQ(mnemonicAfter, mnemonicBefore);
 }
@@ -753,7 +753,7 @@ TEST(StoredKey, EtherWalletAddressNo0x) {
 TEST(StoredKey, CreateMinimalEncryptionParameters) {
     const auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelMinimal);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
@@ -772,7 +772,7 @@ TEST(StoredKey, CreateMinimalEncryptionParameters) {
 TEST(StoredKey, CreateWeakEncryptionParameters) {
     const auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelWeak);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
@@ -791,7 +791,7 @@ TEST(StoredKey, CreateWeakEncryptionParameters) {
 TEST(StoredKey, CreateStandardEncryptionParameters) {
     const auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelStandard);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
     EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
@@ -820,7 +820,7 @@ TEST(StoredKey, CreateEncryptionParametersRandomSalt) {
 TEST(StoredKey, CreateMultiAccounts) { // Multiple accounts from the same wallet
     auto key = StoredKey::createWithMnemonic("name", gPassword, gMnemonic, TWStoredKeyEncryptionLevelDefault);
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
     EXPECT_EQ(key.wallet(gPassword).getMnemonic(), string(gMnemonic));
     EXPECT_EQ(key.accounts.size(), 0ul);
@@ -955,12 +955,12 @@ TEST(StoredKey, CreateWithEncodedPrivateKeyAddDefaultAddress) {
     EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
 
     // Verify that the raw private key bytes can be decrypted from `payload`
-    const Data& decryptedKey = key.payload.decrypt(gPassword);
+    const Data decryptedKey = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(hex(decryptedKey), privateKeyHex);
 
     // Verify that the encoded private key string can be decrypted from `encodedPayload`
     ASSERT_TRUE(key.encodedPayload.has_value());
-    const Data& decryptedEncoded = key.encodedPayload->decrypt(gPassword);
+    const Data decryptedEncoded = key.encodedPayload->decrypt(gPassword).get();
     EXPECT_EQ(string(decryptedEncoded.begin(), decryptedEncoded.end()), privateKeyHex);
 
     // Validate the JSON structure
@@ -1017,7 +1017,7 @@ TEST(StoredKey, LoadScryptWithEmptySalt) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
     // Decrypt mnemonic
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
 
     // JSON representation
@@ -1038,7 +1038,7 @@ TEST(StoredKey, LoadScryptWithoutSalt) {
     EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
     // Decrypt mnemonic
-    const Data& mnemo2Data = key.payload.decrypt(gPassword);
+    const Data mnemo2Data = key.payload.decrypt(gPassword).get();
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(gMnemonic));
 
     // JSON representation
@@ -1064,7 +1064,7 @@ TEST(StoredKey, BackwardCompatibility) {
         const auto key = StoredKey::load(entry.path().string());
         ASSERT_EQ(key.type, StoredKeyType::mnemonicPhrase);
 
-        const Data& decrypted = key.payload.decrypt(gPassword);
+        const Data decrypted = key.payload.decrypt(gPassword).get();
         EXPECT_EQ(string(decrypted.begin(), decrypted.end()), string(gMnemonic));
     }
 }
@@ -1151,7 +1151,7 @@ TEST(StoredKey, EncryptRejectsNonDefaultDkLen) {
 
         // The default length is still accepted and round-trips.
         const auto payload = EncryptedPayload(gPassword, plaintext, cipherParams, ScryptParameters::minimal());
-        EXPECT_EQ(payload.decrypt(gPassword), plaintext);
+        EXPECT_EQ(payload.decrypt(gPassword).get(), plaintext);
     }
 }
 
