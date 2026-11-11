@@ -146,3 +146,97 @@ TEST(NEARCompiler, Compile_InvalidBlockHash) {
     EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     EXPECT_TRUE(output.signed_transaction().empty());
 }
+
+namespace {
+
+TW::NEAR::Proto::SigningInput compilerInputWithPublicKey(const Data& publicKey) {
+    auto input = TW::NEAR::Proto::SigningInput();
+    input.set_signer_id("test.near");
+    input.set_receiver_id("whatever.near");
+    input.set_nonce(1);
+    auto blockHash = Base58::decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
+    input.set_block_hash(blockHash.data(), blockHash.size());
+    input.set_public_key(publicKey.data(), publicKey.size());
+
+    Data deposit(16, 0);
+    deposit[0] = 1;
+    input.add_actions()->mutable_transfer()->set_deposit(deposit.data(), deposit.size());
+    return input;
+}
+
+} // namespace
+
+TEST(NEARCompiler, PreImageHashes_InvalidPublicKeyLength) {
+    const auto coin = TWCoinTypeNEAR;
+    const auto publicKey = Base58::decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
+
+    // Overlong: the real key followed by bytes that a Borsh decoder would read as later fields.
+    auto overlong = publicKey;
+    append(overlong, Data(84, 0x41));
+    // Short: one byte missing.
+    const auto shortKey = Data(publicKey.begin(), publicKey.end() - 1);
+    // 0x01-prefixed form accepted by `PublicKey`, but not a valid Borsh-encoded NEAR key.
+    auto prefixed = Data{0x01};
+    append(prefixed, publicKey);
+
+    for (const auto& key : {overlong, shortKey, prefixed, Data()}) {
+        const auto inputString = compilerInputWithPublicKey(key).SerializeAsString();
+        const auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+        const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
+        TW::TxCompiler::Proto::PreSigningOutput preSigningOutput;
+        ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size()));
+
+        EXPECT_EQ(preSigningOutput.error(), Common::Proto::Error_invalid_params);
+        EXPECT_TRUE(preSigningOutput.data().empty());
+        EXPECT_TRUE(preSigningOutput.data_hash().empty());
+    }
+}
+
+TEST(NEARCompiler, Compile_OverlongPublicKey) {
+    const auto coin = TWCoinTypeNEAR;
+    const auto privateKeyBytes = Base58::decode(
+        "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    const auto privateKey = PrivateKey(Data(privateKeyBytes.begin(), privateKeyBytes.begin() + 32), TWCurveED25519);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+
+    auto overlong = publicKey.bytes;
+    append(overlong, Data(84, 0x41));
+    const auto inputString = compilerInputWithPublicKey(overlong).SerializeAsString();
+    const auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+    // Sign whatever such a preimage would have been, so only the key length check can reject it.
+    const auto signature = privateKey.sign(Data(32, 0));
+    auto outputData = TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {publicKey.bytes});
+
+    TW::NEAR::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(output.signed_transaction().empty());
+}
+
+TEST(NEARCompiler, Compile_PublicKeyMismatch) {
+    const auto coin = TWCoinTypeNEAR;
+    const auto privateKeyBytes = Base58::decode(
+        "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    const auto privateKey = PrivateKey(Data(privateKeyBytes.begin(), privateKeyBytes.begin() + 32), TWCurveED25519);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+
+    // A different, well-formed 32-byte key in the input.
+    const auto otherKey = Data(32, 0x01);
+    const auto inputString = compilerInputWithPublicKey(otherKey).SerializeAsString();
+    const auto inputStrData = TW::Data(inputString.begin(), inputString.end());
+
+    const auto preImageHashesData = TransactionCompiler::preImageHashes(coin, inputStrData);
+    TW::TxCompiler::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashesData.data(), (int)preImageHashesData.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+
+    const auto signature = privateKey.sign(data(preSigningOutput.data_hash()));
+    auto outputData = TransactionCompiler::compileWithSignatures(coin, inputStrData, {signature}, {publicKey.bytes});
+
+    TW::NEAR::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(output.signed_transaction().empty());
+}
