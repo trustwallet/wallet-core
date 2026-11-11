@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <limits>
 #include <numeric>
 #include <vector>
 
@@ -346,7 +347,7 @@ std::vector<TxInput> selectInputsSimpleNative(const std::vector<TxInput>& inputs
 
 // Select a subset of inputs, to cover desired token amount. Simple algorithm: pick the largest ones.
 void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key, const uint256_t& amount, std::vector<TxInput>& selectedInputs) {
-    auto accumulateFunctor = [key]([[maybe_unused]] auto&& sum, auto&& si) { return si.tokenBundle.getAmount(key); };
+    auto accumulateFunctor = [&key](const uint256_t& sum, const TxInput& si) { return sum + si.tokenBundle.getAmount(key); };
     uint256_t selectedAmount = std::accumulate(selectedInputs.begin(), selectedInputs.end(), uint256_t(0), accumulateFunctor);
     if (selectedAmount >= amount) {
         return; // already covered
@@ -360,7 +361,7 @@ void selectInputsSimpleToken(const std::vector<TxInput>& inputs, std::string key
             continue;
         }
         selectedInputs.emplace_back(i);
-        selectedAmount += i.amount;
+        selectedAmount += i.tokenBundle.getAmount(key);
         if (selectedAmount >= amount) {
             return;
         }
@@ -377,6 +378,30 @@ std::vector<TxInput> Signer::selectInputsWithTokens(const std::vector<TxInput>& 
     return selected;
 }
 
+// Unsigned subtraction that saturates at 0 instead of wrapping around.
+static Amount saturatingSub(Amount a, Amount b) {
+    return a > b ? a - b : 0;
+}
+
+// Unsigned addition that saturates at the maximum instead of wrapping around.
+static Amount saturatingAdd(Amount a, Amount b) {
+    return a > std::numeric_limits<Amount>::max() - b ? std::numeric_limits<Amount>::max() : a + b;
+}
+
+// Computes available + undeposit - deposit. Returns invalid_params on overflow, low_balance if the deposits are not covered.
+static Common::Proto::SigningError amountAfterDeposit(Amount available, Amount deposit, Amount undeposit, Amount& result) {
+    result = 0;
+    if (undeposit > std::numeric_limits<Amount>::max() - available) {
+        return Common::Proto::Error_invalid_params;
+    }
+    const Amount total = available + undeposit;
+    if (deposit > total) {
+        return Common::Proto::Error_low_balance;
+    }
+    result = total - deposit;
+    return Common::Proto::OK;
+}
+
 // Create a simple plan, used for estimation
 TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, const std::vector<TxInput>& selectedInputs, bool maxAmount, uint64_t deposit, uint64_t undeposit, const std::vector<TxOutput>& extraOutputs) {
     TransactionPlan plan{.utxos = selectedInputs, .extraOutputs = extraOutputs, .amount = amount, .deposit = deposit, .undeposit = undeposit, .availableTokens{}, .outputTokens{}, .changeTokens{}};
@@ -389,20 +414,21 @@ TransactionPlan simplePlan(Amount amount, const TokenBundle& requestedTokens, co
         }
     }
     plan.fee = PlaceholderFee; // placeholder value
-    const auto availAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
+    Amount availAfterDeposit = 0;
+    amountAfterDeposit(plan.availableAmount, plan.deposit, plan.undeposit, availAfterDeposit);
     // adjust/compute output amount and output tokens
     if (!maxAmount) {
         // reduce amount if needed
-        plan.amount = std::max(Amount(0), std::min(plan.amount, availAfterDeposit - plan.fee));
+        plan.amount = std::max(Amount(0), std::min(plan.amount, saturatingSub(availAfterDeposit, plan.fee)));
         plan.outputTokens = requestedTokens;
     } else {
         // max available amount
-        plan.amount = std::max(Amount(0), availAfterDeposit - plan.fee);
+        plan.amount = saturatingSub(availAfterDeposit, plan.fee);
         plan.outputTokens = plan.availableTokens; // use all
     }
 
     // compute change
-    plan.change = availAfterDeposit - (plan.amount + plan.fee);
+    plan.change = saturatingSub(availAfterDeposit, plan.amount + plan.fee);
     for (auto iter = plan.availableTokens.bundle.begin(); iter != plan.availableTokens.bundle.end(); ++iter) {
         const auto key = iter->second.key();
         const auto changeAmount = iter->second.amount - plan.outputTokens.getAmount(key);
@@ -482,6 +508,10 @@ TransactionPlan Signer::doPlan() const {
     for (auto i = 0; i < input.utxos_size(); ++i) {
         const auto& utxo = input.utxos(i);
         utxos.emplace_back(TxInput::fromProto(utxo));
+        if (utxo.amount() > std::numeric_limits<uint64_t>::max() - inputSum) {
+            plan.error = Common::Proto::Error_invalid_utxo_amount;
+            return plan;
+        }
         inputSum += utxo.amount();
     }
     if (inputSum == 0 || input.utxos_size() == 0) {
@@ -492,7 +522,11 @@ TransactionPlan Signer::doPlan() const {
     // adjust inputSum with deposited/undeposited amount
     plan.deposit = sumDeposits(input);
     plan.undeposit = sumUndeposits(input);
-    const auto inputSumAfterDeposit = inputSum + plan.undeposit - plan.deposit;
+    Amount inputSumAfterDeposit = 0;
+    plan.error = amountAfterDeposit(inputSum, plan.deposit, plan.undeposit, inputSumAfterDeposit);
+    if (plan.error != Common::Proto::OK) {
+        return plan;
+    }
 
     // Amounts requested
     plan.amount = input.transfer_message().amount();
@@ -502,6 +536,10 @@ TransactionPlan Signer::doPlan() const {
     for (auto& output: input.extra_outputs()) {
         const auto extraToAddress = AddressV3(output.address());
         extraOutputs.emplace_back(extraToAddress.data(), output.amount());
+        if (output.amount() > std::numeric_limits<uint64_t>::max() - extraAmountSum) {
+            plan.error = Common::Proto::Error_invalid_params;
+            return plan;
+        }
         extraAmountSum = extraAmountSum + output.amount();
     }
     plan.extraOutputs = extraOutputs;
@@ -527,7 +565,10 @@ TransactionPlan Signer::doPlan() const {
     // select UTXOs
     if (!maxAmount) {
         // aim for larger total input, enough for 4/3 of the target amount plus typical fee plus minimal ADA for change plus some extra
-        auto targetInputAmount = (plan.amount * 4) / 3 + plan.deposit - plan.undeposit + PlaceholderFee + requestedTokens.minAdaAmount() + ExtraInputAmount;
+        // (saturating, as it is only a selection target)
+        const auto scaledAmount = plan.amount > std::numeric_limits<Amount>::max() / 4 ? std::numeric_limits<Amount>::max() : (plan.amount * 4) / 3;
+        const auto extra = saturatingAdd(saturatingAdd(PlaceholderFee, requestedTokens.minAdaAmount()), ExtraInputAmount);
+        const auto targetInputAmount = saturatingAdd(saturatingSub(saturatingAdd(scaledAmount, plan.deposit), plan.undeposit), extra);
         plan.utxos = selectInputsWithTokens(utxos, targetInputAmount, requestedTokens);
     } else {
         // maxAmount, select all
@@ -549,7 +590,11 @@ TransactionPlan Signer::doPlan() const {
     }
     assert(plan.availableAmount > 0);
     // adjust availableAmount with deposited/undeposited amount
-    const auto availableAmountAfterDeposit = plan.availableAmount + plan.undeposit - plan.deposit;
+    Amount availableAmountAfterDeposit = 0;
+    plan.error = amountAfterDeposit(plan.availableAmount, plan.deposit, plan.undeposit, availableAmountAfterDeposit);
+    if (plan.error != Common::Proto::OK) {
+        return plan;
+    }
 
     // check that there are enough coins in the inputs
     if (plan.amount > availableAmountAfterDeposit) {
@@ -569,8 +614,16 @@ TransactionPlan Signer::doPlan() const {
     if (input.transfer_message().force_fee() == 0) {
         plan.fee = estimateFee(input, plan.amount, requestedTokens, plan.utxos, plan.extraOutputs);
     } else {
-        // fee provided, use it (capped)
-        plan.fee = std::max(Amount(0), std::min(availableAmountAfterDeposit - plan.amount - extraAmountSum, input.transfer_message().force_fee()));
+        // fee provided, use it (capped to what is left after the amount, or, if the amount does not fit
+        // and will be reduced below, to what is left after the extra outputs)
+        const auto availAfterExtra = saturatingSub(availableAmountAfterDeposit, extraAmountSum);
+        const auto feeCap = availAfterExtra > plan.amount ? availAfterExtra - plan.amount : availAfterExtra;
+        plan.fee = std::min(feeCap, input.transfer_message().force_fee());
+    }
+    // fee and extra outputs must fit in the inputs, otherwise the amount below would wrap around
+    if (plan.fee == 0 || plan.fee >= availableAmountAfterDeposit || extraAmountSum > availableAmountAfterDeposit - plan.fee) {
+        plan.error = Common::Proto::Error_low_balance;
+        return plan;
     }
     assert(plan.fee >= 0 && plan.fee < availableAmountAfterDeposit);
 
@@ -617,11 +670,11 @@ TransactionPlan Signer::doPlan() const {
 }
 
 
-Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature) {
+Common::Proto::SigningError Signer::encodeTransactionWithSig(Data& encoded, const Proto::SigningInput &input, const PublicKey &publicKey, const Data &signature) {
     Transaction txAux;
     auto buildRet = buildTx(txAux, input);
     if (buildRet != Common::Proto::OK) {
-        throw Common::Proto::SigningError(buildRet);
+        return buildRet;
     }
 
     std::vector<std::pair<Data, Data>> signatures;
@@ -653,11 +706,15 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
         auxData,
     });
 
-    return cbor.encoded();
+    encoded = cbor.encoded();
+    return Common::Proto::OK;
 }
 
 Common::Proto::SigningError Signer::buildTx(Transaction& tx, const Proto::SigningInput& input) {
     auto plan = Signer(input).doPlan();
+    if (plan.error != Common::Proto::OK) {
+        return plan.error;
+    }
     return buildTransactionAux(tx, input, plan);
 }
 
