@@ -52,6 +52,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   # Check formatting, clippy warnings, run tests and check code coverage.
   rust-lints:
