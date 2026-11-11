@@ -43,6 +43,12 @@ message OperationChangeTrust {
 
     // Validity (time bound to), unix time.  Set to (now() + 2 * 365 * 86400) for 2 years; set to 0 for missing.
     int64 valid_before = 2;
+
+    // Optional trustline limit (*10^7); INT64_MAX if not set, 0 removes the trustline. Must not be negative.
+    // The network rejects a limit below the current balance.
+    oneof limit_oneof {
+        int64 limit = 3;
+    }
 }
 
 // A predicate (used in claim)
