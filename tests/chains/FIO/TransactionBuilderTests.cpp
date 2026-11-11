@@ -21,7 +21,7 @@ const Data chainId = parse_hex("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74
 // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
 const PrivateKey gPrivKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
 const PublicKey gPubKey6MA = gPrivKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
-const Address gAddr6M(gPubKey6MA);
+const auto gAddr6M = Address::fromPublicKey(gPubKey6MA).payload();
 
 TEST(FIOTransactionBuilder, RegisterFioAddressGeneric) {
     Proto::SigningInput input;
@@ -35,7 +35,9 @@ TEST(FIOTransactionBuilder, RegisterFioAddressGeneric) {
     input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(gAddr6M.string());
     input.mutable_action()->mutable_register_fio_address_message()->set_fee(5000000000);
 
-    auto json = TransactionBuilder::sign(input);
+    const auto result = TransactionBuilder::sign(input);
+    ASSERT_TRUE(result);
+    const auto json = result.payload();
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"3f99295ec99b904215ff0000000001003056372503a85b0000c6eaa66498ba01102b2f46fca756b200000000a8ed3232650f6164616d4066696f746573746e65743546494f366d31664d645470526b52426e6564765973685843784c4669433573755255384b44667838787874587032686e7478706e6600f2052a01000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"]})", json);
 }
