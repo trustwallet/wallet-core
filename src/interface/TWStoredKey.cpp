@@ -8,6 +8,7 @@
 #include "Data.h"
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
+#include "../Keystore/SealedSigner.h"
 #include "../HexCoding.h"
 #include <stdexcept>
 #include <cassert>
@@ -277,6 +278,81 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
     try {
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         return new TWPrivateKey{ key->impl.privateKey(coin, passwordData) };
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input) {
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto inputData = TW::data(TWDataBytes(input), TWDataSize(input));
+        const auto output = TW::Keystore::sealedSign(key->impl, coin, addressString, passwordData, inputData);
+        if (output.empty()) {
+            return nullptr;
+        }
+        return TWDataCreateWithBytes(output.data(), output.size());
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+static TWData* _Nullable sealedDataResult(const TW::Data& output) {
+    if (output.empty()) {
+        return nullptr;
+    }
+    return TWDataCreateWithBytes(output.data(), output.size());
+}
+
+TWData* _Nullable TWStoredKeySignEthereumMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto& messageData = *reinterpret_cast<const TW::Data*>(message);
+        return sealedDataResult(TW::Keystore::sealedSignEthereumPersonalMessage(key->impl, coin, addressString, passwordData, messageData));
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWData* _Nullable TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWString* _Nonnull typedData) {
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto& typedDataString = *reinterpret_cast<const std::string*>(typedData);
+        return sealedDataResult(TW::Keystore::sealedSignEthereumTypedData(key->impl, coin, addressString, passwordData, typedDataString));
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWData* _Nullable TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull codeAddress, TWString* _Nonnull codeName, TWString* _Nonnull codeVersion, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull userOpHash) {
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
+        return sealedDataResult(TW::Keystore::sealedSignBizUserOpHash(
+            key->impl, coin, addressString, passwordData, chainIdData,
+            *reinterpret_cast<const std::string*>(codeAddress), *reinterpret_cast<const std::string*>(codeName),
+            *reinterpret_cast<const std::string*>(codeVersion), *reinterpret_cast<const std::string*>(typeHash),
+            *reinterpret_cast<const std::string*>(domainSeparatorHash), *reinterpret_cast<const std::string*>(userOpHash)));
+    } catch (...) {
+        return nullptr;
+    }
+}
+
+TWString* _Nullable TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce) {
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto signedAuthorization = TW::Keystore::sealedSignEip7702Authorization(
+            key->impl, coin, addressString, passwordData, *reinterpret_cast<const TW::Data*>(chainId),
+            *reinterpret_cast<const std::string*>(contractAddress), *reinterpret_cast<const TW::Data*>(nonce));
+        if (signedAuthorization.empty()) {
+            return nullptr;
+        }
+        return TWStringCreateWithUTF8Bytes(signedAuthorization.c_str());
     } catch (...) {
         return nullptr;
     }
