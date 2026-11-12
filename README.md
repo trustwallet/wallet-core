@@ -66,7 +66,7 @@ Add this line to the `dependencies` parameter in your `Package.swift`:
 Or add remote url + `master` branch, it points to recent (not always latest) binary release.
 
 ```swift
-.package(name: "WalletCore", url: "https://github.com/trustwallet/wallet-core", .branchItem("master")),
+.package(name: "WalletCore", url: "https://github.com/trustwallet/wallet-core", .branch("master")),
 ```
 
 Then add libraries to target's `dependencies`:
