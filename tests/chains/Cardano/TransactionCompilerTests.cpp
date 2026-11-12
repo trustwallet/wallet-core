@@ -110,3 +110,22 @@ TEST(CardanoCompiler, CompileWithSignaturesAndPubKeyType) {
         EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
     }
 }
+
+TEST(CardanoCompiler, CompileInvalidTransferAddressReturnsSigningError) {
+    const auto coin = TWCoinTypeCardano;
+    auto input = Cardano::Proto::SigningInput();
+    input.mutable_transfer_message()->set_to_address("not-a-valid-cardano-address");
+    input.mutable_transfer_message()->set_change_address("addr1v8mv75d2evhr4kt048cx7m3f97x363ajadha8xv8dp96nuggpv8rn");
+    input.mutable_transfer_message()->set_amount(1000000);
+
+    const auto publicKeyData = parse_hex("17c55d712152ccabf28215fe2d008d615f94796e098a97f1aa43d986ac3cb946");
+    const auto sig = parse_hex("1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e");
+
+    const Data outputData = TransactionCompiler::compileWithSignaturesAndPubKeyType(
+        coin, data(input.SerializeAsString()), {sig}, {publicKeyData}, TWPublicKeyTypeED25519);
+
+    Cardano::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputData.data(), (int)outputData.size()));
+    EXPECT_EQ(output.encoded().size(), 0ul);
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+}
