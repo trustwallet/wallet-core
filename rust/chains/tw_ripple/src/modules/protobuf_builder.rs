@@ -104,9 +104,11 @@ impl<'a> ProtobufBuilder<'a> {
             tx.common_fields.sequence = Some(self.input.sequence);
         }
 
-        // Check whether `SigningInput.last_ledger_sequence` is specified, or JSON transaction doesn't contain that field,
-        // then override the field.
-        if self.input.last_ledger_sequence != 0 || tx.common_fields.last_ledger_sequence.is_none() {
+        // Check whether `SigningInput.last_ledger_sequence` is specified,
+        // then override the field. A value of 0 means "not provided" (proto default),
+        // so we must not set it — `LastLedgerSequence = 0` would cause
+        // immediate transaction expiry on the XRP Ledger.
+        if self.input.last_ledger_sequence != 0 {
             tx.common_fields.last_ledger_sequence = Some(self.input.last_ledger_sequence);
         }
 
@@ -332,8 +334,14 @@ impl<'a> ProtobufBuilder<'a> {
         builder
             .fee(fee)
             .flags(self.input.flags.try_into_u32("inputFlags")?)
-            .sequence(self.input.sequence)
-            .last_ledger_sequence(self.input.last_ledger_sequence)
+            .sequence(self.input.sequence);
+        // Only set `LastLedgerSequence` when explicitly provided (non-zero).
+        // Proto default 0 means "not provided" — setting it to 0 would cause
+        // immediate transaction expiry on the XRP Ledger.
+        if self.input.last_ledger_sequence != 0 {
+            builder.last_ledger_sequence(self.input.last_ledger_sequence);
+        }
+        builder
             .account_str(self.input.account.as_ref())?
             .signing_pub_key(&signing_public_key);
         if self.input.source_tag != 0 {
