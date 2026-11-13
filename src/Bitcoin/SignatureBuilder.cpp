@@ -85,7 +85,6 @@ Result<void, Common::Proto::SigningError> SignatureBuilder<Transaction>::sign(Sc
             return Result<void, Common::Proto::SigningError>::failure(signStepResult.error());
         }
         results = signStepResult.payload();
-        results.push_back(script.bytes);
         redeemScript = script;
     }
 
