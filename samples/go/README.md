@@ -50,7 +50,7 @@ cd wallet-core
 
 ### 🐳 Docker
 1. Run `docker run -it trustwallet/wallet-core`
-The library is already built in this image  (Build instructions [here](building.md))  Note: may not be the most recent version.
+The library is already built in this image  (Build instructions [here](https://developer.trustwallet.com/wallet-core/building))  Note: may not be the most recent version.
 
 2. Install go: `apt-get update && apt-get install golang` 
 (or download from here [go1.16.12](https://go.dev/dl/go1.16.12.linux-amd64.tar.gz), configure `GOROOT` and append `GOROOT/bin` to `PATH`).
