@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 
 const auto key1Hex = "22667b69166481c9f334756f49c8dddfd72c6bcdd68a7386886e97a82f741130";
+const auto digest1Hex = "1111111111111111111111111111111111111111111111111111111111111111";
 
 TEST(TWPrivateKeyTests, Create) {
     const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(key1Hex).get()));
@@ -124,4 +125,21 @@ TEST(TWPrivateKeyTests, SignAsDER) {
 
     ASSERT_EQ(TW::hex(*((TW::Data*)actual.get())),
         "30450221008720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba6202204d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de9");
+}
+
+TEST(TWPrivateKeyTests, SignCurveMismatch) {
+    const auto ed25519Key = WRAP(TWPrivateKey, new TWPrivateKey{TW::PrivateKey(TW::parse_hex(key1Hex), TWCurveED25519)});
+    const auto digest = DATA(digest1Hex);
+
+    EXPECT_EQ(TWPrivateKeySign(ed25519Key.get(), digest.get(), TWCurveSECP256k1), nullptr);
+    EXPECT_EQ(TWPrivateKeySignAsDER(ed25519Key.get(), digest.get()), nullptr);
+    EXPECT_EQ(TWPrivateKeySignZilliqaSchnorr(ed25519Key.get(), digest.get()), nullptr);
+    EXPECT_NE(WRAPD(TWPrivateKeySign(ed25519Key.get(), digest.get(), TWCurveED25519)), nullptr);
+}
+
+TEST(TWPrivateKeyTests, SignCardanoCurveShortKey) {
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(key1Hex).get()));
+    const auto digest = DATA(digest1Hex);
+
+    EXPECT_EQ(TWPrivateKeySign(privateKey.get(), digest.get(), TWCurveED25519ExtendedCardano), nullptr);
 }

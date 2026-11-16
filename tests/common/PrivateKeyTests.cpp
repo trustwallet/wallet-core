@@ -396,4 +396,10 @@ TEST(PrivateKey, SignAsDERRejectsShortDigest) {
     EXPECT_TRUE(privateKey.signAsDER(shortDigest).empty());
 }
 
+TEST(PrivateKey, SignCardanoCurveRejectsShortKey) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto hash = Hash::keccak256(TW::data("hello"));
+    EXPECT_TRUE(privateKey.sign(hash, TWCurveED25519ExtendedCardano).empty());
+}
+
 } // namespace TW::tests

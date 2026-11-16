@@ -92,7 +92,11 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
     return TWPrivateKeyGetPublicKeyByType(pk, TWPublicKeyTypeCURVE25519);
 }
 
+// Curve mismatches return nullptr: the C++ signers throw, and nothing above this C API catches it.
 TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
+    if (!pk->impl.supportsCurve(curve)) {
+        return nullptr;
+    }
     const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.sign(d, curve);
     if (result.empty()) {
@@ -103,6 +107,9 @@ TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull dige
 }
 
 TWData* TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest) {
+    if (!pk->impl.supportsCurve(TWCurveSECP256k1)) {
+        return nullptr;
+    }
     auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.signAsDER(d);
     if (result.empty()) {
@@ -113,6 +120,9 @@ TWData* TWPrivateKeySignAsDER(struct TWPrivateKey* pk, TWData* digest) {
 }
 
 TWData *TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message) {
+    if (!pk->impl.supportsCurve(TWCurveSECP256k1)) {
+        return nullptr;
+    }
     const auto& msg = *reinterpret_cast<const Data*>(message);
     auto result = pk->impl.signZilliqa(msg);
 
