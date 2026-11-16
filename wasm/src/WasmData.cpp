@@ -17,7 +17,10 @@ auto DataToVal(Data data) -> val {
     return jsArray;
 }
 
-auto TWDataToVal(TWData* _Nonnull data) -> val {
+auto TWDataToVal(TWData* _Nullable data) -> val {
+    if (data == nullptr) {
+        return val::null();
+    }
     defer {
         TWDataDelete(data);
     };

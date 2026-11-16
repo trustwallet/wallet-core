@@ -15,6 +15,14 @@ describe("Base32", () => {
     assert.equal(Buffer.from(decoded).toString(), "HelloWorld");
   });
 
+  it("test decrypting invalid input returns null", () => {
+    const { Base32 } = globalThis.core;
+
+    assert.isNull(Base32.decode("+-"));
+    // The module keeps working after a failed call.
+    assert.equal(Buffer.from(Base32.decode("JBSWY3DPK5XXE3DE")).toString(), "HelloWorld");
+  });
+
   it("test decrypting with alphabet", () => {
     const { Base32 } = globalThis.core;
 
