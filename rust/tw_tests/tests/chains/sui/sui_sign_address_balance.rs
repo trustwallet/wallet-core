@@ -42,6 +42,17 @@ fn input(payload: TransactionType<'static>) -> Proto::SigningInput<'static> {
     }
 }
 
+/// A `sign_direct_message` input carrying already built BCS bytes (base64), no key and no
+/// `valid_during`: `sign_direct_message` rejects the window because the bytes carry their own.
+fn direct_input(unsigned_tx: &str) -> Proto::SigningInput<'static> {
+    Proto::SigningInput {
+        transaction_payload: TransactionType::sign_direct_message(Proto::SignDirect {
+            unsigned_tx_msg: unsigned_tx.to_string().into(),
+        }),
+        ..Proto::SigningInput::default()
+    }
+}
+
 fn sign_and_check(
     payload: TransactionType<'static>,
     expected_unsigned_tx: &str,
@@ -54,15 +65,9 @@ fn sign_and_check(
     assert_eq!(output.signature, expected_signature);
 
     // The same bytes handed to `sign_direct_message`, as the app does with a transaction the
-    // backend already built (sc-176159): signed as they are, with the same signature. No
-    // `valid_during` here, `sign_direct_message` rejects it because the bytes carry their own.
-    let direct = Proto::SigningInput {
-        transaction_payload: TransactionType::sign_direct_message(Proto::SignDirect {
-            unsigned_tx_msg: expected_unsigned_tx.into(),
-        }),
-        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
-        ..Proto::SigningInput::default()
-    };
+    // backend already built (sc-176159): signed as they are, with the same signature.
+    let mut direct = direct_input(expected_unsigned_tx);
+    direct.private_key = PRIVATE_KEY_54E80D76.decode_hex().unwrap().into();
     let mut direct_signer = AnySignerHelper::<Proto::SigningOutput>::default();
     let direct_output = direct_signer.sign(CoinType::Sui, direct);
     assert_eq!(
@@ -121,6 +126,17 @@ fn test_sui_sign_add_stake_from_address_balance() {
         ..Proto::RequestAddStake::default()
     };
     sign_and_check(TransactionType::request_add_stake(stake), "AAAEAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABQEAAAAAAAAAAQIAAMqaOwAAAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA3N1aQNTVUkAAAAJAQDKmjsAAAAAACBhlT6nJwnu1y9EQd2UTuxJoRtKyr/I4EAV6JxjvoG2qwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIEY29pbgxyZWRlZW1fZnVuZHMBBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACA3N1aQNTVUkAAQEBAAUAAQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwpzdWlfc3lzdGVtGnJlcXVlc3RfYWRkX3N0YWtlX211bF9jb2luAAQBAAACAQABAgABAwBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsgBU6A1215DCd/WkTzzpL1PSb1iUiSvzld7mN1mIh2vmsmQAAAAAAAAAQEtMAAAAAAACAQgFAAAAAAAAAQkFAAAAAAAAAAAgNYNKisF8pI+xSsj5nBfJh0fpXdBylK5BpGs4IkakSZs5MAAA", "AFbsYoHh3yjNs479Y42OEpp+0DYKcRQTxHcJk584SCZv6WAmAk2vTzGdu+/sKR3KP18MkYSDR2tigQfhuRxQgwmF69FEH+T5VPvl3GB3vwCOEZpeJpKXxvcIPQAdKsh2/g==");
+}
+
+#[test]
+fn test_sui_sign_direct_message_rejects_valid_during() {
+    // The bytes carry their own expiration, so a `valid_during` next to them is a caller mistake.
+    let mut direct = direct_input("AAA=");
+    direct.private_key = PRIVATE_KEY_54E80D76.decode_hex().unwrap().into();
+    direct.valid_during = input(TransactionType::None).valid_during;
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Sui, direct);
+    assert_eq!(output.error, SigningError::Error_invalid_params);
 }
 
 #[test]
@@ -202,7 +218,12 @@ fn assert_matches_mainnet(
     let (signature, public_key) = (raw[1..65].to_vec(), raw[65..].to_vec());
 
     let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
-    let output = compiler.compile(CoinType::Sui, &input, vec![signature], vec![public_key]);
+    let output = compiler.compile(
+        CoinType::Sui,
+        &input,
+        vec![signature.clone()],
+        vec![public_key.clone()],
+    );
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
     assert_eq!(output.unsigned_tx, on_chain_tx);
     assert_eq!(output.signature, on_chain_signature);
@@ -213,15 +234,10 @@ fn assert_matches_mainnet(
 
     // The on-chain bytes through `sign_direct_message` (sc-176159): the pre-image used for the fee
     // estimate must equal the one of the structured input (the 3-byte intent, then the bytes), and
-    // compiling with the on-chain signature must give the same transaction, signature and digest.
-    let direct_input = Proto::SigningInput {
-        transaction_payload: TransactionType::sign_direct_message(Proto::SignDirect {
-            unsigned_tx_msg: on_chain_tx.into(),
-        }),
-        ..Proto::SigningInput::default()
-    };
+    // compiling with the on-chain signature must give the same transaction and signature.
+    let direct = direct_input(on_chain_tx);
     let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
-    let direct_pre_image = pre_imager.pre_image_hashes(CoinType::Sui, &direct_input);
+    let direct_pre_image = pre_imager.pre_image_hashes(CoinType::Sui, &direct);
     assert_eq!(direct_pre_image.error, SigningError::OK);
     let mut proto_pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
     let proto_pre_image = proto_pre_imager.pre_image_hashes(CoinType::Sui, &input);
@@ -233,12 +249,8 @@ fn assert_matches_mainnet(
     assert_eq!(&direct_pre_image.data[3..], tx_bytes.as_slice());
 
     let mut direct_compiler = CompilerHelper::<Proto::SigningOutput>::default();
-    let direct_output = direct_compiler.compile(
-        CoinType::Sui,
-        &direct_input,
-        vec![raw[1..65].to_vec()],
-        vec![raw[65..].to_vec()],
-    );
+    let direct_output =
+        direct_compiler.compile(CoinType::Sui, &direct, vec![signature], vec![public_key]);
     assert_eq!(
         direct_output.error,
         SigningError::OK,
