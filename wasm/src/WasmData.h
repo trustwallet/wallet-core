@@ -15,6 +15,7 @@ namespace TW::Wasm {
 auto DataToVal(Data data) -> emscripten::val;
 
 /// Converts a TWData * to Uint8Array, deleting the TWData * when done.
-auto TWDataToVal(TWData *_Nonnull data) -> emscripten::val;
+/// Returns null for nullptr, so a failed `_Nullable` call reaches JS as null.
+auto TWDataToVal(TWData *_Nullable data) -> emscripten::val;
 
 } // namespace TW::Wasm
