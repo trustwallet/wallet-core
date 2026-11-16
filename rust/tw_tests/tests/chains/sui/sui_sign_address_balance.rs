@@ -9,12 +9,13 @@
 
 use crate::chains::sui::test_cases::{PRIVATE_KEY_54E80D76, SENDER_54E80D76};
 use std::str::FromStr;
-use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, CompilerHelper};
+use tw_any_coin::test_utils::sign_utils::{AnySignerHelper, CompilerHelper, PreImageHelper};
 use tw_any_coin::test_utils::transaction_calc_tx_hash_utils::TransactionUtilHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::Common::Proto::SigningError;
 use tw_proto::Sui::Proto::{self, mod_SigningInput::OneOftransaction_payload as TransactionType};
+use tw_proto::TxCompiler::Proto as CompilerProto;
 use tw_sui::address::SuiAddress;
 use tw_sui::transaction::sui_types::{CallArg, Reservation, WithdrawFrom};
 use tw_sui::transaction::transaction_data::{TransactionData, TransactionKind};
@@ -51,6 +52,27 @@ fn sign_and_check(
     assert_eq!(output.error, SigningError::OK, "{}", output.error_message);
     assert_eq!(output.unsigned_tx, expected_unsigned_tx);
     assert_eq!(output.signature, expected_signature);
+
+    // The same bytes handed to `sign_direct_message`, as the app does with a transaction the
+    // backend already built (sc-176159): signed as they are, with the same signature. No
+    // `valid_during` here, `sign_direct_message` rejects it because the bytes carry their own.
+    let direct = Proto::SigningInput {
+        transaction_payload: TransactionType::sign_direct_message(Proto::SignDirect {
+            unsigned_tx_msg: expected_unsigned_tx.into(),
+        }),
+        private_key: PRIVATE_KEY_54E80D76.decode_hex().unwrap().into(),
+        ..Proto::SigningInput::default()
+    };
+    let mut direct_signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let direct_output = direct_signer.sign(CoinType::Sui, direct);
+    assert_eq!(
+        direct_output.error,
+        SigningError::OK,
+        "{}",
+        direct_output.error_message
+    );
+    assert_eq!(direct_output.unsigned_tx, expected_unsigned_tx);
+    assert_eq!(direct_output.signature, expected_signature);
 }
 
 #[test]
@@ -188,6 +210,43 @@ fn assert_matches_mainnet(
         TransactionUtilHelper::calc_tx_hash(CoinType::Sui, on_chain_tx),
         on_chain_digest
     );
+
+    // The on-chain bytes through `sign_direct_message` (sc-176159): the pre-image used for the fee
+    // estimate must equal the one of the structured input (the 3-byte intent, then the bytes), and
+    // compiling with the on-chain signature must give the same transaction, signature and digest.
+    let direct_input = Proto::SigningInput {
+        transaction_payload: TransactionType::sign_direct_message(Proto::SignDirect {
+            unsigned_tx_msg: on_chain_tx.into(),
+        }),
+        ..Proto::SigningInput::default()
+    };
+    let mut pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+    let direct_pre_image = pre_imager.pre_image_hashes(CoinType::Sui, &direct_input);
+    assert_eq!(direct_pre_image.error, SigningError::OK);
+    let mut proto_pre_imager = PreImageHelper::<CompilerProto::PreSigningOutput>::default();
+    let proto_pre_image = proto_pre_imager.pre_image_hashes(CoinType::Sui, &input);
+    assert_eq!(proto_pre_image.error, SigningError::OK);
+    assert_eq!(direct_pre_image.data, proto_pre_image.data);
+    assert_eq!(direct_pre_image.data_hash, proto_pre_image.data_hash);
+    let tx_bytes = tw_encoding::base64::decode(on_chain_tx, tw_encoding::base64::STANDARD).unwrap();
+    assert_eq!(&direct_pre_image.data[..3], &[0, 0, 0]);
+    assert_eq!(&direct_pre_image.data[3..], tx_bytes.as_slice());
+
+    let mut direct_compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let direct_output = direct_compiler.compile(
+        CoinType::Sui,
+        &direct_input,
+        vec![raw[1..65].to_vec()],
+        vec![raw[65..].to_vec()],
+    );
+    assert_eq!(
+        direct_output.error,
+        SigningError::OK,
+        "{}",
+        direct_output.error_message
+    );
+    assert_eq!(direct_output.unsigned_tx, on_chain_tx);
+    assert_eq!(direct_output.signature, on_chain_signature);
 }
 
 #[test]
