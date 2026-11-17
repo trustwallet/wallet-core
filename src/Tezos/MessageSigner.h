@@ -6,6 +6,7 @@
 
 #include "PrivateKey.h"
 #include "Data.h"
+#include "Result.h"
 
 namespace TW::Tezos {
     class MessageSigner {
@@ -24,9 +25,9 @@ namespace TW::Tezos {
 
         /// implement signing as described in https://tezostaquito.io/docs/signing/
         /// \param privateKey the private key to sign with
-        /// \param message message to sign
-        /// \return base58 signed message
-        static std::string signMessage(const PrivateKey& privateKey, const std::string& message);
+        /// \param message hex payload to sign; must start with the 0x05 (off-chain message) watermark
+        /// \return base58 signed message, or an error if the payload is not valid hex or lacks the 0x05 watermark
+        static Result<std::string> signMessage(const PrivateKey& privateKey, const std::string& message);
 
         /// implement verification as described in https://tezostaquito.io/docs/signing/
         /// \param publicKey publickey to verify the signed message
