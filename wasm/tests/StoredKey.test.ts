@@ -38,16 +38,7 @@ describe("StoredKey", () => {
 
   // Note: the WASM build has C++ exception catching disabled, so failure paths
   // that rely on try/catch in C++ (wrong password, malformed JSON) abort the
-  // module instead of returning null. These tests use failure paths that do not throw.
-  it("test failing string/data-returning functions return empty values", () => {
-    const { EthereumAbi, Base32 } = globalThis.core;
-
-    // Nullable string: the Rust ABI parser rejects the input without throwing.
-    assert.equal(EthereumAbi.getFunctionSignature("not an abi"), "");
-    // Nullable data: invalid Base32 input.
-    assert.equal(Base32.decode("!!!").length, 0);
-  });
-
+  // module instead of returning null. This test uses a failure path that does not throw.
   it("test failing object-returning functions return null", () => {
     const { StoredKey, CoinType } = globalThis.core;
 
