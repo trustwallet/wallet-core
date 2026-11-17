@@ -54,4 +54,44 @@ describe("StoredKey", () => {
 
     storedKey.delete();
   }).timeout(5000);
+
+  it("test failing object-returning functions return null", () => {
+    const { StoredKey, CoinType } = globalThis.core;
+
+    assert.isNull(StoredKey.importJSON(Buffer.from("not json")));
+
+    const mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+    const storedKey = StoredKey.importHDWallet(
+      mnemonic,
+      "test wallet",
+      Buffer.from("password"),
+      CoinType.bitcoin
+    );
+    assert.isNull(storedKey.wallet(Buffer.from("wrong password")));
+    assert.isNull(storedKey.privateKey(CoinType.bitcoin, Buffer.from("wrong password")));
+
+    storedKey.delete();
+  }).timeout(5000);
+
+  it("test accountForCoin accepts a null wallet", () => {
+    const { StoredKey, CoinType } = globalThis.core;
+
+    const mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+    const storedKey = StoredKey.importHDWallet(
+      mnemonic,
+      "test wallet",
+      Buffer.from("password"),
+      CoinType.bitcoin
+    );
+
+    // Existing account is returned without needing a wallet.
+    const account = storedKey.accountForCoin(CoinType.bitcoin, null);
+    assert.equal(account.address(), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    account.delete();
+
+    // No account and no wallet to derive one.
+    assert.isNull(storedKey.accountForCoin(CoinType.ethereum, null));
+
+    storedKey.delete();
+  }).timeout(5000);
 });
