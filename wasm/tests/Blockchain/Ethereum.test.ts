@@ -164,9 +164,9 @@ describe("Ethereum", () => {
     key.delete();
   });
 
-  it("test function signature of an invalid ABI is empty", () => {
+  it("test function signature of an invalid ABI is null", () => {
     const { EthereumAbi } = globalThis.core;
 
-    assert.equal(EthereumAbi.getFunctionSignature("not an abi"), "");
+    assert.isNull(EthereumAbi.getFunctionSignature("not an abi"));
   });
 });

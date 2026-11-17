@@ -19,7 +19,7 @@ auto DataToVal(Data data) -> val {
 
 auto TWDataToVal(TWData* _Nullable data) -> val {
     if (data == nullptr) {
-        return DataToVal({});
+        return val::null();
     }
     defer {
         TWDataDelete(data);

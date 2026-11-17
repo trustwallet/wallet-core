@@ -51,9 +51,10 @@ describe("Base32", () => {
     );
   });
 
-  it("test decoding invalid input returns empty data", () => {
+  it("test decoding invalid input returns null", () => {
     const { Base32 } = globalThis.core;
 
-    assert.equal(Base32.decode("!!!").length, 0);
+    assert.isNull(Base32.decode("!!!"));
+    assert.equal(Base32.decode("").length, 0);
   });
 });
