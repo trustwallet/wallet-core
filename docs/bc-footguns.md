@@ -35,3 +35,22 @@ assigned in memory from a signed literal (`j["n"] = 16384`) as `number_integer`.
 `is_number_unsigned()` rejects the in-memory form while accepting the same document after a
 `dump()`/`parse()` round trip. Use `Keystore/JsonParsing.h` (`parseUnsigned` / `parseU32`), which
 accepts both and rejects negatives, floats, strings, booleans and null.
+
+---
+
+## WASM null returns don't trap (PR #4950, 2026-11)
+
+In WebAssembly, address 0 is ordinary readable memory, so dereferencing a null `TWString*`,
+`TWData*` or object pointer does not crash the way it does natively. Before #4950 the embind
+bindings ignored `_Nullable`, and a failing call did whatever the bytes at address 0 led to:
+`Base32.decode("!!!")` aborted the module, `EthereumAbi.getFunctionSignature("not an abi")`
+returned `""`, `storedKey.account(99)` returned a wrapper whose `.address()` was `""`, and
+`accountForCoin(coin, null)` went out of bounds. JS callers could have depended on the silent
+empty values, so #4950 (all `_Nullable` returns → JS `null`, `.d.ts` typed `T | null`) is a
+breaking change for the npm package even though it only fixes crashes and garbage.
+
+**Rule:** a `_Nullable` C return must map to JS `null` in the WASM bindings, never to an empty
+value, and the generated `.d.ts` must say `| null`. Making an existing `TW*` function `_Nullable`
+(or changing how the bindings surface null) changes the JS runtime behavior and TypeScript types
+of that function, so treat it as a breaking change for the npm package and list it in the
+release notes. Native tests will not catch it: check the WASM tests too.
