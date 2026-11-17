@@ -35,4 +35,23 @@ describe("StoredKey", () => {
 
     storedKey.delete();
   }).timeout(5000);
+
+  it("test decrypting with a wrong password returns empty values", () => {
+    const { StoredKey, CoinType } = globalThis.core;
+
+    const mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+    const storedKey = StoredKey.importHDWallet(
+      mnemonic,
+      "test wallet",
+      Buffer.from("password"),
+      CoinType.bitcoin
+    );
+
+    // The underlying C functions return null on a wrong password.
+    const wrongPassword = Buffer.from("wrong password");
+    assert.equal(storedKey.decryptMnemonic(wrongPassword), "");
+    assert.equal(storedKey.decryptPrivateKey(wrongPassword).length, 0);
+
+    storedKey.delete();
+  }).timeout(5000);
 });

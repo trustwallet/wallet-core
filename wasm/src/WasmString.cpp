@@ -8,13 +8,14 @@
 
 namespace TW::Wasm {
 
-auto TWStringToStd(TWString *_Nonnull string) -> std::string {
+auto TWStringToStd(TWString *_Nullable string) -> std::string {
+    if (string == nullptr) {
+        return {};
+    }
     defer {
         TWStringDelete(string);
     };
-    auto* s = reinterpret_cast<const std::string*>(string);
-    auto result = *s;
-    return result;
+    return *reinterpret_cast<const std::string*>(string);
 }
 
 } // namespace TW::Wasm
