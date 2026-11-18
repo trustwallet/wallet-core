@@ -14,7 +14,10 @@ use tw_hash::sha2::sha256;
 use tw_hash::{H160, H256};
 use tw_keypair::{ecdsa, schnorr};
 
-pub const OP_RETURN_DATA_LIMIT: usize = 80;
+/// Maximum length for OP_RETURN data payload.
+/// Bitcoin Core v30 increased the default -datacarriersize from 83 to 10000 bytes.
+/// This constant represents the maximum payload data size (not including OP_RETURN and push opcodes).
+pub const OP_RETURN_DATA_LIMIT: usize = 10000;
 
 pub struct OutputBuilder {
     amount: Amount,
@@ -167,5 +170,67 @@ impl OutputBuilder {
             value: self.amount,
             script_pubkey: conditions::new_op_return(data),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_op_return_small_data() {
+        // Small data (< 75 bytes) uses direct push
+        let data = vec![0x42; 50];
+        let output = OutputBuilder::new(0).op_return(&data).unwrap();
+        let script = output.script_pubkey.as_slice();
+        assert_eq!(script[0], 0x6a); // OP_RETURN
+        assert_eq!(script[1], 50);   // direct push length
+        assert_eq!(script.len(), 2 + 50);
+    }
+
+    #[test]
+    fn test_op_return_pushdata1() {
+        // Data > 75 bytes but <= 255 uses OP_PUSHDATA1
+        let data = vec![0x42; 100];
+        let output = OutputBuilder::new(0).op_return(&data).unwrap();
+        let script = output.script_pubkey.as_slice();
+        assert_eq!(script[0], 0x6a); // OP_RETURN
+        assert_eq!(script[1], 0x4c); // OP_PUSHDATA1
+        assert_eq!(script[2], 100);  // length
+        assert_eq!(script.len(), 3 + 100);
+    }
+
+    #[test]
+    fn test_op_return_pushdata2() {
+        // Data > 255 bytes uses OP_PUSHDATA2
+        let data = vec![0x42; 1000];
+        let output = OutputBuilder::new(0).op_return(&data).unwrap();
+        let script = output.script_pubkey.as_slice();
+        assert_eq!(script[0], 0x6a); // OP_RETURN
+        assert_eq!(script[1], 0x4d); // OP_PUSHDATA2
+        assert_eq!(script[2], 0xe8); // length low byte (1000 = 0x03e8)
+        assert_eq!(script[3], 0x03); // length high byte
+        assert_eq!(script.len(), 4 + 1000);
+    }
+
+    #[test]
+    fn test_op_return_max_size() {
+        // Maximum allowed size (10000 bytes - Bitcoin Core v30 default)
+        let data = vec![0x42; 10000];
+        let output = OutputBuilder::new(0).op_return(&data).unwrap();
+        let script = output.script_pubkey.as_slice();
+        assert_eq!(script[0], 0x6a); // OP_RETURN
+        assert_eq!(script[1], 0x4d); // OP_PUSHDATA2
+        assert_eq!(script[2], 0x10); // length low byte (10000 = 0x2710)
+        assert_eq!(script[3], 0x27); // length high byte
+        assert_eq!(script.len(), 4 + 10000);
+    }
+
+    #[test]
+    fn test_op_return_too_large() {
+        // Data > 10000 bytes should fail
+        let data = vec![0x42; 10001];
+        let result = OutputBuilder::new(0).op_return(&data);
+        assert!(result.is_err());
     }
 }

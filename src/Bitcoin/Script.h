@@ -20,8 +20,10 @@ namespace TW::Bitcoin {
 
 class Script {
   public:
-    // Maximum length for OP_RETURN data
-    static const size_t MaxOpReturnLength = 80;
+    // Maximum length for OP_RETURN data.
+    // Bitcoin Core v30 increased the default -datacarriersize from 83 to 10000 bytes.
+    // This constant represents the maximum payload data size (not including OP_RETURN and push opcodes).
+    static const size_t MaxOpReturnLength = 10000;
 
     /// Script raw bytes.
     Data bytes;
@@ -122,7 +124,7 @@ class Script {
     /// Builds a V1 pay-to-witness-program script, P2TR (from a 32-byte Schnorr public key).
     static Script buildPayToV1WitnessProgram(const Data& publicKey);
 
-    /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>80).
+    /// Builds an OP_RETURN script with given data. Returns empty script on error, if data is too long (>10000).
     static Script buildOpReturnScript(const Data& data);
 
     /// Builds a appropriate lock script for the given
