@@ -443,6 +443,58 @@ TEST(TronSigner, SignUnFreezeBalance) {
     ASSERT_EQ(hex(output2.signature()), "4b4b12b5fd091d5343335f14ac90bf23ea9a8167d648dd9d10d00c9c9b24731c484937bf133e5010f0338fb70a679a9a2eca8b945574005bc4015b419a68897300");
 }
 
+// NOTE: interim fixtures, NOT broadcasted to mainnet. Stake 1.0 freeze is closed on mainnet, so an
+// unfreeze with an empty `receiver_address` needs a legacy account with V1-frozen TRX.
+// TODO: replace with a mainnet-proven transaction.
+static Proto::SigningInput stakeV1SelfInput(bool freeze, const std::string& receiver) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+    if (freeze) {
+        auto& c = *transaction.mutable_freeze_balance();
+        c.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+        c.set_receiver_address(receiver);
+        c.set_resource("BANDWIDTH");
+        c.set_frozen_balance(1000000);
+        c.set_frozen_duration(3);
+    } else {
+        auto& c = *transaction.mutable_unfreeze_balance();
+        c.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+        c.set_receiver_address(receiver);
+        c.set_resource("BANDWIDTH");
+    }
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+    const auto privateKey = parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54");
+    input.set_private_key(privateKey.data(), privateKey.size());
+    return input;
+}
+
+TEST(TronSigner, SignStakeV1EmptyReceiver) {
+    for (const bool freeze : {false, true}) {
+        const auto output = Signer::sign(stakeV1SelfInput(freeze, ""));
+        EXPECT_EQ(output.error(), Common::Proto::OK);
+        EXPECT_EQ(output.signature().size(), 65ul);
+        EXPECT_FALSE(output.id().empty());
+    }
+}
+
+TEST(TronSigner, SignStakeV1InvalidReceiver) {
+    for (const bool freeze : {false, true}) {
+        const auto output = Signer::sign(stakeV1SelfInput(freeze, "invalid"));
+        EXPECT_EQ(output.error(), Common::Proto::Error_invalid_address);
+    }
+}
+
 TEST(TronSigner, SignUnFreezeAsset) {
     // Step 1. Construct and sign an UnfreezeAsset transaction.
     auto input = Proto::SigningInput();
