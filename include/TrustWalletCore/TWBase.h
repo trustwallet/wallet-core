@@ -13,7 +13,16 @@
 #endif
 
 // Marker for default visibility
+#if defined(_WIN32)
+// Windows DLL exports are supplied by the generated module definition file.
+#define TW_VISIBILITY_DEFAULT
+#else
 #define TW_VISIBILITY_DEFAULT __attribute__((visibility("default")))
+#endif
+
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif
 
 // Marker for exported classes
 #define TW_EXPORT_CLASS

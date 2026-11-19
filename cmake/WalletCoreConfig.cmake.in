@@ -1,0 +1,20 @@
+# Native Windows package. Both targets expose the public C API only.
+get_filename_component(_wallet_core_prefix "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+
+if (NOT TARGET WalletCore::Shared)
+    add_library(WalletCore::Shared SHARED IMPORTED)
+    set_target_properties(WalletCore::Shared PROPERTIES
+        IMPORTED_LOCATION "${_wallet_core_prefix}/shared/bin/TrustWalletCore.dll"
+        IMPORTED_IMPLIB "${_wallet_core_prefix}/shared/lib/TrustWalletCore.lib"
+        INTERFACE_INCLUDE_DIRECTORIES "${_wallet_core_prefix}/include")
+endif ()
+
+if (NOT TARGET WalletCore::Static)
+    add_library(WalletCore::Static STATIC IMPORTED)
+    set_target_properties(WalletCore::Static PROPERTIES
+        IMPORTED_LOCATION "${_wallet_core_prefix}/static/lib/TrustWalletCore.lib"
+        INTERFACE_INCLUDE_DIRECTORIES "${_wallet_core_prefix}/include"
+        INTERFACE_LINK_LIBRARIES "${_wallet_core_prefix}/static/lib/TrezorCrypto.lib;${_wallet_core_prefix}/static/lib/protobuf.lib;${_wallet_core_prefix}/static/lib/wallet_core_rs.lib;@TW_WINDOWS_NATIVE_LIBRARIES@;bcrypt")
+endif ()
+
+unset(_wallet_core_prefix)

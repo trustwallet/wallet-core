@@ -9,13 +9,14 @@
 #include <HexCoding.h>
 #include <PrivateKey.h>
 
+#include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
 
 extern std::string TESTS_ROOT;
 
 std::string load_file(const std::string& path) {
-    std::ifstream stream(path);
+    std::ifstream stream(std::filesystem::u8path(path));
     std::string content((std::istreambuf_iterator<char>(stream)), (std::istreambuf_iterator<char>()));
     return content;
 }

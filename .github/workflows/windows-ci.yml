@@ -1,0 +1,52 @@
+name: Windows x64 CI
+
+on:
+  push:
+    branches: [ dev, master, 'feat/windows-*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - name: Install MSYS2 build utilities
+        shell: pwsh
+        run: |
+          & C:\msys64\usr\bin\bash.exe -lc 'pacman -S --needed --noconfirm ruby perl'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Cache dependency sources and host tools
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: |
+            build/local
+            build/windows/boost_1_83_0*
+            build/windows/protobuf-host
+            build/windows/protobuf-plugin
+            build/windows/tools
+          key: windows-x64-dependencies-${{ hashFiles('tools/windows-build.ps1', 'tools/dependencies-version', 'protobuf-plugin/**') }}
+      - name: Build, package and verify both libraries
+        shell: powershell
+        run: tools/windows-build.ps1 -Msys2Root C:\msys64 -Jobs 4
+      - name: Save logs and test reports
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: windows-x64-logs
+          path: build/windows/logs
+          if-no-files-found: warn
+      - name: Save verified package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: wallet-core-windows-x64
+          path: build/windows/WalletCore-Windows-x64.zip
+          if-no-files-found: error
