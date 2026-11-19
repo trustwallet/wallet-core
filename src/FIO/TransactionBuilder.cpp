@@ -69,11 +69,15 @@ string TransactionBuilder::actionName(const Proto::SigningInput& input) {
     }
 }
 
-string TransactionBuilder::sign(Proto::SigningInput in) {
+Result<string, Common::Proto::SigningError> TransactionBuilder::sign(Proto::SigningInput in) {
     PrivateKey privateKey(in.private_key(), TWCurveSECP256k1);
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    Address owner(publicKey);
-    
+    const auto ownerResult = Address::fromPublicKey(publicKey);
+    if (!ownerResult) {
+        return Result<string, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_private_key);
+    }
+    const auto owner = ownerResult.payload();
+
     string json;
     if (in.action().has_register_fio_address_message()) {
         const auto action = in.action().register_fio_address_message();
@@ -126,7 +130,7 @@ string TransactionBuilder::sign(Proto::SigningInput in) {
         json = TransactionBuilder::createAddBundledTransactions(owner, privateKey, action.fio_address(),
             action.bundle_sets(), getChainParams(in), action.fee(), in.tpid(), in.expiry());
     }
-    return json;
+    return Result<string, Common::Proto::SigningError>::success(std::move(json));
 }
 
 string TransactionBuilder::createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 

@@ -79,7 +79,7 @@ TEST(FIOSigner, compile) {
         // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
         const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
         const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
-        const Address addr6M(pubKey6M);
+        const auto addr6M = Address::fromPublicKey(pubKey6M).payload();
         Proto::SigningInput input;
         input.set_expiry(1579790000);
         input.set_tpid("rewards@wallet");

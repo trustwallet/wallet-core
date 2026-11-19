@@ -34,7 +34,7 @@ TEST(FIOCompiler, CompileWithSignatures) {
     // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
     PrivateKey privateKey = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
     PublicKey pubKeyA = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    Address addrA(pubKeyA);
+    auto addrA = Address::fromPublicKey(pubKeyA).payload();
     const auto coin = TWCoinTypeFIO;
 
     /// Step 1: Prepare transaction input (protobuf)    

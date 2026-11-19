@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include <new>
 #include <optional>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace TW {
 
@@ -74,11 +76,11 @@ struct Result {
         return *this;
     }
 
-    Result(Result&& other) {
+    Result(Result&& other) noexcept : success_(other.success_) {
         if (success_) {
-            new (&storage_) T(other.get<T>());
+            new (&storage_) T(std::move(other.get<T>()));
         } else {
-            new (&storage_) E(other.get<E>());
+            new (&storage_) E(std::move(other.get<E>()));
         }
     }
 
@@ -132,12 +134,12 @@ struct Result {
   private:
     template <typename U>
     const U& get() const {
-        return *reinterpret_cast<const U*>(&storage_);
+        return *std::launder(static_cast<const U*>(static_cast<const void*>(&storage_)));
     }
 
     template <typename U>
     U& get() {
-        return *reinterpret_cast<U*>(&storage_);
+        return *std::launder(static_cast<U*>(static_cast<void*>(&storage_)));
     }
 };
 

@@ -638,7 +638,7 @@ TEST(HDWallet, NearKey) {
         EXPECT_EQ(hex(privateKey.bytes), "35e0d9631bd538d5569266abf6be7a9a403ebfda92ddd49b3268e35360a6c2dd");
         const auto p = privateKey.getPublicKey(TWPublicKeyTypeED25519);
         EXPECT_EQ(hex(p.bytes), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
-        EXPECT_EQ(NEAR::Address(p).string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
+        EXPECT_EQ(NEAR::Address::fromPublicKey(p).payload().string(), "b8d5df25047841365008f30fb6b30dd820e9a84d869f05623d114e96831f2fbf");
     }
 }
 

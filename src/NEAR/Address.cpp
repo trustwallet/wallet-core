@@ -6,6 +6,7 @@
 #include "Base58.h"
 #include "HexCoding.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 using namespace TW;
@@ -49,11 +50,14 @@ Address::Address(const std::string& string) {
     }
 }
 
-/// Initializes a NEAR address from a public key.
-Address::Address(const PublicKey& publicKey) {
-    // copy the raw, compressed key data
-    auto data = publicKey.compressed().bytes;
-    std::copy(std::begin(data), std::end(data), std::begin(bytes));
+/// Creates a NEAR address from an ED25519 public key.
+Result<Address> Address::fromPublicKey(const PublicKey& publicKey) {
+    if (publicKey.type != TWPublicKeyTypeED25519 || publicKey.bytes.size() != size) {
+        return Result<Address>::failure("Invalid public key type");
+    }
+    std::array<byte, size> addressBytes;
+    std::ranges::copy(publicKey.bytes, addressBytes.begin());
+    return Result<Address>::success(Address(addressBytes));
 }
 
 /// Returns a string representation of the NEAR address.

@@ -25,8 +25,13 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     FIO::Proto::SigningOutput output;
     try {
         const string actionName = TransactionBuilder::actionName(input);
-        const string json = TransactionBuilder::sign(input);
-        output.set_json(json);
+        const auto signResult = TransactionBuilder::sign(input);
+        if (!signResult) {
+            output.set_error(signResult.error());
+            output.set_error_message(Common::Proto::SigningError_Name(signResult.error()));
+            return output;
+        }
+        output.set_json(signResult.payload());
         output.set_action_name(actionName);
     } catch(const std::exception& e) {
         output.set_error(Common::Proto::Error_internal);

@@ -6,6 +6,7 @@
 
 #include "Data.h"
 #include "../PublicKey.h"
+#include "../Result.h"
 
 #include <string>
 #include <optional>
@@ -30,8 +31,8 @@ public:
     /// Initializes a FIO address from a string representation.
     Address(const std::string& string);
 
-    /// Initializes a FIO address from a public key.
-    Address(const PublicKey& publicKey);
+    /// Creates a FIO address from a SECP256k1 public key (compressed or extended).
+    static Result<Address> fromPublicKey(const PublicKey& publicKey);
 
     /// Returns a string representation of the FIO address.
     std::string string() const;
@@ -44,6 +45,8 @@ public:
     static std::string prefix() { return "FIO"; }
 
 private:
+    explicit Address(const std::array<byte, size>& bytes) : bytes(bytes) {}
+
     static uint32_t createChecksum(const Data& bytes);
 
     static std::optional<Data> decodeKeyData(const std::string& string);

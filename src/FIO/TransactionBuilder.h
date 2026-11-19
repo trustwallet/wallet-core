@@ -6,7 +6,9 @@
 
 #include "Transaction.h"
 #include "Address.h"
+#include "../proto/Common.pb.h"
 #include "../proto/FIO.pb.h"
+#include "../Result.h"
 
 #include "Data.h"
 #include "../PrivateKey.h"
@@ -36,7 +38,7 @@ public:
     static const auto ExpirySeconds = 3600;
 
     /// Generic transaction signer: Build a signed transaction, in Json, from the specific SigningInput messages.
-    static std::string sign(Proto::SigningInput in);
+    static Result<std::string, Common::Proto::SigningError> sign(Proto::SigningInput in);
 
     /// Returns an action name according to the given signing input.
     static std::string actionName(const Proto::SigningInput& input);

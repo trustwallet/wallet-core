@@ -6,6 +6,7 @@
 
 #include "Data.h"
 #include "../PublicKey.h"
+#include "../Result.h"
 
 #include <string>
 #include <optional>
@@ -29,8 +30,8 @@ public:
     /// Initializes a NEAR address from a string representation.
     Address(const std::string& string);
 
-    /// Initializes a NEAR address from a public key.
-    Address(const PublicKey& publicKey);
+    /// Creates a NEAR address from an ED25519 public key.
+    static Result<Address> fromPublicKey(const PublicKey& publicKey);
 
     /// Returns a string representation of the NEAR address.
     std::string string() const;
@@ -38,6 +39,9 @@ public:
     friend bool operator==(const Address& lhs, const Address& rhs);
 
     static std::optional<Data> decodeLegacyAddress(const std::string& string);
+
+private:
+    explicit Address(const std::array<byte, size>& bytes) : bytes(bytes) {}
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
