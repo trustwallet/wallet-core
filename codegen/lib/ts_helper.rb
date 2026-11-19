@@ -7,6 +7,10 @@ module TsHelper
           if param.type.name == :data
             type += ' | Buffer'
           end
+          # The WASM bindings accept null only for nullable object parameters.
+          if (param.type.is_class || param.type.is_struct) && param.type.is_nullable
+            type += ' | null'
+          end
           "#{param.name}: #{type}"
         end
         names.join(', ')
@@ -42,6 +46,11 @@ module TsHelper
         else
           t.name
         end
+    end
+
+    # A `_Nullable` return becomes JS null on failure.
+    def self.return_type(t)
+        t.is_nullable ? "#{type(t)} | null" : type(t)
     end
 
     def self.combine_declaration_files

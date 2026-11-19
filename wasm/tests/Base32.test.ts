@@ -50,4 +50,11 @@ describe("Base32", () => {
       "g52w64jworydimrxov5hmn3gpj2gwyttnzxdmndjo5xxiztsojuxg5dxobzhs6i"
     );
   });
+
+  it("test decoding invalid input returns null", () => {
+    const { Base32 } = globalThis.core;
+
+    assert.isNull(Base32.decode("!!!"));
+    assert.equal(Base32.decode("").length, 0);
+  });
 });
