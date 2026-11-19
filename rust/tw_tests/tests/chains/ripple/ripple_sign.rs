@@ -292,6 +292,42 @@ fn test_ripple_sign_token_payment_with_currency_amount() {
 }
 
 #[test]
+fn test_ripple_sign_token_payment_out_of_range_exponent_fails() {
+    let private_key = "574e99f7946cfa2a6ca9368ca72fd37e42583cddb9ecc746aa4cb194ef4b2480"
+        .decode_hex()
+        .unwrap();
+
+    for value in ["1e-4294967294", "100e-4294967296", "1e4294967296"] {
+        let token_payment = Proto::OperationPayment {
+            amount_oneof: AmountType::currency_amount(Proto::CurrencyAmount {
+                currency: "524C555344000000000000000000000000000000".into(),
+                value: value.into(),
+                issuer: "rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De".into(),
+            }),
+            destination: "r4oPb529jpRA1tVTDARmBuZPYB2CJjKFac".into(),
+            ..Proto::OperationPayment::default()
+        };
+        let input = Proto::SigningInput {
+            fee: 12,
+            sequence: 93_674_951,
+            last_ledger_sequence: 187_349_950,
+            account: "rDgEGKXWkHHr1HYq2ETnNAs9MdV4R8Gyt".into(),
+            private_key: private_key.clone().into(),
+            operation_oneof: OperationType::op_payment(token_payment),
+            ..Proto::SigningInput::default()
+        };
+
+        let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+        let output = signer.sign(CoinType::XRP, input);
+        assert_eq!(
+            output.error,
+            SigningError::Error_invalid_requested_token_amount,
+            "{value}"
+        );
+    }
+}
+
+#[test]
 fn test_ripple_sign_escrow_create_0() {
     let private_key = "a3cf20a85b25be4c955f0814718cc7a02eae9195159bd72ede5dd5c4e60d22c4"
         .decode_hex()
