@@ -33,6 +33,14 @@ impl StructuredMessageRenderer {
                     .context(format!("'fields[{index}]' has an empty label"));
             }
 
+            // A ':' here makes ("A: B", "C") render like ("A", "B: C").
+            if field.label.contains(':') {
+                return SigningError::err(SigningErrorType::Error_invalid_params).context(format!(
+                    "'fields[{index}]' label {:?} contains ':', which would make the rendered line ambiguous",
+                    field.label
+                ));
+            }
+
             // An empty value would render a bare "Label:" line, which reads like a truncated
             // message to anyone auditing the signature — and silently disagrees with a peer
             // implementation that writes a placeholder there instead. The caller passes its own
