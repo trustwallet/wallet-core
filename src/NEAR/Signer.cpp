@@ -40,6 +40,13 @@ Proto::SigningOutput Signer::compile(const Data& signature, const PublicKey& pub
         output.set_error_message("Invalid public key type: expected ED25519");
         return output;
     }
+    // The serialized signer key must be the same key that verifies the signature.
+    if (Data(input.public_key().begin(), input.public_key().end()) != publicKey.bytes) {
+        Proto::SigningOutput output;
+        output.set_error(Common::Proto::Error_invalid_params);
+        output.set_error_message("SigningInput.public_key does not match the provided public key");
+        return output;
+    }
     auto preImageResult = signaturePreimage();
     if (!preImageResult) {
         Proto::SigningOutput output;
