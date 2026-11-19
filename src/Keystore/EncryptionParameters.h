@@ -6,6 +6,7 @@
 
 #include "AESParameters.h"
 #include "Data.h"
+#include "../memory/memzero_wrapper.h"
 #include "PBKDF2Parameters.h"
 #include "ScryptParameters.h"
 #include <TrustWalletCore/TWStoredKeyEncryption.h>
@@ -95,7 +96,7 @@ public:
     explicit EncryptedPayload(const nlohmann::json& json);
 
     /// Decrypts the payload with the given password.
-    Data decrypt(const Data& password) const;
+    ZeroizingData decrypt(const Data& password) const;
 
     /// Regenerates the encrypted payload with new recommended encryption parameters.
     ///
