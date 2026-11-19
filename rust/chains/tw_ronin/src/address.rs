@@ -38,7 +38,11 @@ impl FromStr for Address {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // Accept both Ronin and standard addresses.
+        // `ronin:0x...` is supported too, so add `0x` only when it is missing.
         let standard = match s.strip_prefix(RONIN_PREFIX) {
+            Some(ronin_no_prefix) if ronin_no_prefix.starts_with("0x") => {
+                ronin_no_prefix.to_string()
+            },
             Some(ronin_no_prefix) => format!("0x{ronin_no_prefix}"),
             None => s.to_string(),
         };

@@ -15,6 +15,7 @@ namespace TW::Tezos {
 
 static const Data gEdSigPrefix{9, 245, 205, 134, 18};
 static const std::string gMsgPrefix{"Tezos Signed Message:"};
+static constexpr uint8_t gMessageWatermark{0x05};
 
 std::string MessageSigner::inputToPayload(const std::string& input) {
     using namespace std::string_literals;
@@ -37,16 +38,38 @@ std::string MessageSigner::formatMessage(const std::string& message, const std::
     return oss.str();
 }
 
-std::string MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message) {
-    auto signature = privateKey.sign(Hash::blake2b(parse_hex(message), 32), TWCurveED25519);
-    return Base58::encodeCheck(concat(gEdSigPrefix, signature));
+/// Decodes a hex message payload that must start with the 0x05 watermark.
+/// Only off-chain message payloads (0x05) are signed; for operations (0x03) use the Tezos transaction signer.
+static Result<Data> decodeMessagePayload(const std::string& message) {
+    auto decoded = parse_hex_checked(message);
+    if (decoded.isFailure()) {
+        return decoded;
+    }
+    auto payload = decoded.payload();
+    if (payload.empty() || payload[0] != gMessageWatermark) {
+        return Result<Data>::failure("Message must start with the 0x05 watermark");
+    }
+    return Result<Data>::success(std::move(payload));
+}
+
+Result<std::string> MessageSigner::signMessage(const PrivateKey& privateKey, const std::string& message) {
+    const auto payload = decodeMessagePayload(message);
+    if (payload.isFailure()) {
+        return Result<std::string>::failure(payload.error());
+    }
+    auto signature = privateKey.sign(Hash::blake2b(payload.payload(), 32), TWCurveED25519);
+    return Result<std::string>::success(Base58::encodeCheck(concat(gEdSigPrefix, signature)));
 }
 
 bool MessageSigner::verifyMessage(const PublicKey& publicKey, const std::string& message, const std::string& signature) noexcept {
-    auto decoded = Base58::decodeCheck(signature);
     try {
+        const auto payload = decodeMessagePayload(message);
+        if (payload.isFailure()) {
+            return false;
+        }
+        auto decoded = Base58::decodeCheck(signature);
         auto rawSignature = subData(decoded, gEdSigPrefix.size());
-        auto msg = Hash::blake2b(parse_hex(message), 32);
+        auto msg = Hash::blake2b(payload.payload(), 32);
         return publicKey.verify(rawSignature, msg);
     } catch (...) {
         return false;

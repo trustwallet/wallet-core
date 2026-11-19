@@ -29,6 +29,8 @@ fn test_ronin_address_invalid() {
         "roni:EC49280228b0D05Aa8e8b756503254e1eE7835ab", // wrong prefix
         "ronin=EC49280228b0D05Aa8e8b756503254e1eE7835ab", // wrong prefix
         "0xronin:EC49280228b0D05Aa8e8b756503254e1eE7835ab", // wrong prefix
+        "ronin:0x0xEC49280228b0D05Aa8e8b756503254e1eE7835ab", // double 0x prefix
+        "0x0xEC49280228b0D05Aa8e8b756503254e1eE7835ab", // double 0x prefix
         "EC49280228b0D05Aa8e8b756503254e1eE7835",   // too short
         "ronin:EC49280228b0D05Aa8e8b756503254e1eE7835", // too short
         "ronin:ec49280228b0d05aa8e8b756503254e1ee7835", // too short

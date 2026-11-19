@@ -2,6 +2,7 @@ package com.trustwallet.core.app.blockchains.tezos
 
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import wallet.core.jni.CoinType
@@ -24,6 +25,14 @@ class TestTezosMessageSigner {
         assertEquals("edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ", signature)
         val pubKey = privateKey.getPublicKey(CoinType.TEZOS)
         assertTrue(TezosMessageSigner.verifyMessage(pubKey, msg, signature))
+    }
+
+    @Test
+    fun testMessageSignerInvalidPayload() {
+        val data = Numeric.hexStringToByteArray("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a")
+        val privateKey = PrivateKey(data)
+        assertNull(TezosMessageSigner.signMessage(privateKey, "03deadbeef"))
+        assertNull(TezosMessageSigner.signMessage(privateKey, "0x0x03deadbeef"))
     }
 
     @Test

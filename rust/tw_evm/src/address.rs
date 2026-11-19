@@ -163,8 +163,11 @@ impl FromStr for Address {
     type Err = AddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let addr_hex = s.strip_prefix("0x").ok_or(AddressError::MissingPrefix)?;
-        let addr_hash = H160::from_str(addr_hex).map_err(|_| AddressError::FromHexError)?;
+        if !s.starts_with("0x") {
+            return Err(AddressError::MissingPrefix);
+        }
+        // `H160::from_str` strips exactly one `0x` prefix, so `0x0x...` is rejected.
+        let addr_hash = H160::from_str(s).map_err(|_| AddressError::FromHexError)?;
         Ok(Address { bytes: addr_hash })
     }
 }
@@ -267,6 +270,7 @@ mod tests {
             "0xabc",
             "0xaaeb60f3e94c9b9a09f33669435e7ef1beaed",
             "fB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
+            "0x0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359",
         ];
         for test in tests {
             Address::from_str(test).unwrap_err();
