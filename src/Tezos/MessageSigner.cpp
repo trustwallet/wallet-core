@@ -39,6 +39,7 @@ std::string MessageSigner::formatMessage(const std::string& message, const std::
 }
 
 /// Decodes a hex message payload that must start with the 0x05 watermark.
+/// Only off-chain message payloads (0x05) are signed; for operations (0x03) use the Tezos transaction signer.
 static Result<Data> decodeMessagePayload(const std::string& message) {
     auto decoded = parse_hex_checked(message);
     if (decoded.isFailure()) {
