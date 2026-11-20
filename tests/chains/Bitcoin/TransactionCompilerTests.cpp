@@ -3,6 +3,7 @@
 // Copyright © 2017 Trust Wallet.
 
 #include "Coin.h"
+#include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
@@ -371,4 +372,79 @@ TEST(BitcoinCompiler, CompileWithSignaturesV2) {
         "02000000017be4e642bb278018ab12277de9427773ad1c5f5b1d164a157e0d99aa48dc1c1e000000006a473044022078eda020d4b86fcb3af78ef919912e6d79b81164dbbb0b0b96da6ac58a2de4b102201a5fd8d48734d5a02371c4b5ee551a69dca3842edbf577d863cf8ae9fdbbd4590121036666dd712e05a487916384bfcd5973eb53e8038eccbbf97f7eed775b87389536ffffffff01c0aff629010000001976a9145eaaa4f458f9158f86afcba08dd7448d27045e3d88ac00000000"
     );
     EXPECT_EQ(hex(outputV2.txid()), "c19f410bf1d70864220e93bca20f836aaaf8cdde84a46692616e9f4480d54885");
+}
+
+// Regression for #4579: P2SH-P2PKH external compile must not duplicate redeemScript in scriptSig.
+TEST(BitcoinCompiler, CompileWithSignaturesP2SH_P2PKH) {
+    const auto coin = TWCoinTypeBitcoin;
+    const auto privateKey = PrivateKey(
+        parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    const auto pubkeyHash = Hash::ripemd(Hash::sha256(publicKey.bytes));
+    ASSERT_EQ(hex(pubkeyHash), "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+
+    const auto redeemScript = Bitcoin::Script::buildPayToPublicKeyHash(pubkeyHash);
+    const auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
+    const auto utxoScript = Bitcoin::Script::buildPayToScriptHash(scriptHash);
+
+    Bitcoin::Proto::SigningInput signingInput;
+    signingInput.set_coin_type(coin);
+    signingInput.set_hash_type(TWBitcoinSigHashTypeAll);
+    signingInput.set_amount(10'000);
+    signingInput.set_byte_fee(1);
+    signingInput.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
+    signingInput.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
+
+    (*signingInput.mutable_scripts())[hex(scriptHash)] =
+        std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+
+    const auto utxoHash =
+        parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
+    auto* utxo = signingInput.add_utxo();
+    utxo->set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+    utxo->set_amount(50'000);
+    utxo->mutable_out_point()->set_hash(std::string(utxoHash.begin(), utxoHash.end()));
+    utxo->mutable_out_point()->set_index(0);
+    utxo->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    Bitcoin::Proto::TransactionPlan plan;
+    ANY_PLAN(signingInput, plan, coin);
+    ASSERT_EQ(plan.error(), Common::Proto::OK);
+    *signingInput.mutable_plan() = plan;
+
+    const auto txInputData = data(signingInput.SerializeAsString());
+    ASSERT_GT(txInputData.size(), 0ul);
+
+    const auto preImageHashes = TransactionCompiler::preImageHashes(coin, txInputData);
+    Bitcoin::Proto::PreSigningOutput preSigningOutput;
+    ASSERT_TRUE(preSigningOutput.ParseFromArray(preImageHashes.data(), (int)preImageHashes.size()));
+    ASSERT_EQ(preSigningOutput.error(), Common::Proto::OK);
+    ASSERT_EQ(preSigningOutput.hash_public_keys_size(), 1);
+
+    const auto& preImageHash = preSigningOutput.hash_public_keys(0).data_hash();
+    const auto signature = privateKey.signAsDER(data(preImageHash));
+    ASSERT_FALSE(signature.empty());
+
+    const auto compiled = TransactionCompiler::compileWithSignatures(
+        coin, txInputData, {signature}, {publicKey.bytes});
+    Bitcoin::Proto::SigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(compiled.data(), (int)compiled.size()));
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+    ASSERT_EQ(output.transaction().inputs_size(), 1);
+
+    const Bitcoin::Script scriptSig(data(output.transaction().inputs(0).script()));
+    std::vector<Data> pushes;
+    size_t index = 0;
+    uint8_t opcode = 0;
+    Data operand;
+    while (scriptSig.getScriptOp(index, opcode, operand)) {
+        if (!operand.empty()) {
+            pushes.push_back(operand);
+        }
+    }
+
+    // <sig> <pubkey> <redeemScript>; redeemScript must appear once.
+    ASSERT_EQ(pushes.size(), 3ul);
+    EXPECT_EQ(pushes[1], publicKey.bytes);
+    EXPECT_EQ(pushes[2], redeemScript.bytes);
 }
