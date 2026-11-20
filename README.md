@@ -94,7 +94,7 @@ npm install @trustwallet/wallet-core
 
 Please check out the [Go integration sample](https://github.com/trustwallet/wallet-core/tree/master/samples/go).
 
-## Kotlin Multipleplatform (beta)
+## Kotlin Multiplatform (beta)
 
 Please check out the [Kotlin Multiplatform sample](https://github.com/trustwallet/wallet-core/tree/master/samples/kmp)
 
