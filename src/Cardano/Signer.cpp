@@ -14,6 +14,7 @@
 #include <cassert>
 #include <cmath>
 #include <numeric>
+#include <stdexcept>
 #include <vector>
 
 namespace TW::Cardano {
@@ -621,7 +622,7 @@ Data Signer::encodeTransactionWithSig(const Proto::SigningInput &input, const Pu
     Transaction txAux;
     auto buildRet = buildTx(txAux, input);
     if (buildRet != Common::Proto::OK) {
-        throw Common::Proto::SigningError(buildRet);
+        throw std::runtime_error(Common::Proto::SigningError_Name(buildRet));
     }
 
     std::vector<std::pair<Data, Data>> signatures;
