@@ -27,7 +27,7 @@ jobs:
     outputs:
       flags: ${{ steps.scan.outputs.flags }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Post reminder comment (once per PR)
         if: steps.scan.outputs.flags != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           FLAGS: ${{ steps.scan.outputs.flags }}
         with:
@@ -185,7 +185,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Verify sign-off token
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
             let prNumber, pr;

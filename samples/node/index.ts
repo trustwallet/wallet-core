@@ -21,7 +21,7 @@ async function main() {
     CoinType.ethereum,
   ]);
 
-  console.log(`Create wallet: ${mnemonic}`);
+  console.log("Create wallet: stored");
   console.log(`Get Ethereum public key: ${HexCoding.encode(pubKey.data())}`);
   console.log(`Get Ethereum address: ${address.description()}`);
   console.log(`CoinType.ethereum.value = ${CoinType.ethereum.value}`);
