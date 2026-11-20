@@ -263,7 +263,7 @@ int ecdsa_sign_digest_checked(const ecdsa_curve* curve, const uint8_t* priv_key,
 }
 
 Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
-    if (_curve.has_value() && _curve.value() != curve) {
+    if (!supportsCurve(curve)) {
         throw std::invalid_argument("Specified curve is different from the curve of the private key");
     }
     Data result;
@@ -284,6 +284,10 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
             success = true;
         } break;
         case TWCurveED25519ExtendedCardano: {
+            // needs the extension part of a double extended key
+            if (bytes.size() != cardanoKeySize) {
+                break;
+            }
             result.resize(64);
             ed25519_sign_ext(digest.data(), digest.size(), key().data(), extension().data(), result.data());
             success = true;
@@ -324,7 +328,7 @@ Data PrivateKey::sign(const Data& digest, int (*canonicalChecker)(uint8_t by, ui
 }
 
 Data PrivateKey::sign(const Data& digest, TWCurve curve, int (*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
-    if (_curve.has_value() && _curve.value() != curve) {
+    if (!supportsCurve(curve)) {
         throw std::invalid_argument("Specified curve is different from the curve of the private key");
     }
     Data result;
@@ -365,7 +369,7 @@ Data PrivateKey::sign(const Data& digest) const {
 }
 
 Data PrivateKey::signAsDER(const Data& digest) const {
-    if (_curve.has_value() && _curve.value() != TWCurveSECP256k1) {
+    if (!supportsCurve(TWCurveSECP256k1)) {
         throw std::invalid_argument("DER signature is only supported for SECP256k1");
     }
     Data sig(64);
@@ -384,7 +388,7 @@ Data PrivateKey::signAsDER(const Data& digest) const {
 }
 
 Data PrivateKey::signZilliqa(const Data& message) const {
-    if (_curve.has_value() && _curve.value() != TWCurveSECP256k1) {
+    if (!supportsCurve(TWCurveSECP256k1)) {
         throw std::invalid_argument("Zilliqa signature is only supported for SECP256k1");
     }
     Data sig(64);

@@ -126,7 +126,7 @@ struct TWPublicKey* _Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
 /// \param pk  Non-null pointer to a Private key
 /// \param digest Non-null digest block of data
 /// \param curve Eliptic curve
-/// \return Signature as a Non-null block of data
+/// \return Signature, or null if the key is bound to a different curve or signing fails
 TW_EXPORT_METHOD
 TWData* _Nullable TWPrivateKeySign(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest, enum TWCurve curve);
 
@@ -134,7 +134,7 @@ TWData* _Nullable TWPrivateKeySign(struct TWPrivateKey* _Nonnull pk, TWData* _No
 ///
 /// \param pk  Non-null pointer to a Private key
 /// \param digest Non-null digest block of data
-/// \return Signature as a Non-null block of data
+/// \return Signature, or null if the key is bound to a different curve or signing fails
 TW_EXPORT_METHOD
 TWData* _Nullable TWPrivateKeySignAsDER(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull digest);
 
@@ -142,7 +142,7 @@ TWData* _Nullable TWPrivateKeySignAsDER(struct TWPrivateKey* _Nonnull pk, TWData
 ///
 /// \param pk Non-null pointer to a Private key
 /// \param message Non-null message
-/// \return Signature as a Non-null block of data
+/// \return Signature, or null if the key is bound to a different curve or signing fails
 TW_EXPORT_METHOD
 TWData* _Nullable TWPrivateKeySignZilliqaSchnorr(struct TWPrivateKey* _Nonnull pk, TWData* _Nonnull message);
 

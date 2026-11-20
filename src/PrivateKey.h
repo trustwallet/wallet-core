@@ -95,6 +95,9 @@ class PrivateKey {
     /// Returns the public key for this private key.
     PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
+    /// Returns false if the key was constructed with a curve other than `curve`.
+    bool supportsCurve(TWCurve curve) const noexcept { return !_curve.has_value() || *_curve == curve; }
+
     /// Signs a digest using the given ECDSA curve.
     /// If constructed with a curve, an exception will be thrown if the curve does not match the one specified.
     /// @deprecated Use sign(const Data& digest) instead
