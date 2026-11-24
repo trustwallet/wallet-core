@@ -9,6 +9,7 @@
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
 #include "../HexCoding.h"
+#include <algorithm>
 #include <stdexcept>
 #include <cassert>
 
@@ -25,7 +26,8 @@ struct TWStoredKey* _Nullable TWStoredKeyLoad(TWString* _Nonnull path) {
 
 struct TWStoredKey* _Nonnull TWStoredKeyCreateLevelAndEncryption(TWString* _Nonnull name, TWData* _Nonnull password, enum TWStoredKeyEncryptionLevel encryptionLevel, enum TWStoredKeyEncryption encryption) {
     const auto& nameString = *reinterpret_cast<const std::string*>(name);
-    const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+    const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+    const auto& passwordData = passwordHolder.get();
     return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicRandom(nameString, passwordData, encryptionLevel, encryption) };
 }
 
@@ -49,7 +51,8 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryption(TWData* 
     try {
         const auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData, encryption) };
     } catch (...) {
         return nullptr;
@@ -67,7 +70,8 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyWithEncryptionAndDeriva
     try {
         const auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWStoredKey{ KeyStore::StoredKey::createWithPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyData, encryption, derivation) };
     } catch (...) {
         return nullptr;
@@ -82,7 +86,8 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryption(T
     try {
         const auto& privateKeyString = *reinterpret_cast<const std::string*>(privateKey);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWStoredKey{ KeyStore::StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyString, encryption) };
     } catch (...) {
         return nullptr;
@@ -100,7 +105,8 @@ struct TWStoredKey* _Nullable TWStoredKeyImportPrivateKeyEncodedWithEncryptionAn
     try {
         const auto& privateKeyString = *reinterpret_cast<const std::string*>(privateKey);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWStoredKey{ KeyStore::StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(nameString, passwordData, coin, privateKeyString, encryption, derivation) };
     } catch (...) {
         return nullptr;
@@ -116,7 +122,8 @@ struct TWStoredKey* _Nullable TWStoredKeyImportHDWalletWithEncryption(TWString* 
     try {
         const auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
         const auto& nameString = *reinterpret_cast<const std::string*>(name);
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWStoredKey{ KeyStore::StoredKey::createWithMnemonicAddDefaultAddress(nameString, passwordData, mnemonicString, coin, encryption) };
     } catch (...) {
         return nullptr;
@@ -240,9 +247,10 @@ bool TWStoredKeyStoreWithTemporaryFile(struct TWStoredKey* _Nonnull key, TWStrin
 
 TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         const auto data = key->impl.payload.decrypt(passwordData);
-        return TWDataCreateWithBytes(data.data(), data.size());
+        return TWDataCreateWithBytes(data.get().data(), data.get().size());
     } catch (...) {
         return nullptr;
     }
@@ -250,9 +258,10 @@ TWData* _Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey* _Nonnull key,
 
 TWString* _Nullable TWStoredKeyDecryptPrivateKeyEncoded(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         const auto encodedStr = key->impl.decryptPrivateKeyEncoded(passwordData);
-        return TWStringCreateWithUTF8Bytes(encodedStr.c_str());
+        return TWStringCreateWithUTF8Bytes(encodedStr.get().c_str());
     } catch (...) {
         return nullptr;
     }
@@ -264,10 +273,12 @@ bool TWStoredKeyHasPrivateKeyEncoded(struct TWStoredKey* _Nonnull key) {
 
 TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         const auto data = key->impl.payload.decrypt(passwordData);
-        const auto string = std::string(data.begin(), data.end());
-        return TWStringCreateWithUTF8Bytes(string.c_str());
+        // Legacy keystores store the mnemonic NUL-terminated; stop at the first NUL.
+        const auto end = std::ranges::find(data.get(), 0);
+        return TWStringCreateWithRawBytes(data.get().data(), static_cast<std::size_t>(end - data.get().begin()));
     } catch (...) {
         return nullptr;
     }
@@ -275,7 +286,8 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
 
 struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWPrivateKey{ key->impl.privateKey(coin, passwordData) };
     } catch (...) {
         return nullptr;
@@ -284,7 +296,8 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 
 struct TWHDWallet* _Nullable TWStoredKeyWallet(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         return new TWHDWallet{ key->impl.wallet(passwordData) };
     } catch (...) {
         return nullptr;
@@ -302,7 +315,8 @@ TWData* _Nullable TWStoredKeyExportJSON(struct TWStoredKey* _Nonnull key) {
 
 bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         key->impl.fixAddresses(passwordData);
         return true;
     } catch (...) {
@@ -312,7 +326,8 @@ bool TWStoredKeyFixAddresses(struct TWStoredKey* _Nonnull key, TWData* _Nonnull 
 
 bool TWStoredKeyFixEncryption(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {
     try {
-        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto passwordHolder = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
+        const auto& passwordData = passwordHolder.get();
         key->impl.fixEncryption(passwordData);
         return true;
     } catch (...) {

@@ -66,6 +66,17 @@ TEST(TWStoredKey, loadNonexistent) {
     EXPECT_EQ(nokey.get(), nullptr);
 }
 
+TEST(TWStoredKey, decryptLegacyMnemonicDropsTrailingNul) {
+    const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/common/Keystore/Data/legacy-mnemonic.json").c_str()));
+    const auto key = WRAP(TWStoredKey, TWStoredKeyLoad(filename.get()));
+    ASSERT_NE(key, nullptr);
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
+    const auto mnemonic = WRAPS(TWStoredKeyDecryptMnemonic(key.get(), password.get()));
+    ASSERT_NE(mnemonic, nullptr);
+    EXPECT_EQ(string(TWStringUTF8Bytes(mnemonic.get()), TWStringSize(mnemonic.get())),
+              "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
+}
+
 TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
