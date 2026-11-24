@@ -9,6 +9,7 @@
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
 #include "../HexCoding.h"
+#include <algorithm>
 #include <stdexcept>
 #include <cassert>
 
@@ -266,7 +267,9 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
     try {
         const auto passwordData = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
         const auto data = key->impl.payload.decrypt(passwordData.get());
-        return TWStringCreateWithRawBytes(data.get().data(), data.get().size());
+        // Legacy keystores store the mnemonic NUL-terminated; stop at the first NUL.
+        const auto end = std::find(data.get().begin(), data.get().end(), 0);
+        return TWStringCreateWithRawBytes(data.get().data(), static_cast<std::size_t>(end - data.get().begin()));
     } catch (...) {
         return nullptr;
     }
