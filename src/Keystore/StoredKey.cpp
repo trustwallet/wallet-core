@@ -80,7 +80,7 @@ StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
 ) {
     const auto curve = TW::curve(coin);
     const auto privateKey = TW::decodePrivateKey(coin, encodedPrivateKey);
-    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, &encodedPrivateKey);
+    auto key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, &encodedPrivateKey);
     const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto pubKeyType = TW::publicKeyType(coin);
     const auto pubKey = privateKey.getPublicKey(pubKeyType);
