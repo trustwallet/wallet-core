@@ -391,7 +391,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
     const Data data = key.payload.decrypt(gPassword).get();
-    const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
+    const auto mnemonic = string(data.begin(), data.end());
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 
     EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);

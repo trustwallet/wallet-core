@@ -266,8 +266,7 @@ TWString* _Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey* _Nonnull key,
     try {
         const auto passwordData = TW::ZeroizingData(TW::data(TWDataBytes(password), TWDataSize(password)));
         const auto data = key->impl.payload.decrypt(passwordData.get());
-        const auto string = TW::ZeroizingString(std::string(data.get().begin(), data.get().end()));
-        return TWStringCreateWithUTF8Bytes(string.get().c_str());
+        return TWStringCreateWithRawBytes(data.get().data(), data.get().size());
     } catch (...) {
         return nullptr;
     }

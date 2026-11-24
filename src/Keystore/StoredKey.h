@@ -205,7 +205,7 @@ private:
         const Data& data, 
         TWStoredKeyEncryptionLevel encryptionLevel, 
         TWStoredKeyEncryption encryption = TWStoredKeyEncryptionAes128Ctr, 
-        const std::optional<std::string>& encodedStr = std::nullopt
+        const std::string* encodedStr = nullptr
     );
 
     /// Find default account for coin, if exists.  If multiple exist, default is returned.

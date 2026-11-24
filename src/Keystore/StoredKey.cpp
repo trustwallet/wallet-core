@@ -80,7 +80,7 @@ StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
 ) {
     const auto curve = TW::curve(coin);
     const auto privateKey = TW::decodePrivateKey(coin, encodedPrivateKey);
-    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, encodedPrivateKey);
+    StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKey.bytes, TWStoredKeyEncryptionLevelDefault, encryption, &encodedPrivateKey);
     const auto derivationPath = TW::derivationPath(coin, derivation);
     const auto pubKeyType = TW::publicKeyType(coin);
     const auto pubKey = privateKey.getPublicKey(pubKeyType);
@@ -89,7 +89,7 @@ StoredKey StoredKey::createWithEncodedPrivateKeyAddDefaultAddress(
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::optional<std::string>& encodedStr)
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data, TWStoredKeyEncryptionLevel encryptionLevel, TWStoredKeyEncryption encryption, const std::string* encodedStr)
     : type(type), id(), name(std::move(name)), accounts() {
     const auto cipherParams = AESParameters::AESParametersFromEncryption(encryption);
     const auto scryptParams = ScryptParameters::getPreset(encryptionLevel);
