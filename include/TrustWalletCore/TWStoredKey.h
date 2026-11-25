@@ -12,6 +12,7 @@
 #include "TWPrivateKey.h"
 #include "TWStoredKeyEncryptionLevel.h"
 #include "TWStoredKeyEncryption.h"
+#include "TWStoredKeySignResult.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -378,13 +379,14 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 ///        in the account (selects e.g. the SegWit vs Taproot Bitcoin account)
 /// \param password Non-null block of data, password of the stored key
 /// \param input Non-null block of data, serialized SigningInput protobuf (without a private key)
-/// \note Returned object needs to be deleted with \TWDataDelete
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
 /// \note The account's derivation path is used only if the key derived from it reproduces `address`;
-///       otherwise signing fails. Does not modify the stored key.
-/// \return Null pointer on failure (unsupported coin, input contract violated, no matching account,
-///         wrong password); serialized SigningOutput otherwise
+///       otherwise signing fails with \TWStoredKeySignErrorAccountMismatch. Does not modify the stored key.
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is the
+///         serialized SigningOutput on success. Errors the chain signer reports itself (e.g. a Tron
+///         `raw_json` txID mismatch) come back as success, in the SigningOutput's `error` field.
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input);
 
 /// Sealed EIP-191 personal_sign: signs keccak256("\x19Ethereum Signed Message:\n" + len + message) with the
 /// key of the EVM account identified by `coin` and `address` (selected as in \TWStoredKeySign).
@@ -394,10 +396,11 @@ TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinT
 /// \param address Non-null string, address of the stored account to sign with, exactly as stored
 /// \param password Non-null block of data, password of the stored key
 /// \param message Non-null block of data, the raw message bytes
-/// \note Returned object needs to be deleted with \TWDataDelete
-/// \return Null pointer on failure; 65-byte signature r || s || v (v = 27/28) otherwise
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is
+///         the 65-byte signature r || s || v (v = 27/28) on success
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySignEthereumMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignEthereumMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
 
 /// Sealed EIP-712 signing of typed data, with the key of the EVM account identified by `coin` and
 /// `address` (selected as in \TWStoredKeySign).
@@ -407,10 +410,11 @@ TWData* _Nullable TWStoredKeySignEthereumMessage(struct TWStoredKey* _Nonnull ke
 /// \param address Non-null string, address of the stored account to sign with, exactly as stored
 /// \param password Non-null block of data, password of the stored key
 /// \param typedData Non-null string, EIP-712 typed data JSON
-/// \note Returned object needs to be deleted with \TWDataDelete
-/// \return Null pointer on failure; 65-byte signature r || s || v (v = 27/28) otherwise
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is
+///         the 65-byte signature r || s || v (v = 27/28) on success
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWString* _Nonnull typedData);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWString* _Nonnull typedData);
 
 /// Sealed Biz smart-account signature: signs the hash of \TWBizGetEncodedHash computed with
 /// `sender` = `address`, with the key of the EVM account identified by `coin` and `address`. Same
@@ -427,10 +431,11 @@ TWData* _Nullable TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull 
 /// \param typeHash Non-null string, type hash
 /// \param domainSeparatorHash Non-null string, domain separator hash
 /// \param userOpHash Non-null string, hash to wrap (UserOperation hash or EIP-712 hash)
-/// \note Returned object needs to be deleted with \TWDataDelete
-/// \return Null pointer on failure; 65-byte signature r || s || v (v = 27/28) otherwise
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is
+///         the 65-byte signature r || s || v (v = 27/28) on success
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull codeAddress, TWString* _Nonnull codeName, TWString* _Nonnull codeVersion, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull userOpHash);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull codeAddress, TWString* _Nonnull codeName, TWString* _Nonnull codeVersion, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull userOpHash);
 
 /// Sealed EIP-7702 authorization: signs the delegation of the EVM account identified by `coin` and
 /// `address` to `contractAddress`. Same result as \TWEip7702SignAuthorization, without exposing the key.
@@ -442,10 +447,11 @@ TWData* _Nullable TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key,
 /// \param chainId Non-null block of data, chain id (big endian)
 /// \param contractAddress Non-null string, address of the contract the account delegates to
 /// \param nonce Non-null block of data, account nonce (big endian)
-/// \note Returned object needs to be deleted with \TWStringDelete
-/// \return Null pointer on failure; signed authorization JSON otherwise
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is
+///         the signed authorization JSON as UTF-8 bytes on success
 TW_EXPORT_METHOD
-TWString* _Nullable TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
 
 /// Sealed Tron message signing (TronWeb signMessageV2): signs
 /// keccak256("\x19TRON Signed Message:\n" + len + message) with the key of the Tron account identified
@@ -457,26 +463,28 @@ TWString* _Nullable TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Non
 /// \param address Non-null string, address of the stored account to sign with, exactly as stored
 /// \param password Non-null block of data, password of the stored key
 /// \param message Non-null block of data, the raw message bytes
-/// \note Returned object needs to be deleted with \TWDataDelete
-/// \return Null pointer on failure; 65-byte signature r || s || v (v = 27/28) otherwise
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is
+///         the 65-byte signature r || s || v (v = 27/28) on success
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
 
 /// Sealed Solana message signing: ed25519 signature over the raw message bytes with the key of the
 /// Solana account identified by `coin` and `address` (selected as in \TWStoredKeySign). For a UTF-8
 /// message, the same signature as \TWMessageSignerSign for Solana (base58-decoded). Refuses bytes that
-/// are exactly a legacy or v0 transaction message (complete, valid header / indexes, no extra bytes),
-/// so it never produces a transaction signature.
+/// are exactly a legacy or v0 transaction message (complete, valid header / indexes, no extra bytes)
+/// with \TWStoredKeySignErrorTransactionBytesRefused, so it never produces a transaction signature.
 ///
 /// \param key Non-null pointer to a stored key
 /// \param coin coin type of the signing account; must be Solana
 /// \param address Non-null string, address of the stored account to sign with, exactly as stored
 /// \param password Non-null block of data, password of the stored key
 /// \param message Non-null block of data, the raw message bytes
-/// \note Returned object needs to be deleted with \TWDataDelete
-/// \return Null pointer on failure; 64-byte ed25519 signature otherwise
+/// \note Returned object needs to be deleted with \TWStoredKeySignResultDelete
+/// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is
+///         the 64-byte ed25519 signature on success
 TW_EXPORT_METHOD
-TWData* _Nullable TWStoredKeySignSolanaMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignSolanaMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
 
 /// Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 ///

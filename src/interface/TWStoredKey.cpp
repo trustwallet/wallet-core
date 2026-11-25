@@ -10,6 +10,7 @@
 #include "../Keystore/StoredKey.h"
 #include "../Keystore/SealedSigner.h"
 #include "../HexCoding.h"
+#include <functional>
 #include <stdexcept>
 #include <cassert>
 
@@ -283,101 +284,82 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
     }
 }
 
-TWData* _Nullable TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input) {
+// Sealed signing: every call returns a result object, never null. The sealed functions map every
+// failure to an error code themselves; the catch here only covers failures outside them (e.g. out of
+// memory while copying the arguments).
+static struct TWStoredKeySignResult* _Nonnull sealedResult(const std::function<TW::Keystore::SealedSignResult()>& body) {
     try {
+        return new TWStoredKeySignResult{body()};
+    } catch (...) {
+        return new TWStoredKeySignResult{TW::Keystore::SealedSignResult::failure(TWStoredKeySignErrorInternal, "unexpected exception")};
+    }
+}
+
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        const auto inputData = TW::data(TWDataBytes(input), TWDataSize(input));
-        const auto output = TW::Keystore::sealedSign(key->impl, coin, addressString, passwordData, inputData);
-        if (output.empty()) {
-            return nullptr;
-        }
-        return TWDataCreateWithBytes(output.data(), output.size());
-    } catch (...) {
-        return nullptr;
-    }
+        const auto& inputData = *reinterpret_cast<const TW::Data*>(input);
+        return TW::Keystore::sealedSign(key->impl, coin, addressString, passwordData, inputData);
+    });
 }
 
-static TWData* _Nullable sealedDataResult(const TW::Data& output) {
-    if (output.empty()) {
-        return nullptr;
-    }
-    return TWDataCreateWithBytes(output.data(), output.size());
-}
-
-TWData* _Nullable TWStoredKeySignEthereumMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
-    try {
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignEthereumMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         const auto& messageData = *reinterpret_cast<const TW::Data*>(message);
-        return sealedDataResult(TW::Keystore::sealedSignEthereumPersonalMessage(key->impl, coin, addressString, passwordData, messageData));
-    } catch (...) {
-        return nullptr;
-    }
+        return TW::Keystore::sealedSignEthereumPersonalMessage(key->impl, coin, addressString, passwordData, messageData);
+    });
 }
 
-TWData* _Nullable TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWString* _Nonnull typedData) {
-    try {
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWString* _Nonnull typedData) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         const auto& typedDataString = *reinterpret_cast<const std::string*>(typedData);
-        return sealedDataResult(TW::Keystore::sealedSignEthereumTypedData(key->impl, coin, addressString, passwordData, typedDataString));
-    } catch (...) {
-        return nullptr;
-    }
+        return TW::Keystore::sealedSignEthereumTypedData(key->impl, coin, addressString, passwordData, typedDataString);
+    });
 }
 
-TWData* _Nullable TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
-    try {
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         const auto& messageData = *reinterpret_cast<const TW::Data*>(message);
-        return sealedDataResult(TW::Keystore::sealedSignTronMessage(key->impl, coin, addressString, passwordData, messageData));
-    } catch (...) {
-        return nullptr;
-    }
+        return TW::Keystore::sealedSignTronMessage(key->impl, coin, addressString, passwordData, messageData);
+    });
 }
 
-TWData* _Nullable TWStoredKeySignSolanaMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
-    try {
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignSolanaMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
         const auto& messageData = *reinterpret_cast<const TW::Data*>(message);
-        return sealedDataResult(TW::Keystore::sealedSignSolanaMessage(key->impl, coin, addressString, passwordData, messageData));
-    } catch (...) {
-        return nullptr;
-    }
+        return TW::Keystore::sealedSignSolanaMessage(key->impl, coin, addressString, passwordData, messageData);
+    });
 }
 
-TWData* _Nullable TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull codeAddress, TWString* _Nonnull codeName, TWString* _Nonnull codeVersion, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull userOpHash) {
-    try {
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull codeAddress, TWString* _Nonnull codeName, TWString* _Nonnull codeVersion, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull userOpHash) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        const auto& chainIdData = *reinterpret_cast<const TW::Data*>(chainId);
-        return sealedDataResult(TW::Keystore::sealedSignBizUserOpHash(
-            key->impl, coin, addressString, passwordData, chainIdData,
+        return TW::Keystore::sealedSignBizUserOpHash(
+            key->impl, coin, addressString, passwordData, *reinterpret_cast<const TW::Data*>(chainId),
             *reinterpret_cast<const std::string*>(codeAddress), *reinterpret_cast<const std::string*>(codeName),
             *reinterpret_cast<const std::string*>(codeVersion), *reinterpret_cast<const std::string*>(typeHash),
-            *reinterpret_cast<const std::string*>(domainSeparatorHash), *reinterpret_cast<const std::string*>(userOpHash)));
-    } catch (...) {
-        return nullptr;
-    }
+            *reinterpret_cast<const std::string*>(domainSeparatorHash), *reinterpret_cast<const std::string*>(userOpHash));
+    });
 }
 
-TWString* _Nullable TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce) {
-    try {
+struct TWStoredKeySignResult* _Nonnull TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce) {
+    return sealedResult([&] {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);
         const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
-        const auto signedAuthorization = TW::Keystore::sealedSignEip7702Authorization(
+        return TW::Keystore::sealedSignEip7702Authorization(
             key->impl, coin, addressString, passwordData, *reinterpret_cast<const TW::Data*>(chainId),
             *reinterpret_cast<const std::string*>(contractAddress), *reinterpret_cast<const TW::Data*>(nonce));
-        if (signedAuthorization.empty()) {
-            return nullptr;
-        }
-        return TWStringCreateWithUTF8Bytes(signedAuthorization.c_str());
-    } catch (...) {
-        return nullptr;
-    }
+    });
 }
 
 struct TWHDWallet* _Nullable TWStoredKeyWallet(struct TWStoredKey* _Nonnull key, TWData* _Nonnull password) {

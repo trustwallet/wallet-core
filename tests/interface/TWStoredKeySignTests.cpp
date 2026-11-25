@@ -4,7 +4,8 @@
 //
 // S2.1 — C ABI sealed-signing test (Security Layer, Phase 2).
 // Drives TWStoredKeySign across the extern "C" boundary and proves it is byte-identical to the
-// current extract-key-then-sign flow (TWStoredKeyPrivateKey + TWAnySignerSign) for Ethereum.
+// current extract-key-then-sign flow (TWStoredKeyPrivateKey + TWAnySignerSign) for Ethereum, and that
+// failures come back as error codes.
 
 #include "Data.h"
 #include "HexCoding.h"
@@ -53,7 +54,10 @@ TEST(TWStoredKeySign, EthereumEndToEndByteIdentical) {
     const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, nullptr));
     ASSERT_NE(account.get(), nullptr);
     const auto address = WRAPS(TWAccountAddress(account.get()));
-    const auto sealed = WRAPD(TWStoredKeySign(key.get(), TWCoinTypeEthereum, address.get(), password.get(), input.get()));
+    const auto result = WRAP(TWStoredKeySignResult, TWStoredKeySign(key.get(), TWCoinTypeEthereum, address.get(), password.get(), input.get()));
+    ASSERT_EQ(TWStoredKeySignResultError(result.get()), TWStoredKeySignErrorOk);
+    EXPECT_EQ(TWStringSize(WRAPS(TWStoredKeySignResultErrorMessage(result.get())).get()), 0ul);
+    const auto sealed = WRAPD(TWStoredKeySignResultData(result.get()));
     ASSERT_NE(sealed.get(), nullptr);
     const auto sealedData = data(TWDataBytes(sealed.get()), TWDataSize(sealed.get()));
 
@@ -76,18 +80,29 @@ TEST(TWStoredKeySign, EthereumEndToEndByteIdentical) {
     EXPECT_FALSE(out.encoded().empty());
 }
 
-TEST(TWStoredKeySign, NoMatchingAccountReturnsNull) {
+// Failures come back as a result with an error code, no data and a description — never as null.
+TEST(TWStoredKeySign, FailuresReturnErrorCodes) {
     const auto mnemonic = STRING("team engine square letter hero song dizzy scrub tornado fabric divert saddle");
     const auto name = STRING("name");
     const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
+    const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("wrong"), 5));
     const auto key = WRAP(TWStoredKey, TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), TWCoinTypeEthereum));
+    const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeEthereum, nullptr));
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+    const auto inputBytes = sealedEthTransferInput();
+    const auto input = WRAPD(TWDataCreateWithBytes(inputBytes.data(), inputBytes.size()));
+    const auto otherAddress = STRING("0x3535353535353535353535353535353535353535");
+    const auto garbage = DATA("ffffffff");
 
-    const auto input = DATA("00");
-    // No Bitcoin account in this keystore (and the input is not a SigningInput) -> null.
-    const auto address = STRING("bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
-    TWData* out = TWStoredKeySign(key.get(), TWCoinTypeBitcoin, address.get(), password.get(), input.get());
-    EXPECT_EQ(out, nullptr);
-    if (out != nullptr) {
-        TWDataDelete(out);
-    }
+    const auto expectFailure = [](TWStoredKeySignResult* raw, TWStoredKeySignError expected) {
+        ASSERT_NE(raw, nullptr);
+        const auto result = WRAP(TWStoredKeySignResult, raw);
+        EXPECT_EQ(TWStoredKeySignResultError(result.get()), expected);
+        EXPECT_EQ(TWStoredKeySignResultData(result.get()), nullptr);
+        EXPECT_GT(TWStringSize(WRAPS(TWStoredKeySignResultErrorMessage(result.get())).get()), 0ul);
+    };
+    expectFailure(TWStoredKeySign(key.get(), TWCoinTypeCosmos, address.get(), password.get(), input.get()), TWStoredKeySignErrorUnsupportedCoin);
+    expectFailure(TWStoredKeySign(key.get(), TWCoinTypeEthereum, address.get(), password.get(), garbage.get()), TWStoredKeySignErrorInvalidInput);
+    expectFailure(TWStoredKeySign(key.get(), TWCoinTypeEthereum, otherAddress.get(), password.get(), input.get()), TWStoredKeySignErrorAccountNotFound);
+    expectFailure(TWStoredKeySign(key.get(), TWCoinTypeEthereum, address.get(), wrongPassword.get(), input.get()), TWStoredKeySignErrorWrongPassword);
 }

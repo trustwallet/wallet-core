@@ -13,6 +13,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "uint256.h"
+#include "Keystore/EncryptionParameters.h"
 #include "Keystore/SealedSigner.h"
 #include "Keystore/StoredKey.h"
 #include "proto/Bitcoin.pb.h"
@@ -60,6 +61,13 @@ static Data sealedSerialize(const google::protobuf::MessageLite& message) {
     return TW::data(message.SerializeAsString());
 }
 
+// The output of a call that must succeed (fails the test, and returns empty, otherwise).
+static Data sealedOk(const SealedSignResult& result) {
+    EXPECT_EQ(result.error, TWStoredKeySignErrorOk) << result.message;
+    EXPECT_STREQ(result.message, "");
+    return result.data;
+}
+
 static Account sealedOnlyAccount(const StoredKey& key, TWCoinType coin) {
     const auto accounts = key.getAccounts(coin);
     EXPECT_EQ(accounts.size(), 1ul);
@@ -85,7 +93,7 @@ TEST(SealedSigner, EthereumByteIdentical) {
     const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeEthereum, account.derivationPath);
     const auto baseline = sealedEthBaseline(pk.bytes);
 
-    const auto sealed = sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(sealedEthTransferNoKey()));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(sealedEthTransferNoKey())));
 
     Ethereum::Proto::SigningOutput sealedOut;
     ASSERT_TRUE(sealedOut.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
@@ -105,17 +113,17 @@ TEST(SealedSigner, EthereumCustomPathAccountByteIdentical) {
     key.addAccount(customAddress, TWCoinTypeEthereum, TWDerivationDefault, customPath, "", "");
 
     const auto input = sealedSerialize(sealedEthTransferNoKey());
-    EXPECT_EQ(sealedSign(key, TWCoinTypeEthereum, customAddress, gSealedPassword, input), sealedEthBaseline(customKey.bytes));
+    EXPECT_EQ(sealedOk(sealedSign(key, TWCoinTypeEthereum, customAddress, gSealedPassword, input)), sealedEthBaseline(customKey.bytes));
     // The default account in the same keystore still signs with the default key.
     const auto defaultKey = key.wallet(gSealedPassword).getKey(TWCoinTypeEthereum, defaultAccount.derivationPath);
-    EXPECT_EQ(sealedSign(key, TWCoinTypeEthereum, defaultAccount.address, gSealedPassword, input), sealedEthBaseline(defaultKey.bytes));
+    EXPECT_EQ(sealedOk(sealedSign(key, TWCoinTypeEthereum, defaultAccount.address, gSealedPassword, input)), sealedEthBaseline(defaultKey.bytes));
     EXPECT_EQ(key.accounts.size(), 2ul);
 }
 
 TEST(SealedSigner, PrivateKeyKeystoreByteIdentical) {
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeEthereum, gSealedRawKey);
     const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
-    const auto sealed = sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(sealedEthTransferNoKey()));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(sealedEthTransferNoKey())));
     EXPECT_FALSE(sealed.empty());
     EXPECT_EQ(sealed, sealedEthBaseline(gSealedRawKey));
 }
@@ -161,7 +169,7 @@ TEST(SealedSigner, EvmSharedDerivationChainsByteIdentical) {
         const auto pk = wallet.getKey(coin, account->derivationPath);
         for (const bool eip1559 : {false, true}) {
             const auto input = sealedEvmTransferNoKey(chainId, eip1559);
-            const auto sealed = sealedSign(key, coin, account->address, gSealedPassword, sealedSerialize(input));
+            const auto sealed = sealedOk(sealedSign(key, coin, account->address, gSealedPassword, sealedSerialize(input)));
             ASSERT_FALSE(sealed.empty()) << coin << " eip1559=" << eip1559;
             EXPECT_EQ(sealed, sealedEvmBaseline(input, pk.bytes)) << coin << " eip1559=" << eip1559;
         }
@@ -181,11 +189,11 @@ TEST(SealedSigner, EvmOwnDerivationChainByteIdentical) {
     const auto ethPk = wallet.getKey(TWCoinTypeEthereum, ethAccount.derivationPath);
 
     const auto input = sealedEvmTransferNoKey(61, false);
-    const auto sealed = sealedSign(key, TWCoinTypeEthereumClassic, account->address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeEthereumClassic, account->address, gSealedPassword, sealedSerialize(input)));
     EXPECT_EQ(sealed, sealedEvmBaseline(input, pk.bytes));
     EXPECT_NE(sealed, sealedEvmBaseline(input, ethPk.bytes));
 
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereumClassic, ethAccount.address, gSealedPassword, sealedSerialize(input)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeEthereumClassic, ethAccount.address, gSealedPassword, sealedSerialize(input)).error, TWStoredKeySignErrorAccountNotFound);
 }
 
 // ERC-4337 UserOperation (v0.7, Biz4337 batch), as the app's `signUserOperation` builds it.
@@ -212,7 +220,7 @@ TEST(SealedSigner, EvmUserOperationV07ByteIdentical) {
     auto verificationGasLimit = store(uint256_t(1000000));
     userOp.set_verification_gas_limit(verificationGasLimit.data(), verificationGasLimit.size());
 
-    const auto sealed = sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(input)));
     Ethereum::Proto::SigningOutput out;
     ASSERT_TRUE(out.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
     EXPECT_EQ(out.error(), Common::Proto::OK) << out.error_message();
@@ -235,7 +243,7 @@ TEST(SealedSigner, EvmEip7702SetCodeByteIdentical) {
     input.set_to_address(account->address);
     input.mutable_eip7702_authorization()->set_address("0x3535353535353535353535353535353535353535");
 
-    const auto sealed = sealedSign(key, TWCoinTypeSmartChain, account->address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeSmartChain, account->address, gSealedPassword, sealedSerialize(input)));
     Ethereum::Proto::SigningOutput out;
     ASSERT_TRUE(out.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
     EXPECT_EQ(out.error(), Common::Proto::OK) << out.error_message();
@@ -250,7 +258,7 @@ TEST(SealedSigner, EvmPrivateKeyKeystoreWithoutEthereumAccount) {
     ASSERT_TRUE(key.getAccounts(TWCoinTypeEthereum).empty());
     const auto account = sealedOnlyAccount(key, TWCoinTypeSmartChain);
     const auto input = sealedEvmTransferNoKey(56, true);
-    const auto sealed = sealedSign(key, TWCoinTypeSmartChain, account.address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeSmartChain, account.address, gSealedPassword, sealedSerialize(input)));
     ASSERT_FALSE(sealed.empty());
     EXPECT_EQ(sealed, sealedEvmBaseline(input, gSealedRawKey));
 }
@@ -258,7 +266,7 @@ TEST(SealedSigner, EvmPrivateKeyKeystoreWithoutEthereumAccount) {
 TEST(SealedSigner, UnsupportedCoinReturnsEmpty) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeCosmos);
     const auto account = sealedOnlyAccount(key, TWCoinTypeCosmos);
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeCosmos, account.address, gSealedPassword, TW::data(std::string("anything"))).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeCosmos, account.address, gSealedPassword, TW::data(std::string("anything"))).error, TWStoredKeySignErrorUnsupportedCoin);
 }
 
 // No account for (coin, address): fail closed, and never add one as a side effect of signing.
@@ -266,7 +274,7 @@ TEST(SealedSigner, UnknownAddressReturnsEmptyWithoutMutating) {
     auto key = StoredKey::createWithMnemonic("n", gSealedPassword, gSealedMnemonic, TWStoredKeyEncryptionLevelDefault);
     const auto defaultAddress = key.wallet(gSealedPassword).deriveAddress(TWCoinTypeEthereum);
     const auto out = sealedSign(key, TWCoinTypeEthereum, defaultAddress, gSealedPassword, sealedSerialize(sealedEthTransferNoKey()));
-    EXPECT_TRUE(out.empty());
+    EXPECT_EQ(out.error, TWStoredKeySignErrorAccountNotFound);
     EXPECT_EQ(key.accounts.size(), 0ul);
 }
 
@@ -276,7 +284,7 @@ TEST(SealedSigner, AccountPathNotMatchingAddressRejected) {
     const auto otherAddress = "0x0000000000000000000000000000000000000001";
     key.addAccount(otherAddress, TWCoinTypeEthereum, TWDerivationDefault, DerivationPath("m/44'/60'/0'/0/0"), "", "");
     const auto out = sealedSign(key, TWCoinTypeEthereum, otherAddress, gSealedPassword, sealedSerialize(sealedEthTransferNoKey()));
-    EXPECT_TRUE(out.empty());
+    EXPECT_EQ(out.error, TWStoredKeySignErrorAccountMismatch);
 }
 
 // The same address recorded under two different paths is ambiguous. addAccount() deduplicates by
@@ -286,7 +294,7 @@ TEST(SealedSigner, AmbiguousAccountRejected) {
     const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
     key.accounts.emplace_back(account.address, TWCoinTypeEthereum, TWDerivationDefault, DerivationPath("m/44'/60'/1'/0/0"), "", "");
     const auto out = sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(sealedEthTransferNoKey()));
-    EXPECT_TRUE(out.empty());
+    EXPECT_EQ(out.error, TWStoredKeySignErrorAccountMismatch);
 }
 
 // Private-key keystore imported for another coin has no Ethereum account.
@@ -294,7 +302,7 @@ TEST(SealedSigner, PrivateKeyKeystoreOtherCoinRejected) {
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeBitcoin, gSealedRawKey);
     const auto ethAddress = TW::deriveAddress(TWCoinTypeEthereum, PrivateKey(gSealedRawKey));
     const auto out = sealedSign(key, TWCoinTypeEthereum, ethAddress, gSealedPassword, sealedSerialize(sealedEthTransferNoKey()));
-    EXPECT_TRUE(out.empty());
+    EXPECT_EQ(out.error, TWStoredKeySignErrorAccountNotFound);
     EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
@@ -304,7 +312,7 @@ TEST(SealedSigner, InputWithPrivateKeyRejected) {
     const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
     auto input = sealedEthTransferNoKey();
     input.set_private_key(gSealedRawKey.data(), gSealedRawKey.size());
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(input)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(input)).error, TWStoredKeySignErrorInvalidInput);
 }
 
 // Bytes that are not a valid SigningInput are rejected before the keystore is decrypted.
@@ -312,13 +320,64 @@ TEST(SealedSigner, MalformedInputRejected) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
     const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
     // A wrong password would throw if decryption were reached; malformed input must return first.
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereum, account.address, TW::data(std::string("wrong")), parse_hex("ffffffff")).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeEthereum, account.address, TW::data(std::string("wrong")), parse_hex("ffffffff")).error, TWStoredKeySignErrorInvalidInput);
 }
 
-TEST(SealedSigner, WrongPasswordThrows) {
+TEST(SealedSigner, WrongPasswordReported) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
     const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
-    EXPECT_ANY_THROW(sealedSign(key, TWCoinTypeEthereum, account.address, TW::data(std::string("wrong")), sealedSerialize(sealedEthTransferNoKey())));
+    EXPECT_EQ(sealedSign(key, TWCoinTypeEthereum, account.address, TW::data(std::string("wrong")), sealedSerialize(sealedEthTransferNoKey())).error, TWStoredKeySignErrorWrongPassword);
+}
+
+// The account lookup runs before decryption: an unknown address is reported as such even with a
+// wrong password (no KDF run for a call that cannot succeed).
+TEST(SealedSigner, AccountNotFoundCheckedBeforePassword) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto out = sealedSign(key, TWCoinTypeEthereum, "0x0000000000000000000000000000000000000001", TW::data(std::string("wrong")),
+                                sealedSerialize(sealedEthTransferNoKey()));
+    EXPECT_EQ(out.error, TWStoredKeySignErrorAccountNotFound);
+    EXPECT_TRUE(out.data.empty());
+    EXPECT_STRNE(out.message, "");
+}
+
+// The MAC check passes but the plaintext is not a valid mnemonic / private key: decryption failed,
+// distinct from a wrong password.
+TEST(SealedSigner, CorruptPayloadReportedAsDecryptionFailed) {
+    const auto cipher = AESParameters::AESParametersFromEncryption(TWStoredKeyEncryptionAes128Ctr);
+
+    auto mnemonicKey = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto account = sealedOnlyAccount(mnemonicKey, TWCoinTypeEthereum);
+    mnemonicKey.payload = EncryptedPayload(gSealedPassword, TW::data(std::string("not a valid mnemonic")), cipher, ScryptParameters::minimal());
+    const auto input = sealedSerialize(sealedEthTransferNoKey());
+    EXPECT_EQ(sealedSign(mnemonicKey, TWCoinTypeEthereum, account.address, gSealedPassword, input).error, TWStoredKeySignErrorDecryptionFailed);
+    EXPECT_EQ(sealedSign(mnemonicKey, TWCoinTypeEthereum, account.address, TW::data(std::string("wrong")), input).error, TWStoredKeySignErrorWrongPassword);
+
+    auto rawKey = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeEthereum, gSealedRawKey);
+    const auto rawAccount = sealedOnlyAccount(rawKey, TWCoinTypeEthereum);
+    rawKey.payload = EncryptedPayload(gSealedPassword, Data(32, 0), cipher, ScryptParameters::minimal()); // zero key: invalid
+    EXPECT_EQ(sealedSign(rawKey, TWCoinTypeEthereum, rawAccount.address, gSealedPassword, input).error, TWStoredKeySignErrorDecryptionFailed);
+}
+
+// Every failure carries a fixed, non-empty description; it never echoes the input or the address.
+TEST(SealedSigner, ErrorMessagesAreFixedText) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeEthereum);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeEthereum);
+    auto withKey = sealedEthTransferNoKey();
+    withKey.set_private_key(gSealedRawKey.data(), gSealedRawKey.size());
+    const std::vector<SealedSignResult> failures = {
+        sealedSign(key, TWCoinTypeCosmos, account.address, gSealedPassword, Data()),
+        sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, sealedSerialize(withKey)),
+        sealedSign(key, TWCoinTypeEthereum, "0x0000000000000000000000000000000000000001", gSealedPassword, sealedSerialize(sealedEthTransferNoKey())),
+        sealedSign(key, TWCoinTypeEthereum, account.address, TW::data(std::string("wrong")), sealedSerialize(sealedEthTransferNoKey())),
+    };
+    for (const auto& failure : failures) {
+        EXPECT_NE(failure.error, TWStoredKeySignErrorOk);
+        EXPECT_TRUE(failure.data.empty());
+        const std::string message = failure.message;
+        EXPECT_FALSE(message.empty());
+        EXPECT_EQ(message.find("0x"), std::string::npos) << message;
+        EXPECT_EQ(message.find(account.address), std::string::npos) << message;
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -395,7 +454,7 @@ static void expectUtxoByteIdentical(StoredKey& key, TWCoinType coin, const Accou
     const auto pk = key.wallet(gSealedPassword).getKey(coin, account.derivationPath);
     const auto baseline = sealedUtxoBaseline(coin, input, pk.bytes);
 
-    const auto sealed = sealedSign(key, coin, account.address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, coin, account.address, gSealedPassword, sealedSerialize(input)));
 
     // Decred wraps the V2 result in its own SigningOutput; every other coin uses Bitcoin's.
     BitcoinV2::Proto::SigningOutput result;
@@ -491,7 +550,7 @@ TEST(SealedSigner, BitcoinPsbtByteIdentical) {
     input.set_coin_type(TWCoinTypeBitcoin);
     *input.mutable_signing_v2() = v2;
 
-    const auto sealed = sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(input)));
     Bitcoin::Proto::SigningOutput out;
     ASSERT_TRUE(out.ParseFromArray(sealed.data(), static_cast<int>(sealed.size())));
     ASSERT_EQ(out.signing_result_v2().error(), Common::Proto::OK) << out.signing_result_v2().error_message();
@@ -506,7 +565,7 @@ TEST(SealedSigner, UtxoCoinTypeMismatchRejected) {
     const auto account = sealedOnlyAccount(key, TWCoinTypeLitecoin);
     auto input = sealedUtxoTransferNoKey(TWCoinTypeLitecoin, account, {48, 50, "ltc"}, "ltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu");
     input.set_coin_type(TWCoinTypeBitcoin);
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeLitecoin, account.address, gSealedPassword, sealedSerialize(input)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeLitecoin, account.address, gSealedPassword, sealedSerialize(input)).error, TWStoredKeySignErrorInvalidInput);
 }
 
 // Only the BitcoinV2 envelope is accepted: a legacy V1-only input is rejected.
@@ -517,7 +576,7 @@ TEST(SealedSigner, UtxoWithoutSigningV2Rejected) {
     input.set_amount(1000);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
     input.set_change_address(account.address);
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(input)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(input)).error, TWStoredKeySignErrorInvalidInput);
 }
 
 // A key supplied in either the V1 `private_key` or `signing_v2.private_keys` is rejected.
@@ -528,11 +587,11 @@ TEST(SealedSigner, UtxoInputWithPrivateKeyRejected) {
 
     auto withV1Key = clean;
     withV1Key.add_private_key(gSealedRawKey.data(), gSealedRawKey.size());
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(withV1Key)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(withV1Key)).error, TWStoredKeySignErrorInvalidInput);
 
     auto withV2Key = clean;
     withV2Key.mutable_signing_v2()->add_private_keys(gSealedRawKey.data(), gSealedRawKey.size());
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(withV2Key)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(withV2Key)).error, TWStoredKeySignErrorInvalidInput);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -606,7 +665,7 @@ TEST(SealedSigner, TronByteIdentical) {
     const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeTron, account.derivationPath);
 
     for (const auto& input : {sealedTronTransferNoKey(account.address), sealedTronTrc20NoKey(account.address)}) {
-        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        const auto sealed = sealedOk(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)));
         const auto parsed = sealedTronParse(sealed);
         EXPECT_EQ(parsed.error(), Common::Proto::OK);
         EXPECT_EQ(parsed.signature().size(), 65ul);
@@ -619,7 +678,7 @@ TEST(SealedSigner, TronPrivateKeyKeystoreByteIdentical) {
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeTron, gSealedRawKey);
     const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
     const auto input = sealedTronTransferNoKey(account.address);
-    const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)));
     EXPECT_EQ(sealedTronParse(sealed).error(), Common::Proto::OK);
     EXPECT_EQ(sealed, sealedTronBaseline(input, gSealedRawKey));
 }
@@ -636,7 +695,7 @@ TEST(SealedSigner, TronRawJsonByteIdentical) {
         Tron::Proto::SigningInput input;
         input.set_raw_json(sealedTronRawJson(structuredOut));
 
-        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        const auto sealed = sealedOk(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)));
         const auto parsed = sealedTronParse(sealed);
         EXPECT_EQ(parsed.error(), Common::Proto::OK);
         EXPECT_EQ(sealed, sealedTronBaseline(input, pk.bytes));
@@ -664,7 +723,7 @@ TEST(SealedSigner, TronRawJsonTxIdMismatchRejected) {
     for (const auto& tampered : {wrongTxId, wrongRawDataHex}) {
         Tron::Proto::SigningInput input;
         input.set_raw_json(tampered.dump());
-        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        const auto sealed = sealedOk(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)));
         const auto parsed = sealedTronParse(sealed);
         EXPECT_EQ(parsed.error(), Common::Proto::Error_tx_hash_mismatch);
         EXPECT_TRUE(parsed.signature().empty());
@@ -677,7 +736,7 @@ TEST(SealedSigner, TronInputWithPrivateKeyRejected) {
     const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
     auto input = sealedTronTransferNoKey(account.address);
     input.set_private_key(gSealedRawKey.data(), gSealedRawKey.size());
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)).error, TWStoredKeySignErrorInvalidInput);
 }
 
 // Unknown address (no Tron account with it), and a Tron address used with another coin's account.
@@ -685,8 +744,8 @@ TEST(SealedSigner, TronUnknownAddressRejected) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
     const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
     const auto input = sealedSerialize(sealedTronTransferNoKey(account.address));
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeTron, "THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV", gSealedPassword, input).empty());
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, input).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeTron, "THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV", gSealedPassword, input).error, TWStoredKeySignErrorAccountNotFound);
+    EXPECT_NE(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, input).error, TWStoredKeySignErrorOk);
     EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
@@ -758,7 +817,7 @@ TEST(SealedSigner, SolanaByteIdentical) {
     const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeSolana, account.derivationPath);
 
     for (const auto& input : {sealedSolTransferNoKey(false), sealedSolTransferNoKey(true), sealedSolTokenTransferNoKey()}) {
-        const auto sealed = sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input));
+        const auto sealed = sealedOk(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input)));
         const auto parsed = sealedSolParse(sealed);
         EXPECT_EQ(parsed.error(), Common::Proto::OK) << parsed.error_message();
         EXPECT_FALSE(parsed.encoded().empty());
@@ -771,7 +830,7 @@ TEST(SealedSigner, SolanaPrivateKeyKeystoreByteIdentical) {
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeSolana, gSealedRawKey);
     const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
     const auto input = sealedSolTransferNoKey(false);
-    const auto sealed = sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input));
+    const auto sealed = sealedOk(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input)));
     EXPECT_EQ(sealedSolParse(sealed).error(), Common::Proto::OK);
     EXPECT_EQ(sealed, sealedSolBaseline(input, gSealedRawKey));
 }
@@ -788,7 +847,7 @@ TEST(SealedSigner, SolanaRawMessageByteIdentical) {
         const auto input = sealedSolRawMessageInput(built);
         ASSERT_EQ(input.raw_message().has_v0(), v0);
 
-        const auto sealed = sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input));
+        const auto sealed = sealedOk(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input)));
         const auto parsed = sealedSolParse(sealed);
         EXPECT_EQ(parsed.error(), Common::Proto::OK) << parsed.error_message();
         EXPECT_EQ(sealed, sealedSolBaseline(input, pk.bytes)) << v0;
@@ -812,14 +871,14 @@ TEST(SealedSigner, SolanaInputWithAnyPrivateKeyRejected) {
     createNonce.set_nonce_account_private_key(gSealedRawKey.data(), gSealedRawKey.size());
 
     for (const auto& input : {withKey, withFeePayerKey, withNonceKey}) {
-        EXPECT_TRUE(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input)).empty());
+        EXPECT_EQ(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input)).error, TWStoredKeySignErrorInvalidInput);
     }
 }
 
 TEST(SealedSigner, SolanaUnknownAddressRejected) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
     const auto input = sealedSerialize(sealedSolTransferNoKey(false));
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeSolana, gSealedSolRecipient, gSealedPassword, input).empty());
+    EXPECT_EQ(sealedSign(key, TWCoinTypeSolana, gSealedSolRecipient, gSealedPassword, input).error, TWStoredKeySignErrorAccountNotFound);
     EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
@@ -831,7 +890,7 @@ TEST(SealedSigner, SolanaMessageByteIdentical) {
     const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeSolana, account.derivationPath);
 
     for (const std::string text : {"Hello world", "Sign in to example.com\nNonce: 8f2a", "", "你好"}) {
-        const auto sealed = sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, TW::data(text));
+        const auto sealed = sealedOk(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, TW::data(text)));
 
         Solana::Proto::MessageSigningInput in;
         in.set_private_key(pk.bytes.data(), pk.bytes.size());
@@ -849,7 +908,7 @@ TEST(SealedSigner, SolanaMessageByteIdentical) {
 
     // Non-UTF-8 bytes and an off-chain-message-format (0xff "solana offchain") payload are signed raw.
     for (const auto& bytes : {parse_hex("00ff80fe"), TW::data(std::string("\xff" "solana offchain\x00\x00", 18))}) {
-        const auto sealed = sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, bytes);
+        const auto sealed = sealedOk(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, bytes));
         ASSERT_EQ(sealed.size(), 64ul) << hex(bytes);
         EXPECT_EQ(hex(sealed), hex(pk.sign(bytes, TWCurveED25519))) << hex(bytes);
     }
@@ -867,16 +926,16 @@ TEST(SealedSigner, SolanaMessageThatIsTransactionRejected) {
         const auto txMessage = sealedSolTxMessageBytes(sealedSolBaseline(input, pk.bytes));
         ASSERT_FALSE(txMessage.empty());
         EXPECT_TRUE(isSolanaTransactionMessage(txMessage));
-        EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, txMessage).empty());
+        EXPECT_EQ(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, txMessage).error, TWStoredKeySignErrorTransactionBytesRefused);
         // Wrong password would throw if decryption were reached.
-        EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, TW::data(std::string("wrong")), txMessage).empty());
+        EXPECT_EQ(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, TW::data(std::string("wrong")), txMessage).error, TWStoredKeySignErrorTransactionBytesRefused);
 
         auto padded = txMessage;
         padded.push_back(0);
         const auto truncated = Data(txMessage.begin(), txMessage.end() - 1);
         for (const auto& bytes : {padded, truncated}) {
             EXPECT_FALSE(isSolanaTransactionMessage(bytes));
-            const auto sealed = sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, bytes);
+            const auto sealed = sealedOk(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, bytes));
             EXPECT_EQ(hex(sealed), hex(pk.sign(bytes, TWCurveED25519)));
         }
     }
@@ -945,9 +1004,9 @@ TEST(SealedSigner, SolanaMessageRejectsOtherCoinAndUnknownAddress) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
     const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
     const auto message = TW::data(std::string("hello"));
-    EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeSolana, gSealedSolRecipient, gSealedPassword, message).empty());
-    EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeEthereum, account.address, gSealedPassword, message).empty());
-    EXPECT_ANY_THROW(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, TW::data(std::string("wrong")), message));
+    EXPECT_EQ(sealedSignSolanaMessage(key, TWCoinTypeSolana, gSealedSolRecipient, gSealedPassword, message).error, TWStoredKeySignErrorAccountNotFound);
+    EXPECT_EQ(sealedSignSolanaMessage(key, TWCoinTypeEthereum, account.address, gSealedPassword, message).error, TWStoredKeySignErrorUnsupportedCoin);
+    EXPECT_EQ(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, TW::data(std::string("wrong")), message).error, TWStoredKeySignErrorWrongPassword);
 }
 
 } // namespace TW::Keystore::tests
