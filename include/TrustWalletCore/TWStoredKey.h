@@ -368,6 +368,9 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 ///   `private_key`. `raw_json` keeps the normal signer's checks (`txID` must match the transaction
 ///   rebuilt from `raw_data`, and `raw_data_hex` when present); a mismatch returns a SigningOutput with
 ///   `Error_tx_hash_mismatch`, as on the normal path.
+/// - Solana: serialized `Solana.Proto.SigningInput` for a library-built transaction or with `raw_message`
+///   (dApp transaction); `private_key`, `fee_payer_private_key` and
+///   `create_nonce_account.nonce_account_private_key` must all be empty.
 ///
 /// \param key Non-null pointer to a stored key
 /// \param coin Coin type to sign for
@@ -458,6 +461,22 @@ TWString* _Nullable TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Non
 /// \return Null pointer on failure; 65-byte signature r || s || v (v = 27/28) otherwise
 TW_EXPORT_METHOD
 TWData* _Nullable TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
+
+/// Sealed Solana message signing: ed25519 signature over the raw message bytes with the key of the
+/// Solana account identified by `coin` and `address` (selected as in \TWStoredKeySign). For a UTF-8
+/// message, the same signature as \TWMessageSignerSign for Solana (base58-decoded). Refuses bytes that
+/// are exactly a legacy or v0 transaction message (complete, valid header / indexes, no extra bytes),
+/// so it never produces a transaction signature.
+///
+/// \param key Non-null pointer to a stored key
+/// \param coin coin type of the signing account; must be Solana
+/// \param address Non-null string, address of the stored account to sign with, exactly as stored
+/// \param password Non-null block of data, password of the stored key
+/// \param message Non-null block of data, the raw message bytes
+/// \note Returned object needs to be deleted with \TWDataDelete
+/// \return Null pointer on failure; 64-byte ed25519 signature otherwise
+TW_EXPORT_METHOD
+TWData* _Nullable TWStoredKeySignSolanaMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
 
 /// Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 ///

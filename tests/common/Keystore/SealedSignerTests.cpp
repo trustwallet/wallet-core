@@ -7,6 +7,7 @@
 // extract-then-sign flow, and that it fails closed whenever it cannot prove which key to use.
 
 #include "Coin.h"
+#include "Base58.h"
 #include "Data.h"
 #include "HDWallet.h"
 #include "HexCoding.h"
@@ -19,7 +20,9 @@
 #include "proto/Common.pb.h"
 #include "proto/Decred.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/Solana.pb.h"
 #include "proto/Tron.pb.h"
+#include "rust/Wrapper.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWDerivation.h>
@@ -253,9 +256,9 @@ TEST(SealedSigner, EvmPrivateKeyKeystoreWithoutEthereumAccount) {
 }
 
 TEST(SealedSigner, UnsupportedCoinReturnsEmpty) {
-    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
-    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
-    EXPECT_TRUE(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, TW::data(std::string("anything"))).empty());
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeCosmos);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeCosmos);
+    EXPECT_TRUE(sealedSign(key, TWCoinTypeCosmos, account.address, gSealedPassword, TW::data(std::string("anything"))).empty());
 }
 
 // No account for (coin, address): fail closed, and never add one as a side effect of signing.
@@ -685,6 +688,266 @@ TEST(SealedSigner, TronUnknownAddressRejected) {
     EXPECT_TRUE(sealedSign(key, TWCoinTypeTron, "THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV", gSealedPassword, input).empty());
     EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, input).empty());
     EXPECT_EQ(key.accounts.size(), 1ul);
+}
+
+// ---------------------------------------------------------------------------------------------
+// Solana — library-built transactions, dApp `raw_message` transactions, and off-chain messages
+// ---------------------------------------------------------------------------------------------
+
+static const char* gSealedSolRecipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd";
+static const char* gSealedSolBlockhash = "8oFmGuWUpsy8h8WP8AXTp3yhcLt4gQJRG5GxNcK7jfhX";
+
+static Solana::Proto::SigningInput sealedSolTransferNoKey(bool v0) {
+    Solana::Proto::SigningInput in;
+    in.set_recent_blockhash(gSealedSolBlockhash);
+    in.set_v0_msg(v0);
+    auto& transfer = *in.mutable_transfer_transaction();
+    transfer.set_recipient(gSealedSolRecipient);
+    transfer.set_value(42000);
+    return in;
+}
+
+static Solana::Proto::SigningInput sealedSolTokenTransferNoKey() {
+    Solana::Proto::SigningInput in;
+    in.set_recent_blockhash(gSealedSolBlockhash);
+    auto& transfer = *in.mutable_token_transfer_transaction();
+    transfer.set_token_mint_address("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt");
+    transfer.set_sender_token_address("EDNd1ycsydWYwVmrYZvqYazFqwk1QjBgAUKFjBoz1jKP");
+    transfer.set_recipient_token_address("3WUX9wASxyScbA7brDipioKfXS1XEYkQ4vo3Kej9bKei");
+    transfer.set_amount(4000);
+    transfer.set_decimals(6);
+    return in;
+}
+
+static Data sealedSolBaseline(Solana::Proto::SigningInput in, const Data& keyBytes) {
+    in.set_private_key(keyBytes.data(), keyBytes.size());
+    Data out;
+    anyCoinSign(TWCoinTypeSolana, sealedSerialize(in), out);
+    return out;
+}
+
+static Solana::Proto::SigningOutput sealedSolParse(const Data& out) {
+    Solana::Proto::SigningOutput parsed;
+    EXPECT_TRUE(parsed.ParseFromArray(out.data(), static_cast<int>(out.size())));
+    return parsed;
+}
+
+// dApp form of a signed transaction: its message decoded into `raw_message`, without signatures.
+static Solana::Proto::SigningInput sealedSolRawMessageInput(const Data& signedOutput) {
+    const auto txBytes = Base58::decode(sealedSolParse(signedOutput).encoded());
+    const Rust::TWDataWrapper txData(txBytes);
+    const Rust::TWDataWrapper decoded = Rust::tw_transaction_decoder_decode(static_cast<uint32_t>(TWCoinTypeSolana), txData.get());
+    const auto decodedBytes = decoded.toDataOrDefault();
+    Solana::Proto::DecodingTransactionOutput decodedOut;
+    EXPECT_TRUE(decodedOut.ParseFromArray(decodedBytes.data(), static_cast<int>(decodedBytes.size())));
+    EXPECT_EQ(decodedOut.error(), Common::Proto::OK);
+    Solana::Proto::SigningInput in;
+    *in.mutable_raw_message() = decodedOut.transaction();
+    in.mutable_raw_message()->clear_signatures();
+    return in;
+}
+
+// The unsigned message bytes of a library-built transaction (what its signature covers).
+static Data sealedSolTxMessageBytes(const Data& signedOutput) {
+    return Base58::decode(sealedSolParse(signedOutput).unsigned_tx());
+}
+
+TEST(SealedSigner, SolanaByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeSolana, account.derivationPath);
+
+    for (const auto& input : {sealedSolTransferNoKey(false), sealedSolTransferNoKey(true), sealedSolTokenTransferNoKey()}) {
+        const auto sealed = sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input));
+        const auto parsed = sealedSolParse(sealed);
+        EXPECT_EQ(parsed.error(), Common::Proto::OK) << parsed.error_message();
+        EXPECT_FALSE(parsed.encoded().empty());
+        EXPECT_EQ(sealed, sealedSolBaseline(input, pk.bytes));
+    }
+    EXPECT_EQ(key.accounts.size(), 1ul);
+}
+
+TEST(SealedSigner, SolanaPrivateKeyKeystoreByteIdentical) {
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeSolana, gSealedRawKey);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+    const auto input = sealedSolTransferNoKey(false);
+    const auto sealed = sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input));
+    EXPECT_EQ(sealedSolParse(sealed).error(), Common::Proto::OK);
+    EXPECT_EQ(sealed, sealedSolBaseline(input, gSealedRawKey));
+}
+
+// dApp transactions (raw_message, legacy and v0) sign to the same bytes as the normal path, and to
+// the same transaction as the library-built one they were decoded from.
+TEST(SealedSigner, SolanaRawMessageByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeSolana, account.derivationPath);
+
+    for (const bool v0 : {false, true}) {
+        const auto built = sealedSolBaseline(sealedSolTransferNoKey(v0), pk.bytes);
+        const auto input = sealedSolRawMessageInput(built);
+        ASSERT_EQ(input.raw_message().has_v0(), v0);
+
+        const auto sealed = sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input));
+        const auto parsed = sealedSolParse(sealed);
+        EXPECT_EQ(parsed.error(), Common::Proto::OK) << parsed.error_message();
+        EXPECT_EQ(sealed, sealedSolBaseline(input, pk.bytes)) << v0;
+        EXPECT_EQ(parsed.encoded(), sealedSolParse(built).encoded()) << v0;
+    }
+}
+
+// Every key field must be empty: private_key, fee_payer_private_key, nonce_account_private_key.
+TEST(SealedSigner, SolanaInputWithAnyPrivateKeyRejected) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+
+    auto withKey = sealedSolTransferNoKey(false);
+    withKey.set_private_key(gSealedRawKey.data(), gSealedRawKey.size());
+    auto withFeePayerKey = sealedSolTokenTransferNoKey();
+    withFeePayerKey.set_fee_payer_private_key(gSealedRawKey.data(), gSealedRawKey.size());
+    Solana::Proto::SigningInput withNonceKey;
+    withNonceKey.set_recent_blockhash(gSealedSolBlockhash);
+    auto& createNonce = *withNonceKey.mutable_create_nonce_account();
+    createNonce.set_rent(10000000);
+    createNonce.set_nonce_account_private_key(gSealedRawKey.data(), gSealedRawKey.size());
+
+    for (const auto& input : {withKey, withFeePayerKey, withNonceKey}) {
+        EXPECT_TRUE(sealedSign(key, TWCoinTypeSolana, account.address, gSealedPassword, sealedSerialize(input)).empty());
+    }
+}
+
+TEST(SealedSigner, SolanaUnknownAddressRejected) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto input = sealedSerialize(sealedSolTransferNoKey(false));
+    EXPECT_TRUE(sealedSign(key, TWCoinTypeSolana, gSealedSolRecipient, gSealedPassword, input).empty());
+    EXPECT_EQ(key.accounts.size(), 1ul);
+}
+
+// Off-chain messages: same signature as the Solana message signer (UTF-8), and the raw ed25519
+// signature for any other bytes.
+TEST(SealedSigner, SolanaMessageByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeSolana, account.derivationPath);
+
+    for (const std::string text : {"Hello world", "Sign in to example.com\nNonce: 8f2a", "", "你好"}) {
+        const auto sealed = sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, TW::data(text));
+
+        Solana::Proto::MessageSigningInput in;
+        in.set_private_key(pk.bytes.data(), pk.bytes.size());
+        in.set_message(text);
+        const Rust::TWDataWrapper inData(sealedSerialize(in));
+        const Rust::TWDataWrapper outPtr = Rust::tw_message_signer_sign(static_cast<uint32_t>(TWCoinTypeSolana), inData.get());
+        const auto outBytes = outPtr.toDataOrDefault();
+        Solana::Proto::MessageSigningOutput out;
+        ASSERT_TRUE(out.ParseFromArray(outBytes.data(), static_cast<int>(outBytes.size())));
+        ASSERT_EQ(out.error(), Common::Proto::OK);
+
+        ASSERT_EQ(sealed.size(), 64ul) << text;
+        EXPECT_EQ(hex(sealed), hex(Base58::decode(out.signature()))) << text;
+    }
+
+    // Non-UTF-8 bytes and an off-chain-message-format (0xff "solana offchain") payload are signed raw.
+    for (const auto& bytes : {parse_hex("00ff80fe"), TW::data(std::string("\xff" "solana offchain\x00\x00", 18))}) {
+        const auto sealed = sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, bytes);
+        ASSERT_EQ(sealed.size(), 64ul) << hex(bytes);
+        EXPECT_EQ(hex(sealed), hex(pk.sign(bytes, TWCurveED25519))) << hex(bytes);
+    }
+}
+
+// A "message" that is exactly a transaction message (legacy, v0, SPL) is refused before the keystore
+// is decrypted, so a dApp cannot get a transaction signed this way. The same bytes padded or truncated
+// are not a transaction message and are signed, as in the App.
+TEST(SealedSigner, SolanaMessageThatIsTransactionRejected) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeSolana, account.derivationPath);
+
+    for (const auto& input : {sealedSolTransferNoKey(false), sealedSolTransferNoKey(true), sealedSolTokenTransferNoKey()}) {
+        const auto txMessage = sealedSolTxMessageBytes(sealedSolBaseline(input, pk.bytes));
+        ASSERT_FALSE(txMessage.empty());
+        EXPECT_TRUE(isSolanaTransactionMessage(txMessage));
+        EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, txMessage).empty());
+        // Wrong password would throw if decryption were reached.
+        EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, TW::data(std::string("wrong")), txMessage).empty());
+
+        auto padded = txMessage;
+        padded.push_back(0);
+        const auto truncated = Data(txMessage.begin(), txMessage.end() - 1);
+        for (const auto& bytes : {padded, truncated}) {
+            EXPECT_FALSE(isSolanaTransactionMessage(bytes));
+            const auto sealed = sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, gSealedPassword, bytes);
+            EXPECT_EQ(hex(sealed), hex(pk.sign(bytes, TWCurveED25519)));
+        }
+    }
+}
+
+// Parity with the App rule (SC-140951): the vectors of mobile-monorepo
+// `solana-transaction-message.parity.test.ts` / `.test-support.ts` (Kotlin TestSolanaTransactionMessage).
+static Data sealedSolLegacyTransferMessage(byte numRequiredSignatures = 1, byte programIndex = 2) {
+    Data m{numRequiredSignatures, 0, 1, 3};
+    for (const byte fill : {1, 2, 0, 3}) {
+        m.insert(m.end(), 32, fill);
+    }
+    append(m, Data{1, programIndex, 2, 0, 1, 12});
+    append(m, Data{2, 0, 0, 0, 0xe8, 3, 0, 0, 0, 0, 0, 0});
+    return m;
+}
+
+static Data sealedSolV0MessageWithLookup(byte accountIndex = 2, byte programIndex = 1) {
+    Data m{0x80, 1, 0, 1, 2};
+    for (const byte fill : {1, 0, 3}) {
+        m.insert(m.end(), 32, fill);
+    }
+    append(m, Data{1, programIndex, 2, 0, accountIndex, 0});
+    m.push_back(1);
+    m.insert(m.end(), 32, 9);
+    append(m, Data{1, 0, 0});
+    return m;
+}
+
+static const char* gSealedSolDappRawData =
+    "hRVNTcYhAHz6jnDZ77Vyz998wVUKdtREqYLt5dMDk1Qg7JNgVC3Tf8ZH1AsRbdQSufdXvCjbYRoBjGwNQNMwXZYkBFgRcfYFxyTvTxkhSEw537AUkEHC7Qc5rrQK1b65QEnpn5z4vqeuhzBWiJ4c8J3x6HRyS5WLA8CyeTegbs7hGpBJkgNxahKTYVXKeZBA1F6NoZ31cGyJih68Myf4qZVo5x7JL8Vzic6JZXwP6855tRRKb7ctWdqT7MNCJcJEFiapnpfYZZEfUqok9hGr7dgFkohoE8MdS6zHhBc9qqAPCmHwzbkL6NC9o61hVd5joUvKtAw43c93RByzueSoUv8BeLMBLgdKgufh3j2EFVjh5QTNmXzLSPBLj2qdDTyoqgPujc4rneUBHdTZPCcb5AzzWssvs6hoJ5U9ewjjR216ZB7DQnU2f4xPuHrUqUzh4MU2Geqj7YZKVeRDWmLhihEpeV5ie4UBZxCkZfAvYv4rhskMdmG24zyB29DWAarkbztWNS6JF88Piit7dHb4KBNzP4ZtyoBoTk9Nqt9LQBAS7B498wy7mFnepsvXrc919HvSMj4XNnf3DPvKNN1UUKejv9p2wudmn9UL1sHQTnvJKsduRBVhjGAUCZKx6B41mJHr44iBDy7cjYPu2jmeq7gDMsC4kDeLDFbPLFgVEQr4kT6JeYDUZmyvLj5KNS85BHi8czckhJMf1Z8gr5pJgMGgdiBxEubau6NU1jEwC4zb9dbNCR9kLAibPj9HPcRW46jANvsEojawJ2MCU2HLyaHS";
+
+TEST(SealedSigner, SolanaTransactionMessageParity) {
+    // Transaction messages.
+    EXPECT_TRUE(isSolanaTransactionMessage(sealedSolLegacyTransferMessage()));
+    const auto dappMessage = Base58::decode(gSealedSolDappRawData);
+    ASSERT_FALSE(dappMessage.empty());
+    EXPECT_TRUE(isSolanaTransactionMessage(dappMessage));
+    EXPECT_TRUE(isSolanaTransactionMessage(sealedSolV0MessageWithLookup()));
+
+    // Not transaction messages.
+    EXPECT_FALSE(isSolanaTransactionMessage(sealedSolV0MessageWithLookup(/*accountIndex*/ 3)));          // past lookup keys
+    EXPECT_FALSE(isSolanaTransactionMessage(sealedSolV0MessageWithLookup(2, /*programIndex*/ 2)));       // program in lookup table
+    auto v1 = sealedSolV0MessageWithLookup();
+    v1[0] = 0x81;
+    EXPECT_FALSE(isSolanaTransactionMessage(v1));                                                        // unsupported version
+    EXPECT_FALSE(isSolanaTransactionMessage(TW::data(std::string("Sign in to example.com"))));
+    EXPECT_FALSE(isSolanaTransactionMessage(Data()));
+    EXPECT_FALSE(isSolanaTransactionMessage(Data(32, 7)));
+    const auto wcMessage = Base58::decode("X3CUgCGzyn43DTAbUKnTMDzcGWMooJT2hPSZinjfN1QUgVNYYfeoJ5zg6i4MY6ZgL16UZzMCKew");
+    ASSERT_FALSE(wcMessage.empty());
+    EXPECT_FALSE(isSolanaTransactionMessage(wcMessage));                                                 // WalletConnect signMessage
+    auto offchain = TW::data(std::string("\xff" "solana offchain"));
+    append(offchain, sealedSolLegacyTransferMessage());
+    EXPECT_FALSE(isSolanaTransactionMessage(offchain));                                                  // off-chain message
+    auto trailing = sealedSolLegacyTransferMessage();
+    trailing.push_back(0);
+    EXPECT_FALSE(isSolanaTransactionMessage(trailing));                                                  // trailing byte
+    const auto legacy = sealedSolLegacyTransferMessage();
+    EXPECT_FALSE(isSolanaTransactionMessage(Data(legacy.begin(), legacy.end() - 1)));                    // missing byte
+    EXPECT_FALSE(isSolanaTransactionMessage(sealedSolLegacyTransferMessage(/*numRequiredSignatures*/ 0)));
+    EXPECT_FALSE(isSolanaTransactionMessage(sealedSolLegacyTransferMessage(1, /*programIndex*/ 3)));
+}
+
+TEST(SealedSigner, SolanaMessageRejectsOtherCoinAndUnknownAddress) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeSolana);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeSolana);
+    const auto message = TW::data(std::string("hello"));
+    EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeSolana, gSealedSolRecipient, gSealedPassword, message).empty());
+    EXPECT_TRUE(sealedSignSolanaMessage(key, TWCoinTypeEthereum, account.address, gSealedPassword, message).empty());
+    EXPECT_ANY_THROW(sealedSignSolanaMessage(key, TWCoinTypeSolana, account.address, TW::data(std::string("wrong")), message));
 }
 
 } // namespace TW::Keystore::tests

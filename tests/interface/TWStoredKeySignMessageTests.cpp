@@ -2,12 +2,15 @@
 //
 // Copyright © 2017 Trust Wallet.
 //
-// Sealed EVM message signing (Security Layer, Phase 2): personal_sign, EIP-712, Biz, EIP-7702 and Tron messages
-// authorization through the TWStoredKey C ABI, each byte-identical to the app's current
+// Sealed message signing (Security Layer, Phase 2): EVM personal_sign, EIP-712, Biz and EIP-7702
+// authorization, plus Tron and Solana messages,
+// through the TWStoredKey C ABI, each byte-identical to the app's current
 // extract-key-then-sign path (TWStoredKeyPrivateKey + the matching public API).
 
 #include "Data.h"
+#include "Base58.h"
 #include "HexCoding.h"
+#include "proto/Solana.pb.h"
 #include "uint256.h"
 
 #include <TrustWalletCore/TWAccount.h>
@@ -16,6 +19,7 @@
 #include <TrustWalletCore/TWEthereumAbi.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWMessageSigner.h>
 #include <TrustWalletCore/TWStoredKey.h>
 #include <TrustWalletCore/TWTronMessageSigner.h>
 
@@ -222,6 +226,38 @@ TEST(TWStoredKeySignMessage, TronMessageByteIdentical) {
     EXPECT_TRUE(sealedMsgIsNull(TWStoredKeySignTronMessage(key.get(), TWCoinTypeTron, otherAddress.get(), password.get(), message.get())));
     const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("wrong"), 5));
     EXPECT_TRUE(sealedMsgIsNull(TWStoredKeySignTronMessage(key.get(), TWCoinTypeTron, address.get(), wrongPassword.get(), message.get())));
+}
+
+// The app's Solana signMessage path: TWMessageSignerSign(Solana) with the exported key. Transaction
+// and input-contract cases are covered in SealedSignerTests.
+TEST(TWStoredKeySignMessage, SolanaMessageByteIdentical) {
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
+    const auto keyData = DATA(gSealedMsgKeyHex);
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(keyData.get(), STRING("n").get(), password.get(), TWCoinTypeSolana));
+    const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeSolana, nullptr));
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+
+    const std::string text = "Hello Trust Wallet";
+    const auto message = TW::data(text);
+    const auto messageData = WRAPD(TWDataCreateWithBytes(message.data(), message.size()));
+    const auto sealed = sealedMsgData(TWStoredKeySignSolanaMessage(key.get(), TWCoinTypeSolana, address.get(), password.get(), messageData.get()));
+
+    Solana::Proto::MessageSigningInput input;
+    const auto privateKey = parse_hex(gSealedMsgKeyHex);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_message(text);
+    const auto inputBytes = TW::data(input.SerializeAsString());
+    const auto inputData = WRAPD(TWDataCreateWithBytes(inputBytes.data(), inputBytes.size()));
+    const auto outputBytes = sealedMsgData(TWMessageSignerSign(TWCoinTypeSolana, inputData.get()));
+    Solana::Proto::MessageSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputBytes.data(), static_cast<int>(outputBytes.size())));
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    ASSERT_EQ(sealed.size(), 64ul);
+    EXPECT_EQ(hex(sealed), hex(Base58::decode(output.signature())));
+
+    const SealedMsgFixture eth(TWCoinTypeEthereum);
+    EXPECT_TRUE(sealedMsgIsNull(TWStoredKeySignSolanaMessage(eth.key.get(), TWCoinTypeEthereum, eth.address.get(), eth.password.get(), messageData.get())));
 }
 
 } // namespace TW::SealedMessageTests

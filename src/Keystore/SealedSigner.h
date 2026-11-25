@@ -30,6 +30,9 @@ namespace TW::Keystore {
 ///   `raw_json` input keeps the Tron signer's checks (`txID` must be the hash of the transaction rebuilt
 ///   from `raw_data`, and of `raw_data_hex` when present); a mismatch yields an output with
 ///   `Error_tx_hash_mismatch`, exactly as on the normal path.
+/// - Solana: `Solana.Proto.SigningInput` for a library-built transaction or with `raw_message` (dApp
+///   transaction), with `private_key`, `fee_payer_private_key` and
+///   `create_nonce_account.nonce_account_private_key` all empty.
 ///
 /// Returns the serialized SigningOutput, or an empty `Data` if `coin` is not supported by the sealed
 /// path, the input violates its contract, or the stored key has no account for (`coin`, `address`)
@@ -68,5 +71,16 @@ std::string sealedSignEip7702Authorization(const StoredKey& storedKey, TWCoinTyp
 /// or empty on failure (including any `coin` other than Tron). Account selection, throwing and
 /// non-mutation as for the EVM message functions.
 Data sealedSignTronMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message);
+
+/// Sealed Solana message signing: 64-byte ed25519 signature over the raw `message` bytes (same as the
+/// Solana message signer for a UTF-8 message), or empty on failure — including any `coin` other than
+/// Solana, and bytes for which `isSolanaTransactionMessage` holds (so it never signs a transaction).
+/// Account selection, throwing and non-mutation as for the EVM message functions.
+Data sealedSignSolanaMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message);
+
+/// Whether `message` is exactly a Solana transaction message: a complete legacy or v0 message that
+/// passes the validator's header / index rules and uses up every byte. Same rule as the App
+/// (SC-140951, `solana-transaction-message.ts`). Exposed for tests.
+bool isSolanaTransactionMessage(const Data& message);
 
 } // namespace TW::Keystore

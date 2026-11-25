@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/Solana.pb.h"
 #include "proto/Tron.pb.h"
 #include "rust/Wrapper.h"
 
@@ -147,6 +148,27 @@ static Data signTron(const StoredKey& storedKey, TWCoinType coin, const std::str
     return output;
 }
 
+// Solana: `Solana.SigningInput` for a transaction the library builds, or with `raw_message` (a dApp
+// transaction). Every key field must be empty — `private_key`, `fee_payer_private_key` and
+// `create_nonce_account.nonce_account_private_key` — so the account key is the only key that signs;
+// signatures of other signers may still come in `raw_message.signatures`.
+static Data signSolana(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& signingInput) {
+    Solana::Proto::SigningInput in;
+    if (!in.ParseFromArray(signingInput.data(), static_cast<int>(signingInput.size())) ||
+        !in.private_key().empty() || !in.fee_payer_private_key().empty() ||
+        !in.create_nonce_account().nonce_account_private_key().empty()) {
+        return {};
+    }
+    const auto key = deriveSigningKey(storedKey, coin, address, password);
+    if (!key.has_value()) {
+        return {};
+    }
+    in.set_private_key(key->bytes.data(), key->bytes.size());
+    auto output = serializeAndSign(TWCoinTypeSolana, in);
+    wipe(*in.mutable_private_key());
+    return output;
+}
+
 Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& signingInput) {
     // Coins supported by the sealed path so far. Each must have a per-coin byte-identical test
     // proving flag-ON output == flag-OFF output before it is added here.
@@ -175,6 +197,8 @@ Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& 
         return signUtxo(storedKey, coin, address, password, signingInput);
     case TWCoinTypeTron:
         return signTron(storedKey, coin, address, password, signingInput);
+    case TWCoinTypeSolana:
+        return signSolana(storedKey, coin, address, password, signingInput);
     default:
         return {}; // not yet supported by sealed signing
     }
@@ -310,6 +334,173 @@ Data sealedSignTronMessage(const StoredKey& storedKey, TWCoinType coin, const st
     auto signature = signSecp256k1DigestRaw(storedKey, coin, address, password, Hash::keccak256(prefixed));
     if (!signature.empty()) {
         signature[64] += 27;
+    }
+    return signature;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Solana message signing
+// ---------------------------------------------------------------------------------------------
+
+// Domain separation for Solana message signing — a line-for-line port of the App's rule
+// (SC-140951: mobile-monorepo `solana-transaction-message.ts`, from Kotlin `SolanaTransactionMessage.kt`),
+// so the sealed path refuses exactly the messages the App refuses.
+//
+// A validator verifies a transaction signature as ed25519 over the serialized transaction message,
+// and message bytes are signed raw — so a "message" that is exactly a transaction message would yield
+// a broadcastable transaction signature. Such bytes are recognised as a complete legacy or v0 message
+// that satisfies the header / index rules a validator enforces and uses up every byte. Padding or
+// truncating the bytes defeats the attack, so those are not transaction messages; off-chain messages
+// (0xff prefix) and other versions never match. Pure byte parsing; no key involved.
+namespace {
+
+class SolanaMessageReader {
+public:
+    explicit SolanaMessageReader(const Data& bytes) : bytes(bytes) {}
+
+    bool isExhausted() const { return offset == bytes.size(); }
+
+    // Each read returns false when out of bytes (the TS reader throws; any throw means "not a transaction").
+    bool u8(uint32_t& out) {
+        if (offset >= bytes.size()) {
+            return false;
+        }
+        out = bytes[offset++];
+        return true;
+    }
+
+    bool skip(uint64_t count) {
+        if (count > bytes.size() - offset) {
+            return false;
+        }
+        offset += static_cast<size_t>(count);
+        return true;
+    }
+
+    // Solana `short_vec` length: 7 bits per byte, at most 3 bytes.
+    bool compactU16(uint32_t& out) {
+        uint32_t value = 0;
+        for (int i = 0; i < 3; i++) {
+            uint32_t byte = 0;
+            if (!u8(byte)) {
+                return false;
+            }
+            value |= (byte & 0x7f) << (7 * i);
+            if ((byte & 0x80) == 0) {
+                out = value;
+                return true;
+            }
+        }
+        return false; // compact-u16 too long
+    }
+
+private:
+    const Data& bytes;
+    size_t offset = 0;
+};
+
+constexpr uint32_t gSolanaVersionPrefix = 0x80;
+constexpr uint64_t gSolanaPublicKeyLength = 32;
+constexpr uint64_t gSolanaBlockhashLength = 32;
+
+bool solanaMessageParses(SolanaMessageReader& reader) {
+    uint32_t first = 0;
+    if (!reader.u8(first)) {
+        return false;
+    }
+    const bool versioned = (first & gSolanaVersionPrefix) != 0;
+    if (versioned) {
+        // Only v0 exists; 0xff (the off-chain message prefix) is not a version.
+        if (first != gSolanaVersionPrefix || !reader.u8(first)) {
+            return false;
+        }
+    }
+    const uint32_t numRequiredSignatures = first;
+    uint32_t numReadonlySigned = 0;
+    uint32_t numReadonlyUnsigned = 0;
+    uint32_t numStaticKeys = 0;
+    if (!reader.u8(numReadonlySigned) || !reader.u8(numReadonlyUnsigned) || !reader.compactU16(numStaticKeys) ||
+        !reader.skip(numStaticKeys * gSolanaPublicKeyLength) || !reader.skip(gSolanaBlockhashLength)) {
+        return false;
+    }
+
+    int64_t maxProgramIndex = -1;
+    int64_t maxAccountIndex = -1;
+    uint32_t numInstructions = 0;
+    if (!reader.compactU16(numInstructions)) {
+        return false;
+    }
+    for (uint32_t i = numInstructions; i > 0; i--) {
+        uint32_t programIndex = 0;
+        uint32_t numAccounts = 0;
+        if (!reader.u8(programIndex) || !reader.compactU16(numAccounts)) {
+            return false;
+        }
+        maxProgramIndex = std::max<int64_t>(maxProgramIndex, programIndex);
+        for (uint32_t j = numAccounts; j > 0; j--) {
+            uint32_t accountIndex = 0;
+            if (!reader.u8(accountIndex)) {
+                return false;
+            }
+            maxAccountIndex = std::max<int64_t>(maxAccountIndex, accountIndex);
+        }
+        uint32_t dataLength = 0;
+        if (!reader.compactU16(dataLength) || !reader.skip(dataLength)) {
+            return false;
+        }
+    }
+
+    uint64_t numLookupKeys = 0;
+    if (versioned) {
+        uint32_t numLookups = 0;
+        if (!reader.compactU16(numLookups)) {
+            return false;
+        }
+        for (uint32_t i = numLookups; i > 0; i--) {
+            if (!reader.skip(gSolanaPublicKeyLength)) {
+                return false;
+            }
+            // writable, then readonly indexes
+            for (int k = 0; k < 2; k++) {
+                uint32_t count = 0;
+                if (!reader.compactU16(count) || !reader.skip(count)) {
+                    return false;
+                }
+                numLookupKeys += count;
+            }
+        }
+    }
+
+    const uint64_t numKeys = numStaticKeys + numLookupKeys;
+    return reader.isExhausted() &&
+           numReadonlySigned < numRequiredSignatures &&
+           static_cast<uint64_t>(numRequiredSignatures) + numReadonlyUnsigned <= numStaticKeys &&
+           maxProgramIndex < static_cast<int64_t>(numStaticKeys) &&
+           maxAccountIndex < static_cast<int64_t>(numKeys);
+}
+
+} // namespace
+
+bool isSolanaTransactionMessage(const Data& message) {
+    SolanaMessageReader reader(message);
+    return solanaMessageParses(reader);
+}
+
+// ed25519 signature over the raw message bytes, as the Solana off-chain message signer does for a
+// UTF-8 message (sign-message cookbook) and as the App signs dApp messages (`PrivateKey.sign`).
+// Refuses bytes that are a transaction message (see above), so this function can never produce a
+// transaction signature.
+Data sealedSignSolanaMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message) {
+    if (coin != TWCoinTypeSolana || isSolanaTransactionMessage(message)) {
+        return {};
+    }
+    const auto key = deriveSigningKey(storedKey, coin, address, password);
+    if (!key.has_value()) {
+        return {};
+    }
+    auto signature = key->sign(message, TWCurveED25519);
+    if (signature.size() != 64) {
+        return {};
     }
     return signature;
 }
