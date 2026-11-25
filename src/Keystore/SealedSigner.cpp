@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 #include "proto/Bitcoin.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/Tron.pb.h"
 #include "rust/Wrapper.h"
 
 #include <TrezorCrypto/memzero.h>
@@ -127,6 +128,25 @@ static Data signUtxo(const StoredKey& storedKey, TWCoinType coin, const std::str
     return output;
 }
 
+// Tron: `Tron.SigningInput` with either `transaction` or `raw_json` (a dApp transaction) and an empty
+// `private_key`. The normal Tron signer keeps its `raw_json` checks: the transaction is rebuilt from
+// `raw_data`, and its SHA-256 must equal `txID` (and `sha256(raw_data_hex)` must equal `txID` when
+// `raw_data_hex` is present), so the key only ever signs the transaction the JSON describes.
+static Data signTron(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& signingInput) {
+    Tron::Proto::SigningInput in;
+    if (!in.ParseFromArray(signingInput.data(), static_cast<int>(signingInput.size())) || !in.private_key().empty()) {
+        return {};
+    }
+    const auto key = deriveSigningKey(storedKey, coin, address, password);
+    if (!key.has_value()) {
+        return {};
+    }
+    in.set_private_key(key->bytes.data(), key->bytes.size());
+    auto output = serializeAndSign(TWCoinTypeTron, in);
+    wipe(*in.mutable_private_key());
+    return output;
+}
+
 Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& signingInput) {
     // Coins supported by the sealed path so far. Each must have a per-coin byte-identical test
     // proving flag-ON output == flag-OFF output before it is added here.
@@ -153,6 +173,8 @@ Data sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& 
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeDecred:
         return signUtxo(storedKey, coin, address, password, signingInput);
+    case TWCoinTypeTron:
+        return signTron(storedKey, coin, address, password, signingInput);
     default:
         return {}; // not yet supported by sealed signing
     }
@@ -171,9 +193,10 @@ static bool isEvm(TWCoinType coin) {
     return TWCoinTypeBlockchain(coin) == TWBlockchainEthereum;
 }
 
-// Signs a 32-byte digest and returns r || s || v with the Ethereum v offset (27/28).
-static Data signEvmDigest(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& digest) {
-    if (!isEvm(coin) || digest.size() != 32) {
+// Signs a 32-byte digest with the secp256k1 key of (`coin`, `address`) and returns r || s || yParity
+// (0/1). Callers check the coin and apply the v encoding of the signature kind they produce.
+static Data signSecp256k1DigestRaw(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& digest) {
+    if (digest.size() != 32 || TWCoinTypeCurve(coin) != TWCurveSECP256k1) {
         return {};
     }
     const auto key = deriveSigningKey(storedKey, coin, address, password);
@@ -181,10 +204,21 @@ static Data signEvmDigest(const StoredKey& storedKey, TWCoinType coin, const std
         return {};
     }
     auto signature = key->sign(digest, TWCurveSECP256k1);
-    if (signature.size() != 65) {
+    if (signature.size() != 65 || signature[64] > 1) {
         return {};
     }
-    signature[64] += 27;
+    return signature;
+}
+
+// Signs a 32-byte digest and returns r || s || v with the Ethereum v offset (27/28).
+static Data signEvmDigest(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& digest) {
+    if (!isEvm(coin)) {
+        return {};
+    }
+    auto signature = signSecp256k1DigestRaw(storedKey, coin, address, password, digest);
+    if (!signature.empty()) {
+        signature[64] += 27;
+    }
     return signature;
 }
 
@@ -258,6 +292,26 @@ std::string sealedSignEip7702Authorization(const StoredKey& storedKey, TWCoinTyp
            "\",\"yParity\":\"" + hexEncoded(Data{yParity}) +
            "\",\"r\":\"" + compactHex(Data(signature.begin(), signature.begin() + 32)) +
            "\",\"s\":\"" + compactHex(Data(signature.begin() + 32, signature.begin() + 64)) + "\"}";
+}
+
+// ---------------------------------------------------------------------------------------------
+// Tron message signing
+// ---------------------------------------------------------------------------------------------
+
+// Same as `Tron::MessageSigner::signMessage` (TronWeb signMessageV2):
+// keccak256("\x19TRON Signed Message:\n" + len + message), v = 27/28. Only Tron accounts sign.
+Data sealedSignTronMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message) {
+    if (coin != TWCoinTypeTron) {
+        return {};
+    }
+    const std::string prefix = "\x19" "TRON Signed Message:\n" + std::to_string(message.size());
+    Data prefixed(prefix.begin(), prefix.end());
+    append(prefixed, message);
+    auto signature = signSecp256k1DigestRaw(storedKey, coin, address, password, Hash::keccak256(prefixed));
+    if (!signature.empty()) {
+        signature[64] += 27;
+    }
+    return signature;
 }
 
 } // namespace TW::Keystore

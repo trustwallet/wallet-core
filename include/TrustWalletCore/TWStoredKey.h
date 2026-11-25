@@ -364,6 +364,10 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 /// - UTXO coins (Bitcoin, Litecoin, Dogecoin, Bitcoin Cash, Dash, Viacoin, DigiByte, Ravencoin, Firo,
 ///   Qtum, Zcash, Flux, Groestlcoin, Decred): serialized `Bitcoin.Proto.SigningInput` with `signing_v2` set,
 ///   `coin_type` equal to `coin`, and no keys in `private_key` or `signing_v2.private_keys`.
+/// - Tron: serialized `Tron.Proto.SigningInput` with `transaction` or `raw_json` and an empty
+///   `private_key`. `raw_json` keeps the normal signer's checks (`txID` must match the transaction
+///   rebuilt from `raw_data`, and `raw_data_hex` when present); a mismatch returns a SigningOutput with
+///   `Error_tx_hash_mismatch`, as on the normal path.
 ///
 /// \param key Non-null pointer to a stored key
 /// \param coin Coin type to sign for
@@ -439,6 +443,21 @@ TWData* _Nullable TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key,
 /// \return Null pointer on failure; signed authorization JSON otherwise
 TW_EXPORT_METHOD
 TWString* _Nullable TWStoredKeySignEip7702Authorization(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull contractAddress, TWData* _Nonnull nonce);
+
+/// Sealed Tron message signing (TronWeb signMessageV2): signs
+/// keccak256("\x19TRON Signed Message:\n" + len + message) with the key of the Tron account identified
+/// by `coin` and `address` (selected as in \TWStoredKeySign). Same result as the hex-decoded output of
+/// \TWTronMessageSignerSignMessage, without exposing the key.
+///
+/// \param key Non-null pointer to a stored key
+/// \param coin coin type of the signing account; must be Tron
+/// \param address Non-null string, address of the stored account to sign with, exactly as stored
+/// \param password Non-null block of data, password of the stored key
+/// \param message Non-null block of data, the raw message bytes
+/// \note Returned object needs to be deleted with \TWDataDelete
+/// \return Null pointer on failure; 65-byte signature r || s || v (v = 27/28) otherwise
+TW_EXPORT_METHOD
+TWData* _Nullable TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message);
 
 /// Decrypts and returns the HD Wallet for mnemonic phrase keys.  Returned object needs to be deleted.
 ///

@@ -327,6 +327,17 @@ TWData* _Nullable TWStoredKeySignEthereumTypedData(struct TWStoredKey* _Nonnull 
     }
 }
 
+TWData* _Nullable TWStoredKeySignTronMessage(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull message) {
+    try {
+        const auto& addressString = *reinterpret_cast<const std::string*>(address);
+        const auto passwordData = TW::data(TWDataBytes(password), TWDataSize(password));
+        const auto& messageData = *reinterpret_cast<const TW::Data*>(message);
+        return sealedDataResult(TW::Keystore::sealedSignTronMessage(key->impl, coin, addressString, passwordData, messageData));
+    } catch (...) {
+        return nullptr;
+    }
+}
+
 TWData* _Nullable TWStoredKeySignBizUserOpHash(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull chainId, TWString* _Nonnull codeAddress, TWString* _Nonnull codeName, TWString* _Nonnull codeVersion, TWString* _Nonnull typeHash, TWString* _Nonnull domainSeparatorHash, TWString* _Nonnull userOpHash) {
     try {
         const auto& addressString = *reinterpret_cast<const std::string*>(address);

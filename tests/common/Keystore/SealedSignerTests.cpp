@@ -19,11 +19,13 @@
 #include "proto/Common.pb.h"
 #include "proto/Decred.pb.h"
 #include "proto/Ethereum.pb.h"
+#include "proto/Tron.pb.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWDerivation.h>
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include <utility>
 #include <vector>
@@ -528,6 +530,161 @@ TEST(SealedSigner, UtxoInputWithPrivateKeyRejected) {
     auto withV2Key = clean;
     withV2Key.mutable_signing_v2()->add_private_keys(gSealedRawKey.data(), gSealedRawKey.size());
     EXPECT_TRUE(sealedSign(key, TWCoinTypeBitcoin, account.address, gSealedPassword, sealedSerialize(withV2Key)).empty());
+}
+
+// ---------------------------------------------------------------------------------------------
+// Tron — native transfer, TRC20 transfer and dApp `raw_json` transactions
+// ---------------------------------------------------------------------------------------------
+
+// Fixed timestamps and block reference (from TronSigner.SignTransfer) so the output is deterministic.
+static void sealedTronSetBlock(Tron::Proto::Transaction& transaction) {
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+}
+
+static Tron::Proto::SigningInput sealedTronTransferNoKey(const std::string& owner) {
+    Tron::Proto::SigningInput in;
+    auto& transaction = *in.mutable_transaction();
+    auto& transfer = *transaction.mutable_transfer();
+    transfer.set_owner_address(owner);
+    transfer.set_to_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+    transfer.set_amount(2000000);
+    sealedTronSetBlock(transaction);
+    return in;
+}
+
+static Tron::Proto::SigningInput sealedTronTrc20NoKey(const std::string& owner) {
+    Tron::Proto::SigningInput in;
+    auto& transaction = *in.mutable_transaction();
+    auto& transfer = *transaction.mutable_transfer_trc20_contract();
+    transfer.set_contract_address("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"); // USDT
+    transfer.set_owner_address(owner);
+    transfer.set_to_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+    const auto amount = store(uint256_t(1000000));
+    transfer.set_amount(amount.data(), amount.size());
+    transaction.set_fee_limit(10000000);
+    sealedTronSetBlock(transaction);
+    return in;
+}
+
+static Data sealedTronBaseline(Tron::Proto::SigningInput in, const Data& keyBytes) {
+    in.set_private_key(keyBytes.data(), keyBytes.size());
+    Data out;
+    anyCoinSign(TWCoinTypeTron, sealedSerialize(in), out);
+    return out;
+}
+
+static Tron::Proto::SigningOutput sealedTronParse(const Data& out) {
+    Tron::Proto::SigningOutput parsed;
+    EXPECT_TRUE(parsed.ParseFromArray(out.data(), static_cast<int>(out.size())));
+    return parsed;
+}
+
+// dApp form of a transaction: the node JSON (txID, raw_data, raw_data_hex) without a signature.
+static std::string sealedTronRawJson(const Data& signedOutput) {
+    auto json = nlohmann::json::parse(sealedTronParse(signedOutput).json());
+    json.erase("signature");
+    return json.dump();
+}
+
+TEST(SealedSigner, TronByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeTron, account.derivationPath);
+
+    for (const auto& input : {sealedTronTransferNoKey(account.address), sealedTronTrc20NoKey(account.address)}) {
+        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        const auto parsed = sealedTronParse(sealed);
+        EXPECT_EQ(parsed.error(), Common::Proto::OK);
+        EXPECT_EQ(parsed.signature().size(), 65ul);
+        EXPECT_EQ(sealed, sealedTronBaseline(input, pk.bytes));
+    }
+    EXPECT_EQ(key.accounts.size(), 1ul);
+}
+
+TEST(SealedSigner, TronPrivateKeyKeystoreByteIdentical) {
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("n", gSealedPassword, TWCoinTypeTron, gSealedRawKey);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
+    const auto input = sealedTronTransferNoKey(account.address);
+    const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+    EXPECT_EQ(sealedTronParse(sealed).error(), Common::Proto::OK);
+    EXPECT_EQ(sealed, sealedTronBaseline(input, gSealedRawKey));
+}
+
+// A dApp transaction (raw_json) signs to the same bytes as the normal path — and as the structured
+// transaction it was built from.
+TEST(SealedSigner, TronRawJsonByteIdentical) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeTron, account.derivationPath);
+
+    for (const auto& structured : {sealedTronTransferNoKey(account.address), sealedTronTrc20NoKey(account.address)}) {
+        const auto structuredOut = sealedTronBaseline(structured, pk.bytes);
+        Tron::Proto::SigningInput input;
+        input.set_raw_json(sealedTronRawJson(structuredOut));
+
+        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        const auto parsed = sealedTronParse(sealed);
+        EXPECT_EQ(parsed.error(), Common::Proto::OK);
+        EXPECT_EQ(sealed, sealedTronBaseline(input, pk.bytes));
+        EXPECT_EQ(hex(parsed.signature()), hex(sealedTronParse(structuredOut).signature()));
+        EXPECT_EQ(hex(parsed.id()), hex(sealedTronParse(structuredOut).id()));
+    }
+}
+
+// raw_json whose txID does not match the transaction (raw_data, or raw_data_hex) is refused with
+// Error_tx_hash_mismatch and no signature — the same output as the normal path.
+TEST(SealedSigner, TronRawJsonTxIdMismatchRejected) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
+    const auto pk = key.wallet(gSealedPassword).getKey(TWCoinTypeTron, account.derivationPath);
+    const auto json = nlohmann::json::parse(sealedTronRawJson(sealedTronBaseline(sealedTronTransferNoKey(account.address), pk.bytes)));
+
+    // (1) txID of another transaction; (2) raw_data_hex of another transaction (txID still matches raw_data).
+    auto wrongTxId = json;
+    wrongTxId["txID"] = "546a3d07164c624809cf4e564a083a7a7974bb3c4eff6bb3e278b0ca21083fcb";
+    auto wrongRawDataHex = json;
+    auto otherHex = json["raw_data_hex"].get<std::string>();
+    otherHex.back() = otherHex.back() == '0' ? '1' : '0';
+    wrongRawDataHex["raw_data_hex"] = otherHex;
+
+    for (const auto& tampered : {wrongTxId, wrongRawDataHex}) {
+        Tron::Proto::SigningInput input;
+        input.set_raw_json(tampered.dump());
+        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        const auto parsed = sealedTronParse(sealed);
+        EXPECT_EQ(parsed.error(), Common::Proto::Error_tx_hash_mismatch);
+        EXPECT_TRUE(parsed.signature().empty());
+        EXPECT_EQ(sealed, sealedTronBaseline(input, pk.bytes));
+    }
+}
+
+TEST(SealedSigner, TronInputWithPrivateKeyRejected) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
+    auto input = sealedTronTransferNoKey(account.address);
+    input.set_private_key(gSealedRawKey.data(), gSealedRawKey.size());
+    EXPECT_TRUE(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)).empty());
+}
+
+// Unknown address (no Tron account with it), and a Tron address used with another coin's account.
+TEST(SealedSigner, TronUnknownAddressRejected) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
+    const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
+    const auto input = sealedSerialize(sealedTronTransferNoKey(account.address));
+    EXPECT_TRUE(sealedSign(key, TWCoinTypeTron, "THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV", gSealedPassword, input).empty());
+    EXPECT_TRUE(sealedSign(key, TWCoinTypeEthereum, account.address, gSealedPassword, input).empty());
+    EXPECT_EQ(key.accounts.size(), 1ul);
 }
 
 } // namespace TW::Keystore::tests

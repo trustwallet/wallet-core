@@ -26,6 +26,10 @@ namespace TW::Keystore {
 /// - UTXO coins (Bitcoin, Litecoin, Dogecoin, Bitcoin Cash, Dash, Viacoin, DigiByte, Ravencoin, Firo, Qtum,
 ///   Zcash, Flux, Groestlcoin, Decred): `Bitcoin.Proto.SigningInput` with `signing_v2` set, `coin_type == coin`,
 ///   and no keys in either `private_key` or `signing_v2.private_keys`.
+/// - Tron: `Tron.Proto.SigningInput` with `transaction` or `raw_json` and an empty `private_key`. A
+///   `raw_json` input keeps the Tron signer's checks (`txID` must be the hash of the transaction rebuilt
+///   from `raw_data`, and of `raw_data_hex` when present); a mismatch yields an output with
+///   `Error_tx_hash_mismatch`, exactly as on the normal path.
 ///
 /// Returns the serialized SigningOutput, or an empty `Data` if `coin` is not supported by the sealed
 /// path, the input violates its contract, or the stored key has no account for (`coin`, `address`)
@@ -58,5 +62,11 @@ Data sealedSignBizUserOpHash(const StoredKey& storedKey, TWCoinType coin, const 
 /// JSON (same format as `TWEip7702SignAuthorization`), or an empty string on failure.
 std::string sealedSignEip7702Authorization(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password,
                                            const Data& chainId, const std::string& contractAddress, const Data& nonce);
+
+/// Sealed Tron message signing, same as `Tron::MessageSigner::signMessage`:
+/// keccak256("\x19TRON Signed Message:\n" + len + message), returned as 65-byte r || s || v (v = 27/28),
+/// or empty on failure (including any `coin` other than Tron). Account selection, throwing and
+/// non-mutation as for the EVM message functions.
+Data sealedSignTronMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message);
 
 } // namespace TW::Keystore
