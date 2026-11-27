@@ -1,0 +1,268 @@
+// SPDX-License-Identifier: Apache-2.0
+//
+// Copyright © 2017 Trust Wallet.
+//
+// Sealed message signing (Security Layer, Phase 2): EVM personal_sign, EIP-712, Biz and EIP-7702
+// authorization, plus Tron and Solana messages,
+// through the TWStoredKey C ABI, each byte-identical to the app's current
+// extract-key-then-sign path (TWStoredKeyPrivateKey + the matching public API).
+
+#include "Data.h"
+#include "Base58.h"
+#include "HexCoding.h"
+#include "proto/Solana.pb.h"
+#include "uint256.h"
+
+#include <TrustWalletCore/TWAccount.h>
+#include <TrustWalletCore/TWBiz.h>
+#include <TrustWalletCore/TWEip7702.h>
+#include <TrustWalletCore/TWEthereumAbi.h>
+#include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWMessageSigner.h>
+#include <TrustWalletCore/TWStoredKey.h>
+#include <TrustWalletCore/TWTronMessageSigner.h>
+
+#include "TestUtilities.h"
+#include <gtest/gtest.h>
+
+#include <string>
+
+namespace TW::SealedMessageTests {
+
+// Private key from the EIP-7702 SignAuthorization fixture (TWBarzTests), so the sealed result can
+// also be checked against the viem-verified values.
+static const char* gSealedMsgKeyHex = "947dd69af402e7f48da1b845dfc1df6be593d01a0d8274bd03ec56712e7164e8";
+static const char* gSealedMsgTypedData = R"({"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"Person":[{"name":"name","type":"string"},{"name":"wallet","type":"address"}],"Mail":[{"name":"from","type":"Person"},{"name":"to","type":"Person"},{"name":"contents","type":"string"}]},"primaryType":"Mail","domain":{"name":"Ether Mail","version":"1","chainId":1,"verifyingContract":"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"},"message":{"from":{"name":"Cow","wallet":"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826"},"to":{"name":"Bob","wallet":"0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB"},"contents":"Hello, Bob!"}})";
+
+struct SealedMsgFixture {
+    std::shared_ptr<TWData> password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
+    std::shared_ptr<TWStoredKey> key;
+    std::shared_ptr<TWString> address;
+    std::shared_ptr<TWPrivateKey> privateKey;
+
+    explicit SealedMsgFixture(TWCoinType coin) {
+        const auto keyData = DATA(gSealedMsgKeyHex);
+        key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(keyData.get(), STRING("n").get(), password.get(), coin));
+        const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), coin, nullptr));
+        address = WRAPS(TWAccountAddress(account.get()));
+        privateKey = WRAP(TWPrivateKey, TWStoredKeyPrivateKey(key.get(), coin, password.get()));
+    }
+};
+
+// What the app does for personal_sign / EIP-712 today: sign the digest, then add 27 to v.
+static Data sealedMsgAppSignDigest(TWPrivateKey* privateKey, const Data& digest) {
+    const auto digestData = WRAPD(TWDataCreateWithBytes(digest.data(), digest.size()));
+    const auto signature = WRAPD(TWPrivateKeySign(privateKey, digestData.get(), TWCurveSECP256k1));
+    auto result = *reinterpret_cast<const Data*>(signature.get());
+    result[64] += 27;
+    return result;
+}
+
+// Copies and frees a possibly-null TWData result (the public APIs the sealed results are compared with).
+static Data sealedMsgData(TWData* result) {
+    if (result == nullptr) {
+        return {};
+    }
+    auto copy = *reinterpret_cast<const Data*>(result);
+    TWDataDelete(result);
+    return copy;
+}
+
+// The output of a sealed call that must succeed; frees the result.
+static Data sealedMsgData(TWStoredKeySignResult* result) {
+    const auto wrapped = WRAP(TWStoredKeySignResult, result);
+    EXPECT_EQ(TWStoredKeySignResultError(wrapped.get()), TWStoredKeySignErrorOk);
+    TWData* output = TWStoredKeySignResultData(wrapped.get());
+    EXPECT_NE(output, nullptr);
+    return sealedMsgData(output);
+}
+
+// The error of a sealed call that must fail; checks the failure carries no data and a description,
+// and frees the result.
+static TWStoredKeySignError sealedMsgError(TWStoredKeySignResult* result) {
+    const auto wrapped = WRAP(TWStoredKeySignResult, result);
+    TWData* output = TWStoredKeySignResultData(wrapped.get());
+    EXPECT_EQ(output, nullptr);
+    if (output != nullptr) {
+        TWDataDelete(output);
+    }
+    const auto message = WRAPS(TWStoredKeySignResultErrorMessage(wrapped.get()));
+    EXPECT_GT(TWStringSize(message.get()), 0ul);
+    return TWStoredKeySignResultError(wrapped.get());
+}
+
+TEST(TWStoredKeySignMessage, PersonalMessageByteIdentical) {
+    const SealedMsgFixture f(TWCoinTypeEthereum);
+    for (const std::string text : {"Hello Trust Wallet", ""}) {
+        const auto message = TW::data(text);
+        const auto messageData = WRAPD(TWDataCreateWithBytes(message.data(), message.size()));
+        const auto sealed = sealedMsgData(TWStoredKeySignEthereumMessage(f.key.get(), TWCoinTypeEthereum, f.address.get(), f.password.get(), messageData.get()));
+
+        const std::string prefix = "\x19" "Ethereum Signed Message:\n" + std::to_string(message.size());
+        Data prefixed(prefix.begin(), prefix.end());
+        append(prefixed, message);
+        const auto prefixedData = WRAPD(TWDataCreateWithBytes(prefixed.data(), prefixed.size()));
+        const auto digest = sealedMsgData(TWHashKeccak256(prefixedData.get()));
+        ASSERT_EQ(sealed.size(), 65ul);
+        EXPECT_EQ(hex(sealed), hex(sealedMsgAppSignDigest(f.privateKey.get(), digest)));
+    }
+
+    // Binary (hex-encoded in the app) messages are signed as raw bytes.
+    const auto binary = parse_hex("deadbeef00ff");
+    const auto binaryData = WRAPD(TWDataCreateWithBytes(binary.data(), binary.size()));
+    EXPECT_EQ(sealedMsgData(TWStoredKeySignEthereumMessage(f.key.get(), TWCoinTypeEthereum, f.address.get(), f.password.get(), binaryData.get())).size(), 65ul);
+}
+
+TEST(TWStoredKeySignMessage, TypedDataByteIdentical) {
+    const SealedMsgFixture f(TWCoinTypeEthereum);
+    const auto json = STRING(gSealedMsgTypedData);
+    const auto sealed = sealedMsgData(TWStoredKeySignEthereumTypedData(f.key.get(), TWCoinTypeEthereum, f.address.get(), f.password.get(), json.get()));
+    const auto digest = sealedMsgData(TWEthereumAbiEncodeTyped(json.get()));
+    ASSERT_EQ(digest.size(), 32ul);
+    ASSERT_EQ(sealed.size(), 65ul);
+    EXPECT_EQ(hex(sealed), hex(sealedMsgAppSignDigest(f.privateKey.get(), digest)));
+
+    const auto malformed = STRING("{not json");
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignEthereumTypedData(f.key.get(), TWCoinTypeEthereum, f.address.get(), f.password.get(), malformed.get())), TWStoredKeySignErrorInvalidInput);
+}
+
+// Decodes the hex string returned by a public message signer (empty on failure).
+static Data sealedMsgHexResult(TWString* result) {
+    const auto wrapped = WRAPS(result);
+    return parse_hex(std::string(TWStringUTF8Bytes(wrapped.get())));
+}
+
+// The app's FlexGas / Biz path: TWBizGetEncodedHash (sender = account) then TWBizGetSignedHash.
+TEST(TWStoredKeySignMessage, BizUserOpHashByteIdentical) {
+    const SealedMsgFixture f(TWCoinTypeSmartChain);
+    const auto chainIdBytes = store(uint256_t(56));
+    const auto chainId = WRAPD(TWDataCreateWithBytes(chainIdBytes.data(), chainIdBytes.size()));
+    const auto codeAddress = STRING("0x2e234DAe75C793f67A35089C9d99245E1C58470b");
+    const auto codeName = STRING("Biz");
+    const auto codeVersion = STRING("v1.0.0");
+    const auto typeHash = STRING("0x4f51e7a567f083a31264743067875fc6a7ae45c32c5bd71f6a998c4625b13867");
+    const auto domainSeparatorHash = STRING("0xd87cd6ef79d4e2b95e15ce8abf732db51ec771f1ca2edccf22a46c729ac56472");
+    const auto userOpHash = STRING("0xf177858c1c500e51f38ffe937bed7e4d3a8678725900be4682d3ce04d97071eb");
+
+    const auto sealed = sealedMsgData(TWStoredKeySignBizUserOpHash(f.key.get(), TWCoinTypeSmartChain, f.address.get(), f.password.get(), chainId.get(),
+                                                                         codeAddress.get(), codeName.get(), codeVersion.get(), typeHash.get(), domainSeparatorHash.get(), userOpHash.get()));
+
+    const auto encoded = sealedMsgData(TWBizGetEncodedHash(chainId.get(), codeAddress.get(), codeName.get(), codeVersion.get(), typeHash.get(),
+                                                                 domainSeparatorHash.get(), f.address.get(), userOpHash.get()));
+    ASSERT_EQ(encoded.size(), 32ul);
+    const auto baseline = sealedMsgData(TWBizGetSignedHash(STRING(hexEncoded(encoded).c_str()).get(), STRING(gSealedMsgKeyHex).get()));
+    ASSERT_EQ(sealed.size(), 65ul);
+    EXPECT_EQ(hex(sealed), hex(baseline));
+}
+
+// The app's eip7702SignAuthorization path: TWEip7702SignAuthorization with the exported key. The
+// fixture also matches the viem-verified signature from TWBarzTests.
+TEST(TWStoredKeySignMessage, Eip7702AuthorizationByteIdentical) {
+    const SealedMsgFixture f(TWCoinTypeEthereum);
+    const auto contract = STRING("0xB91aaa96B138A1B1D94c9df4628187132c5F2bf1");
+    for (const uint64_t nonceValue : {0ull, 1ull, 300ull}) {
+        const auto chainIdBytes = store(uint256_t(1));
+        const auto nonceBytes = store(uint256_t(nonceValue));
+        const auto chainId = WRAPD(TWDataCreateWithBytes(chainIdBytes.data(), chainIdBytes.size()));
+        const auto nonce = WRAPD(TWDataCreateWithBytes(nonceBytes.data(), nonceBytes.size()));
+
+        // The sealed result carries the JSON as UTF-8 bytes.
+        const auto sealedBytes = sealedMsgData(TWStoredKeySignEip7702Authorization(f.key.get(), TWCoinTypeEthereum, f.address.get(), f.password.get(), chainId.get(), contract.get(), nonce.get()));
+        const std::string sealed(sealedBytes.begin(), sealedBytes.end());
+        TWString* baselineRaw = TWEip7702SignAuthorization(chainId.get(), contract.get(), nonce.get(), STRING(gSealedMsgKeyHex).get());
+        ASSERT_NE(baselineRaw, nullptr);
+        const auto baseline = WRAPS(baselineRaw);
+        EXPECT_EQ(sealed, std::string(TWStringUTF8Bytes(baseline.get()))) << nonceValue;
+        if (nonceValue == 1) {
+            EXPECT_NE(sealed.find("0x2c39f2f64441dd38c364ee175dc6b9a87f34ca330bce968f6c8e22811e3bb710"), std::string::npos);
+        }
+    }
+
+    const auto chainIdBytes = store(uint256_t(1));
+    const auto chainId = WRAPD(TWDataCreateWithBytes(chainIdBytes.data(), chainIdBytes.size()));
+    const auto invalidContract = STRING("0x1234");
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignEip7702Authorization(f.key.get(), TWCoinTypeEthereum, f.address.get(), f.password.get(), chainId.get(), invalidContract.get(), chainId.get())), TWStoredKeySignErrorInvalidInput);
+}
+
+// Fail closed, each with its error: non-EVM coin, unknown address, wrong password.
+TEST(TWStoredKeySignMessage, RejectsNonEvmUnknownAddressAndWrongPassword) {
+    const SealedMsgFixture f(TWCoinTypeEthereum);
+    const auto message = DATA("68656c6c6f");
+
+    const SealedMsgFixture btc(TWCoinTypeBitcoin);
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignEthereumMessage(btc.key.get(), TWCoinTypeBitcoin, btc.address.get(), btc.password.get(), message.get())), TWStoredKeySignErrorUnsupportedCoin);
+
+    const auto otherAddress = STRING("0x3535353535353535353535353535353535353535");
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignEthereumMessage(f.key.get(), TWCoinTypeEthereum, otherAddress.get(), f.password.get(), message.get())), TWStoredKeySignErrorAccountNotFound);
+
+    const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("wrong"), 5));
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignEthereumMessage(f.key.get(), TWCoinTypeEthereum, f.address.get(), wrongPassword.get(), message.get())), TWStoredKeySignErrorWrongPassword);
+}
+
+// The app's Tron signMessage path: TWTronMessageSignerSignMessage with the exported key. The first
+// case is also the known vector from TWTronMessageSigner.SignAndVerifyLegacy.
+TEST(TWStoredKeySignMessage, TronMessageByteIdentical) {
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
+    const auto keyData = DATA("75065f100e38d3f3b4c5c4235834ba8216de62272a4f03532c44b31a5734360a");
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(keyData.get(), STRING("n").get(), password.get(), TWCoinTypeTron));
+    const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeTron, nullptr));
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+    const auto privateKey = WRAP(TWPrivateKey, TWStoredKeyPrivateKey(key.get(), TWCoinTypeTron, password.get()));
+
+    for (const std::string text : {"Hello World", "A much longer message to test the signing and verification process", "", "你好"}) {
+        const auto message = TW::data(text);
+        const auto messageData = WRAPD(TWDataCreateWithBytes(message.data(), message.size()));
+        const auto sealed = sealedMsgData(TWStoredKeySignTronMessage(key.get(), TWCoinTypeTron, address.get(), password.get(), messageData.get()));
+        const auto baseline = sealedMsgHexResult(TWTronMessageSignerSignMessage(privateKey.get(), STRING(text.c_str()).get()));
+        ASSERT_EQ(sealed.size(), 65ul) << text;
+        EXPECT_EQ(hex(sealed), hex(baseline)) << text;
+        if (text == "Hello World") {
+            EXPECT_EQ(hex(sealed), "bc0753c070cc55693097df11bc11e1a7c4bd5e1a40b9dc94c75568e59bcc9d6b50a7873ef25b469e494490a54de37327b4bc7fc825c81a377b555e34fb7261ba1c");
+        }
+    }
+
+    // Fail closed: non-Tron coin (even with an EVM account of the same key), unknown address, wrong password.
+    const auto message = DATA("68656c6c6f");
+    const SealedMsgFixture eth(TWCoinTypeEthereum);
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignTronMessage(eth.key.get(), TWCoinTypeEthereum, eth.address.get(), eth.password.get(), message.get())), TWStoredKeySignErrorUnsupportedCoin);
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignTronMessage(key.get(), TWCoinTypeEthereum, address.get(), password.get(), message.get())), TWStoredKeySignErrorUnsupportedCoin);
+    const auto otherAddress = STRING("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignTronMessage(key.get(), TWCoinTypeTron, otherAddress.get(), password.get(), message.get())), TWStoredKeySignErrorAccountNotFound);
+    const auto wrongPassword = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("wrong"), 5));
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignTronMessage(key.get(), TWCoinTypeTron, address.get(), wrongPassword.get(), message.get())), TWStoredKeySignErrorWrongPassword);
+}
+
+// The app's Solana signMessage path: TWMessageSignerSign(Solana) with the exported key. Transaction
+// and input-contract cases are covered in SealedSignerTests.
+TEST(TWStoredKeySignMessage, SolanaMessageByteIdentical) {
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>("password"), 8));
+    const auto keyData = DATA(gSealedMsgKeyHex);
+    const auto key = WRAP(TWStoredKey, TWStoredKeyImportPrivateKey(keyData.get(), STRING("n").get(), password.get(), TWCoinTypeSolana));
+    const auto account = WRAP(TWAccount, TWStoredKeyAccountForCoin(key.get(), TWCoinTypeSolana, nullptr));
+    const auto address = WRAPS(TWAccountAddress(account.get()));
+
+    const std::string text = "Hello Trust Wallet";
+    const auto message = TW::data(text);
+    const auto messageData = WRAPD(TWDataCreateWithBytes(message.data(), message.size()));
+    const auto sealed = sealedMsgData(TWStoredKeySignSolanaMessage(key.get(), TWCoinTypeSolana, address.get(), password.get(), messageData.get()));
+
+    Solana::Proto::MessageSigningInput input;
+    const auto privateKey = parse_hex(gSealedMsgKeyHex);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_message(text);
+    const auto inputBytes = TW::data(input.SerializeAsString());
+    const auto inputData = WRAPD(TWDataCreateWithBytes(inputBytes.data(), inputBytes.size()));
+    const auto outputBytes = sealedMsgData(TWMessageSignerSign(TWCoinTypeSolana, inputData.get()));
+    Solana::Proto::MessageSigningOutput output;
+    ASSERT_TRUE(output.ParseFromArray(outputBytes.data(), static_cast<int>(outputBytes.size())));
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+
+    ASSERT_EQ(sealed.size(), 64ul);
+    EXPECT_EQ(hex(sealed), hex(Base58::decode(output.signature())));
+
+    const SealedMsgFixture eth(TWCoinTypeEthereum);
+    EXPECT_EQ(sealedMsgError(TWStoredKeySignSolanaMessage(eth.key.get(), TWCoinTypeEthereum, eth.address.get(), eth.password.get(), messageData.get())), TWStoredKeySignErrorUnsupportedCoin);
+}
+
+} // namespace TW::SealedMessageTests

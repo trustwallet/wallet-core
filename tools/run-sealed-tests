@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Build the C++ tests and run the sealed-signing (Security Layer S2.1) tests.
+#
+# Usage:
+#   tools/run-sealed-tests                 # run *SealedSigner* + *TWStoredKeySign*
+#   tools/run-sealed-tests "*Ethereum*"    # custom gtest filter
+#
+set -e
+
+cd "$(dirname "$0")/.."
+
+# cmake needs BOOST_ROOT (brew boost) on macOS; make rust/protoc reachable for fresh shells.
+if command -v brew >/dev/null 2>&1; then
+  export BOOST_ROOT="${BOOST_ROOT:-$(brew --prefix boost 2>/dev/null)}"
+fi
+export PATH="/opt/homebrew/opt/rustup/bin:$HOME/.cargo/bin:$PWD/build/local/bin:$PATH"
+
+FILTER="${1:-*SealedSigner*:*TWStoredKeySign*}"
+
+# Configure once if the build tree isn't there yet.
+if [ ! -f build/CMakeCache.txt ]; then
+  cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+fi
+
+make -Cbuild -j12 tests
+./build/tests/tests --gtest_filter="$FILTER"
