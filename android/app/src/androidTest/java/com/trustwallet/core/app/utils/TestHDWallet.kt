@@ -259,16 +259,11 @@ class TestHDWallet {
     }
 
     @Test
-    fun testInitHDWallet() {
-        val hdWallet2 = HDWallet(160, "")
-        assertFalse(hdWallet2.mnemonic().isNullOrBlank())
-        val wordList2 = hdWallet2.mnemonic().split(" ")
-        Mnemonic.isValid(wordList2.joinToString { " " })
+    fun testGenerate160BitMnemonic() {
+        val phrase = HDWallet(160, "").mnemonic()
 
-        val hdWallet3 = HDWallet(160, "")
-        assertFalse(hdWallet3.mnemonic().isNullOrBlank())
-        val wordList3 = hdWallet3.mnemonic().split(" ")
-        Mnemonic.isValid(wordList3.joinToString { " " })
+        assertEquals(15, phrase.split(" ").size)
+        assertTrue(Mnemonic.isValid(phrase))
     }
 
     @Test
