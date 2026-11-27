@@ -21,7 +21,6 @@
 #include <TrezorCrypto/memzero.h>
 
 #include <algorithm>
-#include <functional>
 #include <optional>
 
 namespace TW::Keystore {
@@ -42,7 +41,8 @@ static void wipe(std::string& s) {
 
 // Runs a public sealed function body so that nothing escapes as an exception: an exception that
 // no step mapped to its own error is a bug, reported as `internal` (its text is not kept).
-static Result guarded(const std::function<Result()>& body) {
+template <typename Body>
+static Result guarded(const Body& body) {
     try {
         return body();
     } catch (...) {
@@ -274,7 +274,7 @@ Result sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string
     // The PrivateKey and HDWallet destructors zero their own buffers; the serialized input and the
     // proto's copy of the key are wiped by the per-family signers above.
     // (Copies made inside the per-coin signer itself are a later hardening step.)
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &signingInput]() -> Result {
         if (TWCoinTypeBlockchain(coin) == TWBlockchainEthereum) {
             return signEthereum(storedKey, coin, address, password, signingInput);
         }
@@ -343,7 +343,7 @@ static Result signSecp256k1Digest(const StoredKey& storedKey, TWCoinType coin, c
 }
 
 Result sealedSignEthereumPersonalMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message) {
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &message]() -> Result {
         if (!isEvm(coin)) {
             return unsupportedCoin();
         }
@@ -355,7 +355,7 @@ Result sealedSignEthereumPersonalMessage(const StoredKey& storedKey, TWCoinType 
 }
 
 Result sealedSignEthereumTypedData(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const std::string& typedDataJson) {
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &typedDataJson]() -> Result {
         if (!isEvm(coin)) {
             return unsupportedCoin();
         }
@@ -375,7 +375,7 @@ Result sealedSignEthereumTypedData(const StoredKey& storedKey, TWCoinType coin, 
 Result sealedSignBizUserOpHash(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password,
                                const Data& chainId, const std::string& codeAddress, const std::string& codeName, const std::string& codeVersion,
                                const std::string& typeHash, const std::string& domainSeparatorHash, const std::string& userOpHash) {
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &chainId, &codeAddress, &codeName, &codeVersion, &typeHash, &domainSeparatorHash, &userOpHash]() -> Result {
         if (!isEvm(coin)) {
             return unsupportedCoin();
         }
@@ -408,7 +408,7 @@ static std::string compactHex(const Data& bigEndian) {
 
 Result sealedSignEip7702Authorization(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password,
                                       const Data& chainId, const std::string& contractAddress, const Data& nonce) {
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &chainId, &contractAddress, &nonce]() -> Result {
         if (!isEvm(coin)) {
             return unsupportedCoin();
         }
@@ -446,7 +446,7 @@ Result sealedSignEip7702Authorization(const StoredKey& storedKey, TWCoinType coi
 // Same as `Tron::MessageSigner::signMessage` (TronWeb signMessageV2):
 // keccak256("\x19TRON Signed Message:\n" + len + message), v = 27/28. Only Tron accounts sign.
 Result sealedSignTronMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message) {
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &message]() -> Result {
         if (coin != TWCoinTypeTron) {
             return unsupportedCoin();
         }
@@ -522,79 +522,107 @@ constexpr uint32_t gSolanaVersionPrefix = 0x80;
 constexpr uint64_t gSolanaPublicKeyLength = 32;
 constexpr uint64_t gSolanaBlockhashLength = 32;
 
-bool solanaMessageParses(SolanaMessageReader& reader) {
+struct SolanaMessageHeader {
+    bool versioned = false;
+    uint32_t numRequiredSignatures = 0;
+    uint32_t numReadonlySigned = 0;
+    uint32_t numReadonlyUnsigned = 0;
+    uint32_t numStaticKeys = 0;
+};
+
+// Version prefix (legacy, or 0x80 for v0), header, static account keys and recent blockhash.
+bool readSolanaHeader(SolanaMessageReader& reader, SolanaMessageHeader& header) {
     uint32_t first = 0;
     if (!reader.u8(first)) {
         return false;
     }
-    const bool versioned = (first & gSolanaVersionPrefix) != 0;
-    if (versioned) {
-        // Only v0 exists; 0xff (the off-chain message prefix) is not a version.
-        if (first != gSolanaVersionPrefix || !reader.u8(first)) {
-            return false;
-        }
-    }
-    const uint32_t numRequiredSignatures = first;
-    uint32_t numReadonlySigned = 0;
-    uint32_t numReadonlyUnsigned = 0;
-    uint32_t numStaticKeys = 0;
-    if (!reader.u8(numReadonlySigned) || !reader.u8(numReadonlyUnsigned) || !reader.compactU16(numStaticKeys) ||
-        !reader.skip(numStaticKeys * gSolanaPublicKeyLength) || !reader.skip(gSolanaBlockhashLength)) {
+    header.versioned = (first & gSolanaVersionPrefix) != 0;
+    // Only v0 exists; 0xff (the off-chain message prefix) is not a version.
+    if (header.versioned && (first != gSolanaVersionPrefix || !reader.u8(first))) {
         return false;
     }
+    header.numRequiredSignatures = first;
+    return reader.u8(header.numReadonlySigned) && reader.u8(header.numReadonlyUnsigned) &&
+           reader.compactU16(header.numStaticKeys) &&
+           reader.skip(header.numStaticKeys * gSolanaPublicKeyLength) && reader.skip(gSolanaBlockhashLength);
+}
 
-    int64_t maxProgramIndex = -1;
-    int64_t maxAccountIndex = -1;
+// One compiled instruction: program index, account indexes, data. Tracks the highest indexes seen.
+bool readSolanaInstruction(SolanaMessageReader& reader, int64_t& maxProgramIndex, int64_t& maxAccountIndex) {
+    uint32_t programIndex = 0;
+    uint32_t numAccounts = 0;
+    if (!reader.u8(programIndex) || !reader.compactU16(numAccounts)) {
+        return false;
+    }
+    maxProgramIndex = std::max<int64_t>(maxProgramIndex, programIndex);
+    for (uint32_t j = numAccounts; j > 0; j--) {
+        uint32_t accountIndex = 0;
+        if (!reader.u8(accountIndex)) {
+            return false;
+        }
+        maxAccountIndex = std::max<int64_t>(maxAccountIndex, accountIndex);
+    }
+    uint32_t dataLength = 0;
+    return reader.compactU16(dataLength) && reader.skip(dataLength);
+}
+
+bool readSolanaInstructions(SolanaMessageReader& reader, int64_t& maxProgramIndex, int64_t& maxAccountIndex) {
     uint32_t numInstructions = 0;
     if (!reader.compactU16(numInstructions)) {
         return false;
     }
     for (uint32_t i = numInstructions; i > 0; i--) {
-        uint32_t programIndex = 0;
-        uint32_t numAccounts = 0;
-        if (!reader.u8(programIndex) || !reader.compactU16(numAccounts)) {
-            return false;
-        }
-        maxProgramIndex = std::max<int64_t>(maxProgramIndex, programIndex);
-        for (uint32_t j = numAccounts; j > 0; j--) {
-            uint32_t accountIndex = 0;
-            if (!reader.u8(accountIndex)) {
-                return false;
-            }
-            maxAccountIndex = std::max<int64_t>(maxAccountIndex, accountIndex);
-        }
-        uint32_t dataLength = 0;
-        if (!reader.compactU16(dataLength) || !reader.skip(dataLength)) {
+        if (!readSolanaInstruction(reader, maxProgramIndex, maxAccountIndex)) {
             return false;
         }
     }
+    return true;
+}
 
+// One address-lookup table: its key, then the writable and the readonly indexes it adds.
+bool readSolanaLookupTable(SolanaMessageReader& reader, uint64_t& numLookupKeys) {
+    if (!reader.skip(gSolanaPublicKeyLength)) {
+        return false;
+    }
+    for (int k = 0; k < 2; k++) {
+        uint32_t count = 0;
+        if (!reader.compactU16(count) || !reader.skip(count)) {
+            return false;
+        }
+        numLookupKeys += count;
+    }
+    return true;
+}
+
+bool readSolanaLookupTables(SolanaMessageReader& reader, uint64_t& numLookupKeys) {
+    uint32_t numLookups = 0;
+    if (!reader.compactU16(numLookups)) {
+        return false;
+    }
+    for (uint32_t i = numLookups; i > 0; i--) {
+        if (!readSolanaLookupTable(reader, numLookupKeys)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool solanaMessageParses(SolanaMessageReader& reader) {
+    SolanaMessageHeader header;
+    int64_t maxProgramIndex = -1;
+    int64_t maxAccountIndex = -1;
     uint64_t numLookupKeys = 0;
-    if (versioned) {
-        uint32_t numLookups = 0;
-        if (!reader.compactU16(numLookups)) {
-            return false;
-        }
-        for (uint32_t i = numLookups; i > 0; i--) {
-            if (!reader.skip(gSolanaPublicKeyLength)) {
-                return false;
-            }
-            // writable, then readonly indexes
-            for (int k = 0; k < 2; k++) {
-                uint32_t count = 0;
-                if (!reader.compactU16(count) || !reader.skip(count)) {
-                    return false;
-                }
-                numLookupKeys += count;
-            }
-        }
+    if (!readSolanaHeader(reader, header) ||
+        !readSolanaInstructions(reader, maxProgramIndex, maxAccountIndex) ||
+        (header.versioned && !readSolanaLookupTables(reader, numLookupKeys))) {
+        return false;
     }
 
-    const uint64_t numKeys = numStaticKeys + numLookupKeys;
+    const uint64_t numKeys = header.numStaticKeys + numLookupKeys;
     return reader.isExhausted() &&
-           numReadonlySigned < numRequiredSignatures &&
-           static_cast<uint64_t>(numRequiredSignatures) + numReadonlyUnsigned <= numStaticKeys &&
-           maxProgramIndex < static_cast<int64_t>(numStaticKeys) &&
+           header.numReadonlySigned < header.numRequiredSignatures &&
+           static_cast<uint64_t>(header.numRequiredSignatures) + header.numReadonlyUnsigned <= header.numStaticKeys &&
+           maxProgramIndex < static_cast<int64_t>(header.numStaticKeys) &&
            maxAccountIndex < static_cast<int64_t>(numKeys);
 }
 
@@ -610,7 +638,7 @@ bool isSolanaTransactionMessage(const Data& message) {
 // Refuses bytes that are a transaction message (see above), so this function can never produce a
 // transaction signature.
 Result sealedSignSolanaMessage(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& message) {
-    return guarded([&]() -> Result {
+    return guarded([&storedKey, coin, &address, &password, &message]() -> Result {
         if (coin != TWCoinTypeSolana) {
             return unsupportedCoin();
         }

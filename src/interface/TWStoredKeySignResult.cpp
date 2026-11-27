@@ -6,8 +6,11 @@
 
 #include "../Keystore/SealedSigner.h"
 
+#include <memory>
+
 void TWStoredKeySignResultDelete(struct TWStoredKeySignResult* _Nonnull result) {
-    delete result;
+    // Takes back ownership handed out by the sealed signing functions and frees the result.
+    const std::unique_ptr<TWStoredKeySignResult> owned(result);
 }
 
 enum TWStoredKeySignError TWStoredKeySignResultError(struct TWStoredKeySignResult* _Nonnull result) {
