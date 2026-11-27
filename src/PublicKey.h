@@ -10,6 +10,7 @@
 #include <TrustWalletCore/TWPublicKeyType.h>
 
 #include <cassert>
+#include <optional>
 #include <stdexcept>
 
 namespace TW {
@@ -39,6 +40,9 @@ class PublicKey {
 
     /// Magic number used in V component encoding
     static const byte SignatureVOffset = 27;
+
+    /// Number of ECDSA recovery IDs (0..3).
+    static const byte SignatureRecIdCount = 4;
 
     /// The number of bytes in an ECDSA message digest (e.g., 32-byte hash) that can be verified.
     static const size_t ecdsaMessageSize = 32;
@@ -101,6 +105,9 @@ class PublicKey {
     /// messageDigest: message digest (hash) to be signed
     /// Throws on invalid data.
     static PublicKey recoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest);
+
+    /// Same as recoverRaw, but returns std::nullopt on invalid data instead of throwing.
+    static std::optional<PublicKey> tryRecoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest);
 
     /// Recover public key from signature (SECP256k1Extended)
     /// signature: 65-byte signature (R, S, and V). V can have higher value bits, as used by Ethereum (for values over 27 the negated last bit is taken).

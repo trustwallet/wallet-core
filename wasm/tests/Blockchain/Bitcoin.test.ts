@@ -342,4 +342,36 @@ describe("Bitcoin", () => {
         "0x7046dc2689a27e143ea2ad1039710885147e9485ab6453fa7e87464aa7dd3eca"
     );
   });
+
+  // Invalid input must return "" / false instead of aborting the module.
+  it("test BitcoinMessageSigner invalid input", () => {
+    const { BitcoinMessageSigner, PrivateKey, HexCoding } = globalThis.core;
+    const privateKey = PrivateKey.createWithData(HexCoding.decode("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const address = "19cAJn4Ms8jodBBGtroBNNpCZiHAWGAq7X";
+    const segwitAddress = "bc1qten42eesehw0ktddcp0fws7d3ycsqez3f7d5yt"; // same key
+    const message = "test signature";
+    const signature = "ILH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=";
+
+    assert.equal(BitcoinMessageSigner.signMessage(privateKey, address, message), signature);
+    assert.isTrue(BitcoinMessageSigner.verifyMessage(address, message, signature));
+
+    // Only legacy addresses are supported.
+    assert.equal(BitcoinMessageSigner.signMessage(privateKey, segwitAddress, message), "");
+    assert.isFalse(BitcoinMessageSigner.verifyMessage(segwitAddress, message, signature));
+    // Legacy address of another key.
+    assert.equal(BitcoinMessageSigner.signMessage(privateKey, "1B8Qea79tsxmn4dTiKKRVvsJpHwL2fMQnr", message), "");
+    // Private key out of range for secp256k1.
+    const outOfRangeKey = PrivateKey.createWithData(HexCoding.decode("ff".repeat(32)));
+    assert.equal(BitcoinMessageSigner.signMessage(outOfRangeKey, address, message), "");
+
+    const invalidSignatures = [
+      "ILH5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXA==", // 64 bytes
+      "!!!not-base64!!!",
+      "I7H5K7JQLaRGaKGXXH5mYM6FIIy9IWyY4JUPI+PHYY4WaupxUbg+zy0bhBCrDuehy9x4WidwjkRR1GSLnWvOXBo=", // recovery id out of range
+      "HwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", // r = 0
+    ];
+    for (const invalid of invalidSignatures) {
+      assert.isFalse(BitcoinMessageSigner.verifyMessage(address, message, invalid), invalid);
+    }
+  });
 });

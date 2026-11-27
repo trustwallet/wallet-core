@@ -285,7 +285,7 @@ PublicKey PublicKey::recoverRaw(const Data& signatureRS, byte recId, const Data&
     if (signatureRS.size() < 2 * PrivateKey::_size) {
         throw std::invalid_argument("signature too short");
     }
-    if (recId >= 4) {
+    if (recId >= SignatureRecIdCount) {
         throw std::invalid_argument("Invalid recId (>=4)");
     }
     if (messageDigest.size() < PrivateKey::_size) {
@@ -294,6 +294,17 @@ PublicKey PublicKey::recoverRaw(const Data& signatureRS, byte recId, const Data&
     TW::Data result(secp256k1SignatureSize);
     if (auto ret = ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureRS.data(), messageDigest.data(), recId); ret != 0) {
         throw std::invalid_argument("recover failed " + std::to_string(ret));
+    }
+    return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+}
+
+std::optional<PublicKey> PublicKey::tryRecoverRaw(const Data& signatureRS, byte recId, const Data& messageDigest) {
+    if (signatureRS.size() < 2 * PrivateKey::_size || recId >= SignatureRecIdCount || messageDigest.size() < PrivateKey::_size) {
+        return std::nullopt;
+    }
+    TW::Data result(secp256k1SignatureSize);
+    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureRS.data(), messageDigest.data(), recId) != 0) {
+        return std::nullopt;
     }
     return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
 }

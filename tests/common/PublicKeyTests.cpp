@@ -314,6 +314,23 @@ TEST(PublicKeyTests, RecoverRawNegative) {
         "digest too short");
 }
 
+TEST(PublicKeyTests, TryRecoverRaw) {
+    const auto privateKey = PrivateKey(parse_hex("4f96ed80e9a7555a6f74b3d658afdd9c756b0a40d4ca30c42c2039eb449bb904"), TWCurveSECP256k1);
+    const auto message = parse_hex("6468eb103d51c9a683b51818fdb73390151c9973831d2cfb4e9587ad54273155");
+    const auto signature = privateKey.sign(message);
+
+    const auto recovered = PublicKey::tryRecoverRaw(signature, signature[64], message);
+    ASSERT_TRUE(recovered.has_value());
+    EXPECT_EQ(hex(recovered->bytes), hex(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended).bytes));
+
+    // Inputs that make recoverRaw throw.
+    EXPECT_FALSE(PublicKey::tryRecoverRaw(signature, 4, message).has_value());
+    EXPECT_FALSE(PublicKey::tryRecoverRaw(subData(signature, 0, 63), 1, message).has_value());
+    EXPECT_FALSE(PublicKey::tryRecoverRaw(signature, 1, subData(message, 0, 31)).has_value());
+    // r = 0, recovery fails.
+    EXPECT_FALSE(PublicKey::tryRecoverRaw(Data(64, 0), 0, message).has_value());
+}
+
 TEST(PublicKeyTests, Recover) {
     {
         const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
