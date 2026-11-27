@@ -11,9 +11,20 @@
 
 #include <TrustWalletCore/TWStellarMemoType.h>
 
+#include <cstdint>
+#include <limits>
+
 using namespace TW;
 
 namespace TW::Stellar {
+
+// Default ChangeTrust limit, same as the Stellar SDKs.
+static constexpr int64_t changeTrustMaxLimit = std::numeric_limits<int64_t>::max();
+
+static int64_t changeTrustLimit(const Proto::OperationChangeTrust& op) {
+    return op.limit_oneof_case() == Proto::OperationChangeTrust::kLimit ? op.limit() : changeTrustMaxLimit;
+}
+
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
     auto signer = Signer(input);
     auto signResult = signer.sign();
@@ -67,6 +78,10 @@ Result<Data, Common::Proto::SigningError> Signer::encode(const Proto::SigningInp
     }
     if (input.has_memo_return_hash() && input.memo_return_hash().hash().size() != 32) {
         return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_memo);
+    }
+    // Negative limits are CHANGE_TRUST_MALFORMED.
+    if (input.has_op_change_trust() && changeTrustLimit(input.op_change_trust()) < 0) {
+        return Result<Data, Common::Proto::SigningError>::failure(Common::Proto::Error_invalid_params);
     }
 
     auto data = Data();
@@ -130,7 +145,7 @@ Result<Data, Common::Proto::SigningError> Signer::encode(const Proto::SigningInp
 
     case Proto::SigningInput::kOpChangeTrust:
         encodeAsset(input.op_change_trust().asset(), data);
-        encode64BE(0x7fffffffffffffff, data); // limit MAX
+        encode64BE(static_cast<uint64_t>(changeTrustLimit(input.op_change_trust())), data);
         break;
 
     case Proto::SigningInput::kOpCreateClaimableBalance: {

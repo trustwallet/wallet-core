@@ -13,6 +13,8 @@
 #include <TrustWalletCore/TWStellarPassphrase.h>
 #include <gtest/gtest.h>
 
+#include <limits>
+
 using namespace TW;
 
 namespace TW::Stellar::tests {
@@ -129,6 +131,69 @@ TEST(TWAnySingerStellar, Sign_Change_Trust_2) {
     ANY_SIGN(input, TWCoinTypeStellar);
 
     EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAVVTRAAAAAAA6KYahh5gr2D4B3PgY0blxyy+Wdyt2jdgjVjvQlEdn9x//////////wAAAAAAAAABd9ORdQAAAEDMZtN05ZsZB4OKOZSFkQvuRqDIvMME3PYMTAGJPQlO6Ee0nOtaRn2q0uf0IhETSSfqcsK5asAZzNj07tG0SPwM");
+}
+
+// Inputs of `Sign_Change_Trust_ad9c`.
+static Proto::SigningInput changeTrustMobiInput() {
+    const auto key = parse_hex("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9");
+    Proto::SigningInput input;
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL");
+    input.set_fee(10000);
+    input.set_sequence(144098454883270659);
+    input.mutable_op_change_trust()->mutable_asset()->set_issuer("GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH");
+    input.mutable_op_change_trust()->mutable_asset()->set_alphanum4("MOBI");
+    input.mutable_op_change_trust()->set_valid_before(1613336576);
+    input.set_private_key(key.data(), key.size());
+    return input;
+}
+
+// Expected values cross-checked with stellar-sdk (Python).
+TEST(TWAnySingerStellar, Sign_Change_Trust_RemoveTrustline) {
+    auto input = changeTrustMobiInput();
+    input.mutable_op_change_trust()->set_limit(0);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWQAAAAAAAAAAAAAAAAAAAABd9ORdQAAAEBa4LiVrWPaYWa4LkZedEwiQ2aO7tDsnbl4vDn15E1HwnHXyfAo2Kly6uG2OFXu4HE4dRjjWN3FigrdXh8df6cH");
+}
+
+TEST(TWAnySingerStellar, Sign_Change_Trust_CustomLimit) {
+    auto input = changeTrustMobiInput();
+    input.mutable_op_change_trust()->set_limit(10000000000); // 1000 MOBI
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    EXPECT_EQ(output.signature(), "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWQAAAACVAvkAAAAAAAAAAABd9ORdQAAAECqM0ZbnflQjdBWM9BLFRCt951M4mo6ivaZNfhHBLAMFEV6OJ+nnLAE7kyEocuDEVaEKKHR9E+VyNCfas0UlXsL");
+}
+
+TEST(TWAnySingerStellar, Sign_Change_Trust_ExplicitMaxLimitMatchesUnset) {
+    auto input = changeTrustMobiInput();
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+    ASSERT_EQ(output.error(), Common::Proto::OK);
+    const auto unsetLimitSignature = output.signature();
+
+    input.mutable_op_change_trust()->set_limit(std::numeric_limits<int64_t>::max());
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.error(), Common::Proto::OK);
+    EXPECT_EQ(output.signature(), unsetLimitSignature);
+}
+
+TEST(TWAnySingerStellar, Sign_Change_Trust_NegativeLimit) {
+    auto input = changeTrustMobiInput();
+    input.mutable_op_change_trust()->set_limit(-1);
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeStellar);
+
+    EXPECT_EQ(output.error(), Common::Proto::Error_invalid_params);
+    EXPECT_TRUE(output.signature().empty());
 }
 
 TEST(TWAnySingerStellar, Sign_Create_Claimable_Balance_1f1f84) {

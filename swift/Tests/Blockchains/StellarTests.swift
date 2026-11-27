@@ -150,4 +150,27 @@ class StellarTests: XCTestCase {
         let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
         XCTAssertEqual(output.signature, "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWR//////////wAAAAAAAAABd9ORdQAAAEAnfyXyaNQX5Bq3AEQVBIaYd+cLib+y2sNY7DF/NYVSE51dZ6swGGElz094ObsPefmVmeRrkGsSc/fF5pmth+wJ")
     }
+
+    func testSignChangeTrustRemoveTrustline() {
+        let assetMobi = StellarAsset.with {
+            $0.issuer = "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH"
+            $0.alphanum4 = "MOBI"
+        }
+        let operation = StellarOperationChangeTrust.with {
+            $0.asset = assetMobi
+            $0.validBefore = 1613336576
+            $0.limit = 0 // removes the trustline
+        }
+        let input = StellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
+            $0.fee = 10000
+            $0.sequence = 144098454883270659
+            $0.account = "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL"
+            $0.privateKey = Data(hexString: "3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9")!
+            $0.opChangeTrust = operation
+        }
+
+        let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .stellar)
+        XCTAssertEqual(output.signature, "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWQAAAAAAAAAAAAAAAAAAAABd9ORdQAAAEBa4LiVrWPaYWa4LkZedEwiQ2aO7tDsnbl4vDn15E1HwnHXyfAo2Kly6uG2OFXu4HE4dRjjWN3FigrdXh8df6cH")
+    }
 }

@@ -163,4 +163,33 @@ class TestStellarTransactionSigner {
 
         assertEquals(signBytes, "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWR//////////wAAAAAAAAABd9ORdQAAAEAnfyXyaNQX5Bq3AEQVBIaYd+cLib+y2sNY7DF/NYVSE51dZ6swGGElz094ObsPefmVmeRrkGsSc/fF5pmth+wJ")
     }
+
+    @Test
+    fun testStellarTransactionSigningChangeTrustRemoveTrustline() {
+        val assetMobi = Stellar.Asset.newBuilder()
+        assetMobi.apply {
+            issuer = "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH"
+            alphanum4 = "MOBI"
+        }
+        val operation = Stellar.OperationChangeTrust.newBuilder()
+        operation.apply {
+            asset = assetMobi.build()
+            validBefore = 1613336576
+            limit = 0L // removes the trustline
+        }
+        val signingInput = Stellar.SigningInput.newBuilder()
+        signingInput.apply {
+            account = "GDFEKJIFKUZP26SESUHZONAUJZMBSODVN2XBYN4KAGNHB7LX2OIXLPUL"
+            fee = 10000
+            sequence = 144098454883270659
+            passphrase = StellarPassphrase.STELLAR.toString()
+            opChangeTrust = operation.build()
+            privateKey = ByteString.copyFrom(PrivateKey("3c0635f8638605aed6e461cf3fa2d508dd895df1a1655ff92c79bfbeaf88d4b9".toHexByteArray()).data())
+        }
+
+        val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
+        val signBytes = sign.signature
+
+        assertEquals(signBytes, "AAAAAMpFJQVVMv16RJUPlzQUTlgZOHVurhw3igGacP1305F1AAAnEAH/8MgAAAADAAAAAQAAAAAAAAAAAAAAAGApkAAAAAAAAAAAAQAAAAAAAAAGAAAAAU1PQkkAAAAAPHEwK55l2uMBECcQxzsOUsAWg1YwXwD+ZUTDWZEbZWQAAAAAAAAAAAAAAAAAAAABd9ORdQAAAEBa4LiVrWPaYWa4LkZedEwiQ2aO7tDsnbl4vDn15E1HwnHXyfAo2Kly6uG2OFXu4HE4dRjjWN3FigrdXh8df6cH")
+    }
 }
