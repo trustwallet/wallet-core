@@ -3,6 +3,7 @@
 <% constructors = entity.static_methods.select { |method| method.name.start_with?('Create') } -%>
 <% methods = entity.methods.select { |method| not method.name.start_with?('Delete') } -%>
 <% static_methods = entity.static_methods.select { |method| not method.name.start_with?('Create') } -%>
+<% has_delete = !entity.methods.select { |x| x.name == "Delete" }.empty? -%>
 actual class <%= entity.name %> private constructor(
     private val nativeHandle: Long,
 ) {
@@ -34,7 +35,9 @@ actual class <%= entity.name %> private constructor(
     @JvmName("<%= KotlinHelper.format_name(method.name) %>")
     actual external fun <%= KotlinHelper.format_name(method.name) %>(<%= KotlinHelper.parameters(method.parameters.drop(1)) %>)<%= KotlinHelper.return_type(method.return_type) %>
 <%  end -%>
-<%  if entity.static_properties.any? || static_methods.any? || constructors.any? -%>
+<%# The companion also holds `createFromNative` (used by JNI to wrap returned objects) and `delete`, so a
+    class that is only ever returned (no constructor, no static members) still needs it. -%>
+<%  if entity.static_properties.any? || static_methods.any? || constructors.any? || has_delete -%>
 
     <%= if entity.static_properties.any? || static_methods.any? then "actual" else "private" end %> companion object {
 <%# Static property declarations -%>
