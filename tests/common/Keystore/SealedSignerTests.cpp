@@ -704,8 +704,9 @@ TEST(SealedSigner, TronRawJsonByteIdentical) {
     }
 }
 
-// raw_json whose txID does not match the transaction (raw_data, or raw_data_hex) is refused with
-// Error_tx_hash_mismatch and no signature — the same output as the normal path.
+// raw_json whose txID does not match the transaction (raw_data, or raw_data_hex) is refused: the normal
+// path returns an output carrying Error_tx_hash_mismatch, and the sealed call turns that into
+// SigningFailed with no data, so its result code alone shows nothing was signed.
 TEST(SealedSigner, TronRawJsonTxIdMismatchRejected) {
     auto key = StoredKey::createWithMnemonicAddDefaultAddress("n", gSealedPassword, gSealedMnemonic, TWCoinTypeTron);
     const auto account = sealedOnlyAccount(key, TWCoinTypeTron);
@@ -723,11 +724,11 @@ TEST(SealedSigner, TronRawJsonTxIdMismatchRejected) {
     for (const auto& tampered : {wrongTxId, wrongRawDataHex}) {
         Tron::Proto::SigningInput input;
         input.set_raw_json(tampered.dump());
-        const auto sealed = sealedOk(sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input)));
-        const auto parsed = sealedTronParse(sealed);
-        EXPECT_EQ(parsed.error(), Common::Proto::Error_tx_hash_mismatch);
-        EXPECT_TRUE(parsed.signature().empty());
-        EXPECT_EQ(sealed, sealedTronBaseline(input, pk.bytes));
+        const auto sealed = sealedSign(key, TWCoinTypeTron, account.address, gSealedPassword, sealedSerialize(input));
+        EXPECT_EQ(sealed.error, TWStoredKeySignErrorSigningFailed);
+        EXPECT_TRUE(sealed.data.empty());
+        // The normal path's output for the same input carries the signer's own error.
+        EXPECT_EQ(sealedTronParse(sealedTronBaseline(input, pk.bytes)).error(), Common::Proto::Error_tx_hash_mismatch);
     }
 }
 

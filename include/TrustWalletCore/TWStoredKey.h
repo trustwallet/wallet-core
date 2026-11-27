@@ -367,8 +367,8 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 ///   `coin_type` equal to `coin`, and no keys in `private_key` or `signing_v2.private_keys`.
 /// - Tron: serialized `Tron.Proto.SigningInput` with `transaction` or `raw_json` and an empty
 ///   `private_key`. `raw_json` keeps the normal signer's checks (`txID` must match the transaction
-///   rebuilt from `raw_data`, and `raw_data_hex` when present); a mismatch returns a SigningOutput with
-///   `Error_tx_hash_mismatch`, as on the normal path.
+///   rebuilt from `raw_data`, and `raw_data_hex` when present); a mismatch is
+///   \TWStoredKeySignErrorSigningFailed.
 /// - Solana: serialized `Solana.Proto.SigningInput` for a library-built transaction or with `raw_message`
 ///   (dApp transaction); `private_key`, `fee_payer_private_key` and
 ///   `create_nonce_account.nonce_account_private_key` must all be empty.
@@ -383,8 +383,9 @@ struct TWPrivateKey* _Nullable TWStoredKeyPrivateKey(struct TWStoredKey* _Nonnul
 /// \note The account's derivation path is used only if the key derived from it reproduces `address`;
 ///       otherwise signing fails with \TWStoredKeySignErrorAccountMismatch. Does not modify the stored key.
 /// \return Result whose error says why signing failed (see \TWStoredKeySignError), and whose data is the
-///         serialized SigningOutput on success. Errors the chain signer reports itself (e.g. a Tron
-///         `raw_json` txID mismatch) come back as success, in the SigningOutput's `error` field.
+///         serialized SigningOutput on success, whose own `error` field is then always OK. An error the
+///         chain signer reports in its SigningOutput (e.g. a Tron `raw_json` txID mismatch) is
+///         \TWStoredKeySignErrorSigningFailed with no data.
 TW_EXPORT_METHOD
 struct TWStoredKeySignResult* _Nonnull TWStoredKeySign(struct TWStoredKey* _Nonnull key, enum TWCoinType coin, TWString* _Nonnull address, TWData* _Nonnull password, TWData* _Nonnull input);
 

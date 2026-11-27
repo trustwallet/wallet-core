@@ -45,15 +45,15 @@ struct SealedSignResult {
 ///   and no keys in either `private_key` or `signing_v2.private_keys`.
 /// - Tron: `Tron.Proto.SigningInput` with `transaction` or `raw_json` and an empty `private_key`. A
 ///   `raw_json` input keeps the Tron signer's checks (`txID` must be the hash of the transaction rebuilt
-///   from `raw_data`, and of `raw_data_hex` when present); a mismatch yields an output with
-///   `Error_tx_hash_mismatch`, exactly as on the normal path.
+///   from `raw_data`, and of `raw_data_hex` when present); a mismatch is `SigningFailed`.
 /// - Solana: `Solana.Proto.SigningInput` for a library-built transaction or with `raw_message` (dApp
 ///   transaction), with `private_key`, `fee_payer_private_key` and
 ///   `create_nonce_account.nonce_account_private_key` all empty.
 ///
-/// On success `data` is the serialized SigningOutput. Errors the chain signer itself reports (e.g. a
-/// Tron `raw_json` txID mismatch) are a successful call whose SigningOutput carries the error, as with
-/// AnySigner. Never mutates `storedKey`; never throws.
+/// On success `data` is the serialized SigningOutput, and its `error` is always OK. An error the chain
+/// signer reports in its own SigningOutput (e.g. a Tron `raw_json` txID mismatch) is `SigningFailed`
+/// with no data, unlike AnySigner, so the result code alone tells a signature from a failure. Never
+/// mutates `storedKey`; never throws.
 ///
 /// Design invariant: the keystore is decrypted at most once per call (see SealedSigner.cpp).
 SealedSignResult sealedSign(const StoredKey& storedKey, TWCoinType coin, const std::string& address, const Data& password, const Data& signingInput);

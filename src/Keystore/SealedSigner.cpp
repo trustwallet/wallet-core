@@ -12,6 +12,7 @@
 #include "Keystore/EncryptionParameters.h"
 #include "PrivateKey.h"
 #include "proto/Bitcoin.pb.h"
+#include "proto/Common.pb.h"
 #include "proto/Ethereum.pb.h"
 #include "proto/Solana.pb.h"
 #include "proto/Tron.pb.h"
@@ -119,9 +120,24 @@ static Result deriveSigningKey(const StoredKey& storedKey, TWCoinType coin, cons
     return Result::success({});
 }
 
+// The error a chain signer reported in its own SigningOutput. A BitcoinV2 envelope reports it in
+// `signing_result_v2`.
+template <typename Output>
+static Common::Proto::SigningError outputError(const Output& out) {
+    return out.error();
+}
+
+static Common::Proto::SigningError outputError(const Bitcoin::Proto::SigningOutput& out) {
+    return out.error() != Common::Proto::OK ? out.error() : out.signing_result_v2().error();
+}
+
 // Serializes the key-injected input straight into a Data buffer (no intermediate std::string),
 // signs it through the normal internal dispatcher, and wipes the serialized copy.
-template <typename Input>
+//
+// A signer that ran but reported an error in its SigningOutput (e.g. a Tron `raw_json` whose txID does
+// not match) produced no signature. That is `SigningFailed`, not a successful call, so a caller that
+// checks only the result code can never mistake the output for a signed transaction.
+template <typename Output, typename Input>
 static Result serializeAndSign(TWCoinType coin, const Input& in) {
     Data injected(in.ByteSizeLong());
     in.SerializeToArray(injected.data(), static_cast<int>(injected.size()));
@@ -135,6 +151,13 @@ static Result serializeAndSign(TWCoinType coin, const Input& in) {
     wipe(injected);
     if (output.empty()) {
         return Result::failure(TWStoredKeySignErrorSigningFailed, "signer returned no output");
+    }
+    Output parsed;
+    if (!parsed.ParseFromArray(output.data(), static_cast<int>(output.size()))) {
+        return Result::failure(TWStoredKeySignErrorSigningFailed, "signer output does not parse");
+    }
+    if (outputError(parsed) != Common::Proto::OK) {
+        return Result::failure(TWStoredKeySignErrorSigningFailed, "signer reported an error in its output");
     }
     return Result::success(std::move(output));
 }
@@ -165,7 +188,7 @@ static Result signEthereum(const StoredKey& storedKey, TWCoinType coin, const st
         return derived;
     }
     in.set_private_key(key->bytes.data(), key->bytes.size());
-    auto output = serializeAndSign(TWCoinTypeEthereum, in);
+    auto output = serializeAndSign<Ethereum::Proto::SigningOutput>(TWCoinTypeEthereum, in);
     wipe(*in.mutable_private_key()); // clear_* alone does not zero memory
     return output;
 }
@@ -194,7 +217,7 @@ static Result signUtxo(const StoredKey& storedKey, TWCoinType coin, const std::s
     }
     auto* v2 = in.mutable_signing_v2();
     v2->add_private_keys(key->bytes.data(), key->bytes.size());
-    auto output = serializeAndSign(coin, in);
+    auto output = serializeAndSign<Bitcoin::Proto::SigningOutput>(coin, in);
     wipe(*v2->mutable_private_keys(0));
     return output;
 }
@@ -216,7 +239,7 @@ static Result signTron(const StoredKey& storedKey, TWCoinType coin, const std::s
         return derived;
     }
     in.set_private_key(key->bytes.data(), key->bytes.size());
-    auto output = serializeAndSign(TWCoinTypeTron, in);
+    auto output = serializeAndSign<Tron::Proto::SigningOutput>(TWCoinTypeTron, in);
     wipe(*in.mutable_private_key());
     return output;
 }
@@ -239,7 +262,7 @@ static Result signSolana(const StoredKey& storedKey, TWCoinType coin, const std:
         return derived;
     }
     in.set_private_key(key->bytes.data(), key->bytes.size());
-    auto output = serializeAndSign(TWCoinTypeSolana, in);
+    auto output = serializeAndSign<Solana::Proto::SigningOutput>(TWCoinTypeSolana, in);
     wipe(*in.mutable_private_key());
     return output;
 }
