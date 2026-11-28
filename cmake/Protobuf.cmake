@@ -203,10 +203,15 @@ set_target_properties(
     IMPORTED_CONFIGURATIONS Release
     INCLUDE_DIRECTORIES ${protobuf_source_dir}/src
     PUBLIC_HEADER "${protobuf_HEADER_FILES}"
-    LINK_FLAGS -no-undefined
 )
 
-target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32 -Wno-invalid-noreturn)
+if (WIN32 AND MSVC)
+    target_compile_definitions(protobuf PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN _CRT_SECURE_NO_WARNINGS)
+    target_compile_options(protobuf PRIVATE /utf-8 /clang:-Wno-inconsistent-missing-override /clang:-Wno-shorten-64-to-32 /clang:-Wno-invalid-noreturn)
+else ()
+    set_target_properties(protobuf PROPERTIES LINK_FLAGS -no-undefined)
+    target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32 -Wno-invalid-noreturn)
+endif ()
 
 install(TARGETS protobuf
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

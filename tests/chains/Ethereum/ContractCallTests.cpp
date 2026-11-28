@@ -5,6 +5,7 @@
 #include "Ethereum/ContractCall.h"
 #include "HexCoding.h"
 
+#include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
 
@@ -13,14 +14,14 @@ extern std::string TESTS_ROOT;
 namespace TW::Ethereum::ABI::tests {
 
 static nlohmann::json load_json(const std::string& path) {
-    std::ifstream stream(path);
+    std::ifstream stream(std::filesystem::u8path(path));
     nlohmann::json json;
     stream >> json;
     return json;
 }
 
 static std::string load_json_str(const std::string& path) {
-    std::ifstream stream(path);
+    std::ifstream stream(std::filesystem::u8path(path));
     std::string json((std::istreambuf_iterator<char>(stream)),
                     std::istreambuf_iterator<char>());
     return json;

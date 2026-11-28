@@ -58,8 +58,6 @@
 #error This code requires 8-bit bytes
 #endif
 
-#if defined __STDC__ && __STDC_VERSION__ >= 199901L
-
 #include <stdint.h>
 
 typedef uint32_t sph_u32;
@@ -69,10 +67,6 @@ typedef int64_t sph_s64;
 
 #define SPH_C32(x)    ((sph_u32)(x))
 #define SPH_C64(x)    ((sph_u64)(x))
-
-#else
-#error We need at least C99 compiler
-#endif
 
 #define SPH_T32(x)    ((x) & SPH_C32(0xFFFFFFFF))
 #define SPH_ROTL32(x, n)   SPH_T32(((x) << (n)) | ((x) >> (32 - (n))))

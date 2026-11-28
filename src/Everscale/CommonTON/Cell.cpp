@@ -366,7 +366,7 @@ void Cell::finalize() {
     const auto [d1, d2] = getDescriptorBytes();
     normalized.push_back(d1);
     normalized.push_back(d2);
-    std::copy(data.begin(), std::next(data.begin(), static_cast<ssize_t>(dataSize)), std::back_inserter(normalized));
+    std::copy(data.begin(), std::next(data.begin(), static_cast<Data::difference_type>(dataSize)), std::back_inserter(normalized));
 
     // Write all children depths
     for (const auto& ref : references) {

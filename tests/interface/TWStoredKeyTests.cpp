@@ -14,7 +14,12 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include <filesystem>
 #include <fstream>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 extern std::string TESTS_ROOT;
 
@@ -42,7 +47,7 @@ struct std::shared_ptr<TWStoredKey> createDefaultStoredKey(TWStoredKeyEncryption
 /// Throws std::invalid_argument if the file cannot be opened.
 /// Note: uses a byte-by-byte loop instead of ifs.read() to avoid static-analysis warnings.
 static Data readFileData(const string& path) {
-    ifstream ifs(path);
+    ifstream ifs(std::filesystem::u8path(path));
     if (!ifs.is_open()) throw std::invalid_argument("Cannot open file: " + path);
     ifs.seekg(0, ifs.end);
     const auto length = ifs.tellg();
@@ -675,7 +680,7 @@ TEST(TWStoredKey, storeWithTemporaryFileSuccess) {
     EXPECT_TRUE(TWStoredKeyStoreWithTemporaryFile(key.get(), outFileNameStr.get(), tmpFileNameStr.get()));
 
     // The temp file must have been renamed away — only the final file should exist.
-    EXPECT_FALSE(ifstream(tmpFileName).is_open());
+    EXPECT_FALSE(ifstream(std::filesystem::u8path(tmpFileName)).is_open());
 
     // The final file must be readable and parse as a valid StoredKey.
     auto json = readFileData(outFileName);
@@ -695,6 +700,76 @@ TEST(TWStoredKey, storeWithTemporaryFileInvalidPath) {
     EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), invalidPath.get(), tmpFileNameStr.get()));
 }
 
+TEST(TWStoredKey, storeWithTemporaryFileReplacesExisting) {
+    const auto key = createDefaultStoredKey();
+    const string target = getTestTempDir() + "/TWStoredKey_replace.json";
+    const string temporary = target + ".tmp";
+    {
+        ofstream file(std::filesystem::u8path(target));
+        file << "old contents";
+    }
+    const auto targetString = WRAPS(TWStringCreateWithUTF8Bytes(target.c_str()));
+    const auto temporaryString = WRAPS(TWStringCreateWithUTF8Bytes(temporary.c_str()));
+    ASSERT_TRUE(TWStoredKeyStoreWithTemporaryFile(key.get(), targetString.get(), temporaryString.get()));
+    EXPECT_FALSE(ifstream(std::filesystem::u8path(temporary)).is_open());
+    const auto loaded = WRAP(TWStoredKey, TWStoredKeyLoad(targetString.get()));
+    ASSERT_NE(loaded.get(), nullptr);
+    const auto name = WRAPS(TWStoredKeyName(loaded.get()));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name.get())), "name");
+    std::filesystem::remove(std::filesystem::u8path(target));
+}
+
+#ifdef _WIN32
+TEST(TWStoredKey, storeWithTemporaryFileUTF8Path) {
+    const auto key = createDefaultStoredKey();
+    const string target = getTestTempDir() + "/TWStoredKey_\xE5\xAF\x86\xE9\x92\xA5.json";
+    const string temporary = target + ".tmp";
+    const auto targetString = WRAPS(TWStringCreateWithUTF8Bytes(target.c_str()));
+    const auto temporaryString = WRAPS(TWStringCreateWithUTF8Bytes(temporary.c_str()));
+    ASSERT_TRUE(TWStoredKeyStoreWithTemporaryFile(key.get(), targetString.get(), temporaryString.get()));
+    ASSERT_NE(WRAP(TWStoredKey, TWStoredKeyLoad(targetString.get())).get(), nullptr);
+    EXPECT_FALSE(std::filesystem::exists(std::filesystem::u8path(temporary)));
+    std::filesystem::remove(std::filesystem::u8path(target));
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileLockedDestination) {
+    const auto key = createDefaultStoredKey();
+    const string target = getTestTempDir() + "/TWStoredKey_locked.json";
+    const string temporary = target + ".tmp";
+    const string sentinel = "original key contents";
+    {
+        ofstream file(std::filesystem::u8path(target));
+        file << sentinel;
+    }
+    const auto lock = CreateFileW(std::filesystem::u8path(target).c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+    ASSERT_NE(lock, INVALID_HANDLE_VALUE);
+    const auto targetString = WRAPS(TWStringCreateWithUTF8Bytes(target.c_str()));
+    const auto temporaryString = WRAPS(TWStringCreateWithUTF8Bytes(temporary.c_str()));
+    const auto stored = TWStoredKeyStoreWithTemporaryFile(key.get(), targetString.get(), temporaryString.get());
+    CloseHandle(lock);
+    EXPECT_FALSE(stored);
+    EXPECT_FALSE(ifstream(std::filesystem::u8path(temporary)).is_open());
+    const auto contents = readFileData(target);
+    EXPECT_EQ(string(contents.begin(), contents.end()), sentinel);
+    std::filesystem::remove(std::filesystem::u8path(target));
+}
+
+TEST(TWStoredKey, storeWithTemporaryFileSameDestination) {
+    const auto key = createDefaultStoredKey();
+    const string target = getTestTempDir() + "/TWStoredKey_same.json";
+    const string sentinel = "original key contents";
+    {
+        ofstream file(std::filesystem::u8path(target));
+        file << sentinel;
+    }
+    const auto targetString = WRAPS(TWStringCreateWithUTF8Bytes(target.c_str()));
+    EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), targetString.get(), targetString.get()));
+    const auto contents = readFileData(target);
+    EXPECT_EQ(string(contents.begin(), contents.end()), sentinel);
+    std::filesystem::remove(std::filesystem::u8path(target));
+}
+#endif
+
 TEST(TWStoredKey, storeWithTemporaryFileInvalidTempPath) {
     const auto key = createDefaultStoredKey();
     const auto outFileName = string(getTestTempDir() + "/TWStoredKey_storeWithTmpInvalidTmp.json");
@@ -703,12 +778,15 @@ TEST(TWStoredKey, storeWithTemporaryFileInvalidTempPath) {
 
     // Write known sentinel content to the destination file so we can verify it is untouched.
     const string sentinel = "{\"sentinel\":true}";
-    { ofstream f(outFileName); f << sentinel; }
+    {
+        ofstream f(std::filesystem::u8path(outFileName));
+        f << sentinel;
+    }
 
     EXPECT_FALSE(TWStoredKeyStoreWithTemporaryFile(key.get(), outFileNameStr.get(), invalidTmpPath.get()));
 
     // The destination file must be unchanged.
-    ifstream ifs(outFileName);
+    ifstream ifs(std::filesystem::u8path(outFileName));
     ASSERT_TRUE(ifs.is_open());
     const string actual((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
     EXPECT_EQ(actual, sentinel);
