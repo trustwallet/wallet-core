@@ -6,7 +6,9 @@ use crate::chains::common::bitcoin::{
     compile, dust_threshold, input, output, preimage, TransactionOneof, DUST, SIGHASH_ALL,
     SIGHASH_ANYONE_CAN_PAY,
 };
-use crate::chains::zcash::{zcash_extra_data, zec_info, BLOSSOM_BRANCH_ID, SAPLING_BRANCH_ID};
+use crate::chains::zcash::{
+    zcash_extra_data, zec_info, BLOSSOM_BRANCH_ID, NU6_3_BRANCH_ID, SAPLING_BRANCH_ID,
+};
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_misc::traits::ToBytesVec;
@@ -53,6 +55,7 @@ fn test_zcash_pre_hash_different_sighash_types() {
             branch_id: SAPLING_BRANCH_ID.into(),
             zip_0317: false,
             expiry_height: 307_272,
+            tx_version: ZcashProto::TransactionVersion::V4,
         };
 
         let builder = Proto::TransactionBuilder {
@@ -126,6 +129,7 @@ fn test_zcash_compile_with_signatures() {
         branch_id: BLOSSOM_BRANCH_ID.into(),
         zip_0317: false,
         expiry_height: 0,
+        tx_version: ZcashProto::TransactionVersion::V4,
     };
 
     let builder = Proto::TransactionBuilder {
@@ -165,6 +169,82 @@ fn test_zcash_compile_with_signatures() {
             outputs: vec![17_615],
             vsize: 211,
             weight: 211 * 4,
+            fee: 10_000,
+        });
+}
+
+/// Successfully broadcasted (Zcash mainnet, NU6.3, v5 transaction):
+/// https://blockchair.com/zcash/transaction/f98b289fa014fa21fb3542f59eddc1140895e8f31575b47a5c4482abf8a82565
+#[test]
+fn test_zcash_compile_v5_with_signatures() {
+    const PUBLIC_KEY: &str = "02950ef6f2aab593a487101a47b35fc2b3a6f2f9323afa024f15e5225b365d63fe";
+    const SENDER_ADDRESS: &str = "t1NiBn6r7FrgzL63yF34qJBb3FW8su1qYCF";
+    const TO_ADDRESS: &str = "t1gUuvGGo2HvZbxTbjyucHCZHrWfaSZrfeS";
+
+    let txid = "228adfd085406159b848a0370bb25716e3b731d67532a5c0aed1f146f6c4433d";
+    let in1 = Proto::Input {
+        out_point: input::out_point(txid, 1),
+        value: 279_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::p2pkh(PUBLIC_KEY.decode_hex().unwrap()),
+        ..Default::default()
+    };
+
+    let out1 = Proto::Output {
+        value: 100_000,
+        to_recipient: output::to_address(TO_ADDRESS),
+    };
+    let change_output = Proto::Output {
+        value: 0,
+        to_recipient: output::to_address(SENDER_ADDRESS),
+    };
+
+    let extra_data = ZcashProto::TransactionBuilderExtraData {
+        branch_id: NU6_3_BRANCH_ID.into(),
+        zip_0317: true,
+        expiry_height: 3_542_813,
+        tx_version: ZcashProto::TransactionVersion::V5,
+    };
+
+    let builder = Proto::TransactionBuilder {
+        version: Proto::TransactionVersion::UseDefault,
+        inputs: vec![in1],
+        outputs: vec![out1],
+        change_output: Some(change_output),
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        chain_specific: zcash_extra_data(extra_data),
+        ..Default::default()
+    };
+
+    let signing = Proto::SigningInput {
+        public_keys: vec![PUBLIC_KEY.decode_hex().unwrap().into()],
+        chain_info: zec_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    // ZIP-244 signature digest.
+    let expected_sighash = "43f76a654bed58e0fff013e3660d95c3ffe438ed6ed0e645a85d68553c1882a9"
+        .decode_hex()
+        .unwrap()
+        .to_vec();
+    preimage::BitcoinPreImageHelper::new(&signing)
+        .coin(CoinType::Zcash)
+        .add_expected_legacy(PUBLIC_KEY.decode_hex().unwrap(), expected_sighash)
+        .pre_image();
+
+    let signature = "3672aa890ade97ff91335b490b84584ebc488e35562a247547dc39806156a08a0bb32dd446123fcb8833c115ef4ec151a5a0991dc429a1f9d02d8dbf19430056".decode_hex().unwrap();
+    compile::BitcoinCompileHelper::new(&signing)
+        .coin(CoinType::Zcash)
+        .add_pubkey_sig(PUBLIC_KEY.decode_hex().unwrap(), signature)
+        .compile(compile::Expected {
+            encoded: "050000800a27a7265b16a537000000001d0f3600013d43c4f646f1d1aec0a53275d631b7e31657b20b37a048b859614085d0df8a22010000006a47304402203672aa890ade97ff91335b490b84584ebc488e35562a247547dc39806156a08a02200bb32dd446123fcb8833c115ef4ec151a5a0991dc429a1f9d02d8dbf19430056012102950ef6f2aab593a487101a47b35fc2b3a6f2f9323afa024f15e5225b365d63feffffffff02a0860100000000001976a914f800474fa2709c3ee9330fc4f85a8996d6fb218a88ac28940200000000001976a9143510a91d51112126751446a639e6dfe84144e7cb88ac000000",
+            txid: "f98b289fa014fa21fb3542f59eddc1140895e8f31575b47a5c4482abf8a82565",
+            inputs: vec![279_000],
+            outputs: vec![100_000, 169_000],
+            vsize: 240,
+            weight: 240 * 4,
             fee: 10_000,
         });
 }

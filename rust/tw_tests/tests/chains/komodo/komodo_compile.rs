@@ -39,6 +39,7 @@ fn test_komodo_compile() {
         branch_id: SAPLING_BRANCH_ID.into(),
         zip_0317: false,
         expiry_height: 0,
+        ..Default::default()
     };
 
     let builder = Proto::TransactionBuilder {

@@ -7,9 +7,11 @@ use crate::chains::common::bitcoin::{
 };
 use crate::chains::komodo::komodo_info;
 use crate::chains::zcash::{zcash_extra_data, SAPLING_BRANCH_ID};
+use tw_any_coin::test_utils::sign_utils::AnySignerHelper;
 use tw_coin_registry::coin_type::CoinType;
 use tw_encoding::hex::DecodeHex;
 use tw_proto::BitcoinV2::Proto;
+use tw_proto::Common::Proto::SigningError;
 use tw_proto::Zcash::Proto as ZcashProto;
 
 /// Simulate ZEC transaction like it's broadcasted on Komodo chain.
@@ -40,6 +42,7 @@ fn test_komodo_sign_sapling_era() {
         branch_id: SAPLING_BRANCH_ID.into(),
         zip_0317: false,
         expiry_height: 0,
+        ..Default::default()
     };
 
     let builder = Proto::TransactionBuilder {
@@ -84,4 +87,49 @@ fn test_komodo_sign_sapling_era() {
             weight: 211 * 4,
             fee: 6_000,
         });
+}
+
+#[test]
+fn test_komodo_sign_v5_not_supported() {
+    const PRIVATE_KEY: &str = "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559";
+    const SENDER_ADDRESS: &str = "RXv5JDP8UjTzgKm4jKMiHhzoU1tobVLfyj";
+
+    let tx1 = Proto::Input {
+        out_point: input::out_point(
+            "3a19dd44032dfed61bfca5ba5751aab8a107b30609cbd5d70dc5ef09885b6853",
+            0,
+        ),
+        value: 494_000,
+        sighash_type: SIGHASH_ALL,
+        claiming_script: input::receiver_address(SENDER_ADDRESS),
+        ..Default::default()
+    };
+    let out1 = Proto::Output {
+        value: 488_000,
+        to_recipient: output::to_address(SENDER_ADDRESS),
+    };
+
+    let extra_data = ZcashProto::TransactionBuilderExtraData {
+        branch_id: SAPLING_BRANCH_ID.into(),
+        tx_version: ZcashProto::TransactionVersion::V5,
+        ..Default::default()
+    };
+    let builder = Proto::TransactionBuilder {
+        inputs: vec![tx1],
+        outputs: vec![out1],
+        input_selector: Proto::InputSelector::UseAll,
+        dust_policy: dust_threshold(DUST),
+        chain_specific: zcash_extra_data(extra_data),
+        ..Default::default()
+    };
+    let signing = Proto::SigningInput {
+        private_keys: vec![PRIVATE_KEY.decode_hex().unwrap().into()],
+        chain_info: komodo_info(),
+        transaction: TransactionOneof::builder(builder),
+        ..Default::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Komodo, signing);
+    assert_eq!(output.error, SigningError::Error_not_supported);
 }

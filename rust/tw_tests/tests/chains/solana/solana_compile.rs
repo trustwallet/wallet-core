@@ -514,3 +514,62 @@ fn test_solana_compile_with_external_signature() {
     // Successfully broadcasted: https://solscan.io/tx/5NuXtYpE58FbtCfEzgk2cTHZgEdNF69Z76bd8TQhBgmEN1RC98DNGNiWhvp1VSDMPudCgpE3z8jD7BNRuBztUbpM
     assert_eq!(signed_tx_base64, "Atr1azHjqXUEu1rbTGRwnN2CQHAJNdnhyumgWrAy3gS0acweAlh/nG1+VxkuT5x3EXiXqF0VkAcw2Qp/Vd6/aQrDIH0nd1ShqHK9yRATbpF/npAvAl5JPwwb89W0US//4DslDobk5o4g6Wqwm+sk13Bq4ziixdEfuyPXea5bjAcBAgAGDqMrdVJnGyKZfDMMU6yR6mjQRynQy91x5Ik0QW5S7HjblEDFOjfYkcjeiZdpl9opTtGz1XgRDjyGqc4Z5VKuBHI5lg1U5Wnl5tFnrGEI9Y2rG1BNC7tYK5PXpURkpupeap6naP7fZEyKrpuOIYit0GvFUPv3Fsgiuc5jx3g9lS4fsU4N5V6fuoY5br/VSM/4ySAR6se3W6qbLZxqhvWhcUEJ5qP+7PmQMuHB32uXItyzY057jjRAk2vDSwzByOtSH/zRQemDLK8QrZF0lcoPJxtbKTzUcCfqc3AH7UDrOaC9BIo+CMO0lb4X9FQn2JvsW4DH4mlcGGTXZ0PbOb7TRtYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFTlniTAUaihSnsel5fw4Szfp0kCFmUxlaalEqbxZmArjJclj04kifG7PRApFI4NgwtaE5na/xCEBI572Nvp+FkDBkZv5SEXMv/srbpyw5vnvIzlu8X3EmssQ5s6QAAAAAaBTtTK9ooXRnL9rIYDGmPoTqFe+h1EtyKT9tvbABZQBt324ddloZPZy+FGzut5rBy0he1fWzeROoz1hX7/AKnLHFG8r27UznARMamsTdStWltOfL+TLpgyxe4Hfqm8xQYIAgABDAIAAACghgEAAAAAAAoGAAIABggNAQEMCgcJAwECBQIGCA0JDqCGAQAAAAAACwAFAkANAwALAAkDgDgBAAAAAAAIAgAEDAIAAAC0/gAAAAAAAA==")
 }
+
+#[test]
+fn test_solana_compile_transfer_core_asset_with_external_fee_payer() {
+    let sender = "ArgPLJSF7ujjPZgooHGpRcnFDmftpDSzvhLRNsH94zmo";
+    let fee_payer = "HRqBqsfppNgzcb5EfCKoFWXXz9Y5tru9ZMg1R1WtJCcw";
+
+    let transfer = Proto::TransferCoreAsset {
+        asset_address: "DdC5i5AFrHCvcaEUEcCktFBiytHoGbMgUQ7JBwfRGihL".into(),
+        recipient_address: fee_payer.into(),
+        collection_address: "CCryptUfeFSZ3Fgc9FLeKrhLVAP67FSqi1GuVoj9CRac".into(),
+        ..Proto::TransferCoreAsset::default()
+    };
+    let input = Proto::SigningInput {
+        sender: sender.into(),
+        fee_payer: fee_payer.into(),
+        recent_blockhash: "4oAHcxtSmNHddwHPT8dvRyfLRmuE2gUoVYsPStTD2Dyy".into(),
+        transaction_type: TransactionType::transfer_core_asset_transaction(transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    // Step 2: Obtain preimage hash
+    let mut pre_imager = PreImageHelper::<Proto::PreSigningOutput>::default();
+    let preimage_output = pre_imager.pre_image_hashes(CoinType::Solana, &input);
+
+    assert_eq!(preimage_output.error, SigningError::OK);
+    assert_eq!(
+        preimage_output.data.to_hex(),
+        "02010205f4176a56e9fcd9216b52f05bfb8e50789c910286c61ab8d7eeb7c4966383e4a892732cbf84218dc43401df991043f314edcbeba7ec1b6c51a13ebb50f7a5db22bb91ae884a2e6a4bcec425f7f1094800edf870f645626bd0b1f042ab9e3026ffa67a751698f0bf3e1e1a7efa144f4627da21b08b02b5a72ae64acff7844c1ef5af54ab10bd97a542a09ef7b39889dd0cd394a4cce9dfa6cdc97ebe2d235ba74838664740fa14f1aa7337820ab604e7a9d5b16f254690704bf7c40c34ba705f0001040702030001000404020e00"
+    );
+    let actual_signers: Vec<_> = preimage_output
+        .signers
+        .iter()
+        .map(|signer| String::from_utf8(signer.to_vec()).unwrap())
+        .collect();
+    assert_eq!(
+        actual_signers,
+        vec![fee_payer.to_string(), sender.to_string()]
+    );
+
+    // Step 3: Compile transaction info
+
+    // Signatures of the broadcasted transaction below.
+    let fee_payer_signature = "5f34101d0a248c69416c3ce80439c1687d8818229f1c3e2cb066c0048a95fbaa221f7ec57293961eb39e768d77fc3115f172ff1a9c9667197d753e647ef17609".decode_hex().unwrap();
+    let sender_signature = "23072fd8b6d58bdfd5bbcf915c92bf2cef27802fdfa3ecdca935aeede8f9cbf9c538b0bcd548c3af2ca1bfb7dbd3cd3ca8fb5457462ee4712b760b369fe34f06".decode_hex().unwrap();
+    let fee_payer_pubkey = base58::decode(fee_payer, Alphabet::Bitcoin).unwrap();
+    let sender_pubkey = base58::decode(sender, Alphabet::Bitcoin).unwrap();
+
+    let mut compiler = CompilerHelper::<Proto::SigningOutput>::default();
+    let output = compiler.compile(
+        CoinType::Solana,
+        &input,
+        vec![fee_payer_signature, sender_signature],
+        vec![fee_payer_pubkey, sender_pubkey],
+    );
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx - https://solscan.io/tx/2uQ79PnqUQNMd8okN2qLnxr5AE6MLER7eA4LHDYhJ3WwJg6zJGhGBPZDQLzY1oEgyGvM4J3jQSUeawE3e5eEPgp8
+    assert_eq!(output.encoded, "6xZ26VwD4b46ZTqDTGQLbmQwtVmh3xzqUhJq2f6hEJ1jmc2ZkbD3hafuZxsiKLXyM6NbPGsjWwCW7n6adHh46XYcJ6EQZFzHbzkovQGvyccZZoJ2VgnWM1PKZqSXNVG7kbPu8JecZY6fhwDcSNdVjUE64Lmkr1EcikKNgNFTUUz4YhBJ3QQy7MVX1N3KxAfsnHQsthc1ruybsMiHuZ23teogeEFu7MDBQSuS927yEGZa4hwKJ7fSvB4aP5AxgS2TtT3LtNvwJWnwc6gwVT95LXbXEadrxHYpC7DNz4rjeV2PRxmS1vmK2VTGtUpHfPxqPvsixtuCakoHALKujYwabR51gvQZAxtzzLmzsu8VQgt2h123HZH2ovoBRFHrYv1rUs617SgmXpdhv7T1i554zHyqWcfV8hcw5ebAi83StbdxrfRhCj3jSLvvv47BQd6EDBnQgiapemfBM");
+}

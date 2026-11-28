@@ -34,6 +34,12 @@ static Data decodeAddress(const std::string& addr) {
     return decoded;
 }
 
+/// Same as `decodeAddress`, but an empty address is allowed and yields empty data.
+/// Used for the optional `receiver_address` of Stake 1.0 freeze/unfreeze (empty when not delegated).
+static Data decodeOptionalAddress(const std::string& addr) {
+    return addr.empty() ? Data() : decodeAddress(addr);
+}
+
 /// Converts an external TransferContract to an internal one used for signing.
 protocol::TransferContract to_internal(const Proto::TransferContract& transfer) {
     auto internal = protocol::TransferContract();
@@ -71,7 +77,7 @@ protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& 
     auto internal = protocol::FreezeBalanceContract();
     auto resource = protocol::ResourceCode();
     const auto ownerAddress = decodeAddress(freezeContract.owner_address());
-    const auto receiverAddress = decodeAddress(freezeContract.receiver_address());
+    const auto receiverAddress = decodeOptionalAddress(freezeContract.receiver_address());
 
     protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
 
@@ -102,7 +108,7 @@ protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContra
     auto internal = protocol::UnfreezeBalanceContract();
     auto resource = protocol::ResourceCode();
     const auto ownerAddress = decodeAddress(unfreezeContract.owner_address());
-    const auto receiverAddress = decodeAddress(unfreezeContract.receiver_address());
+    const auto receiverAddress = decodeOptionalAddress(unfreezeContract.receiver_address());
 
     protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
 

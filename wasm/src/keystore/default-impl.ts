@@ -5,6 +5,14 @@
 import {WalletCore, CoinType, Derivation, PrivateKey, StoredKey, StoredKeyEncryption} from "../wallet-core";
 import * as Types from "./types";
 
+// Wallet Core returns null when a `_Nullable` call fails.
+function orThrow<T>(value: T | null, error: Types.Error): T {
+  if (value === null) {
+    throw error;
+  }
+  return value;
+}
+
 export class Default implements Types.IKeyStore {
   private readonly core: WalletCore;
   private readonly storage: Types.IStorage;
@@ -34,13 +42,28 @@ export class Default implements Types.IKeyStore {
   }
 
   mapWallet(storedKey: StoredKey): Types.Wallet {
-    const json = storedKey.exportJSON();
+    const json = orThrow(storedKey.exportJSON(), Types.Error.InvalidJSON);
     return JSON.parse(Buffer.from(json).toString()) as Types.Wallet;
   }
 
   mapStoredKey(wallet: Types.Wallet): StoredKey {
     const json = Buffer.from(JSON.stringify(wallet));
-    return this.core.StoredKey.importJSON(json);
+    return orThrow(this.core.StoredKey.importJSON(json), Types.Error.InvalidJSON);
+  }
+
+  // Runs `fn` on a StoredKey parsed from `wallet`, deleting the key even if `fn` throws.
+  private withStoredKey<T>(wallet: Types.Wallet, fn: (storedKey: StoredKey) => T): T {
+    const storedKey = this.mapStoredKey(wallet);
+    try {
+      return fn(storedKey);
+    } finally {
+      storedKey.delete();
+    }
+  }
+
+  // Decrypts a secret from `wallet`; a null result means a wrong password.
+  private decrypt<T>(wallet: Types.Wallet, fn: (storedKey: StoredKey) => T | null): T {
+    return this.withStoredKey(wallet, (storedKey) => orThrow(fn(storedKey), Types.Error.InvalidPassword));
   }
 
   importWallet(wallet: Types.Wallet): Promise<void> {
@@ -61,15 +84,24 @@ export class Default implements Types.IKeyStore {
         throw Types.Error.InvalidMnemonic;
       }
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importHDWalletWithEncryption(mnemonic, name, pass, coins[0], encryption);
-      let hdWallet = HDWallet.createWithMnemonic(mnemonic, "");
-      coins.forEach((coin) => {
-        storedKey.accountForCoin(coin, hdWallet);
-      });
-      let wallet = this.mapWallet(storedKey);
-
-      storedKey.delete();
-      hdWallet.delete();
+      const hdWallet = orThrow(HDWallet.createWithMnemonic(mnemonic, ""), Types.Error.InvalidMnemonic);
+      let wallet: Types.Wallet;
+      try {
+        const storedKey = orThrow(
+          StoredKey.importHDWalletWithEncryption(mnemonic, name, pass, coins[0], encryption),
+          Types.Error.InvalidMnemonic
+        );
+        try {
+          coins.forEach((coin) => {
+            storedKey.accountForCoin(coin, hdWallet)?.delete();
+          });
+          wallet = this.mapWallet(storedKey);
+        } finally {
+          storedKey.delete();
+        }
+      } finally {
+        hdWallet.delete();
+      }
 
       this.importWallet(wallet)
         .then(() => resolve(wallet))
@@ -96,9 +128,16 @@ export class Default implements Types.IKeyStore {
         throw Types.Error.InvalidKey;
       }
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importPrivateKeyWithEncryptionAndDerivation(key, name, pass, coin, encryption, derivation);
-      let wallet = this.mapWallet(storedKey);
-      storedKey.delete();
+      const storedKey = orThrow(
+        StoredKey.importPrivateKeyWithEncryptionAndDerivation(key, name, pass, coin, encryption, derivation),
+        Types.Error.InvalidKey
+      );
+      let wallet: Types.Wallet;
+      try {
+        wallet = this.mapWallet(storedKey);
+      } finally {
+        storedKey.delete();
+      }
       this.importWallet(wallet)
         .then(() => resolve(wallet))
         .catch((error) => reject(error));
@@ -117,9 +156,16 @@ export class Default implements Types.IKeyStore {
       const { StoredKey, PrivateKey, Curve, StoredKeyEncryption } = this.core;
 
       let pass = Buffer.from(password);
-      let storedKey = StoredKey.importPrivateKeyEncodedWithEncryptionAndDerivation(key, name, pass, coin, encryption, derivation);
-      let wallet = this.mapWallet(storedKey);
-      storedKey.delete();
+      const storedKey = orThrow(
+        StoredKey.importPrivateKeyEncodedWithEncryptionAndDerivation(key, name, pass, coin, encryption, derivation),
+        Types.Error.InvalidKey
+      );
+      let wallet: Types.Wallet;
+      try {
+        wallet = this.mapWallet(storedKey);
+      } finally {
+        storedKey.delete();
+      }
       this.importWallet(wallet)
         .then(() => resolve(wallet))
         .catch((error) => reject(error));
@@ -142,14 +188,17 @@ export class Default implements Types.IKeyStore {
 
   addAccountsWithDerivations(id: string, password: string, coins: Types.CoinWithDerivation[]): Promise<Types.Wallet> {
     return this.load(id).then((wallet) => {
-      let storedKey = this.mapStoredKey(wallet);
-      let hdWallet = storedKey.wallet(Buffer.from(password));
-      coins.forEach((item) => {
-        storedKey.accountForCoinDerivation(item.coin, item.derivation, hdWallet);
+      const newWallet = this.withStoredKey(wallet, (storedKey) => {
+        const hdWallet = orThrow(storedKey.wallet(Buffer.from(password)), Types.Error.InvalidPassword);
+        try {
+          coins.forEach((item) => {
+            storedKey.accountForCoinDerivation(item.coin, item.derivation, hdWallet)?.delete();
+          });
+          return this.mapWallet(storedKey);
+        } finally {
+          hdWallet.delete();
+        }
       });
-      let newWallet = this.mapWallet(storedKey);
-      storedKey.delete();
-      hdWallet.delete();
       return this.importWallet(newWallet).then(() => newWallet);
     });
   }
@@ -160,30 +209,23 @@ export class Default implements Types.IKeyStore {
     account: Types.ActiveAccount
   ): Promise<PrivateKey> {
     return this.load(id).then((wallet) => {
-      let storedKey = this.mapStoredKey(wallet);
       let coin = (this.core.CoinType as any).values["" + account.coin];
-      let privateKey = storedKey.privateKey(coin, Buffer.from(password));
-      storedKey.delete();
-      return privateKey;
+      return this.withStoredKey(wallet, (storedKey) =>
+        orThrow(storedKey.privateKey(coin, Buffer.from(password)), Types.Error.InvalidPassword)
+      );
     });
   }
 
   export(id: string, password: string): Promise<string | Uint8Array> {
     return this.load(id).then((wallet) => {
-      let storedKey = this.mapStoredKey(wallet);
-      let value: string | Uint8Array;
       switch (wallet.type) {
         case Types.WalletType.Mnemonic:
-          value = storedKey.decryptMnemonic(Buffer.from(password));
-          break;
+          return this.decrypt(wallet, (storedKey) => storedKey.decryptMnemonic(Buffer.from(password)));
         case Types.WalletType.PrivateKey:
-          value = storedKey.decryptPrivateKey(Buffer.from(password));
-          break;
+          return this.decrypt(wallet, (storedKey) => storedKey.decryptPrivateKey(Buffer.from(password)));
         default:
           throw Types.Error.InvalidJSON;
       }
-      storedKey.delete();
-      return value;
     });
   }
 
@@ -196,10 +238,7 @@ export class Default implements Types.IKeyStore {
       if (wallet.type !== Types.WalletType.Mnemonic) {
         throw Types.Error.UnsupportedWalletType;
       }
-      let storedKey = this.mapStoredKey(wallet);
-      let value = storedKey.decryptMnemonic(Buffer.from(password));
-      storedKey.delete();
-      return value;
+      return this.decrypt(wallet, (storedKey) => storedKey.decryptMnemonic(Buffer.from(password)));
     });
   }
 
@@ -208,10 +247,7 @@ export class Default implements Types.IKeyStore {
       if (wallet.type !== Types.WalletType.PrivateKey) {
         throw Types.Error.UnsupportedWalletType;
       }
-      let storedKey = this.mapStoredKey(wallet);
-      let value = storedKey.decryptPrivateKey(Buffer.from(password));
-      storedKey.delete();
-      return value;
+      return this.decrypt(wallet, (storedKey) => storedKey.decryptPrivateKey(Buffer.from(password)));
     });
   }
 
@@ -220,10 +256,7 @@ export class Default implements Types.IKeyStore {
       if (wallet.type !== Types.WalletType.PrivateKey) {
         throw Types.Error.UnsupportedWalletType;
       }
-      let storedKey = this.mapStoredKey(wallet);
-      let value = storedKey.decryptPrivateKeyEncoded(Buffer.from(password));
-      storedKey.delete();
-      return value;
+      return this.decrypt(wallet, (storedKey) => storedKey.decryptPrivateKeyEncoded(Buffer.from(password)));
     });
   }
 }

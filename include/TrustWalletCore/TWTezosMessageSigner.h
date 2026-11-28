@@ -34,10 +34,10 @@ TWString* _Nonnull TWTezosMessageSignerInputToPayload(TWString* _Nonnull message
 /// Sign a message as described in https://tezostaquito.io/docs/signing/
 ///
 /// \param privateKey: the private key used for signing
-/// \param message: A custom message payload (hex) which is input to the signing.
-/// \returns the signature, Hex-encoded. On invalid input empty string is returned. Returned object needs to be deleted after use.
+/// \param message: A custom message payload (hex) which is input to the signing. Must start with the 0x05 (off-chain message) watermark.
+/// \returns the signature, Hex-encoded. On invalid input (invalid hex or missing 0x05 watermark) null is returned. Returned object needs to be deleted after use.
 TW_EXPORT_STATIC_METHOD
-TWString* _Nonnull TWTezosMessageSignerSignMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message);
+TWString* _Nullable TWTezosMessageSignerSignMessage(const struct TWPrivateKey* _Nonnull privateKey, TWString* _Nonnull message);
 
 /// Verify signature for a message as described in https://tezostaquito.io/docs/signing/
 ///

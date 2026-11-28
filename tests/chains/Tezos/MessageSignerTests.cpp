@@ -27,8 +27,34 @@ TEST(TezosMessageSigner, SignMessage) {
     PrivateKey privKey(parse_hex("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a"));
     auto result = Tezos::MessageSigner::signMessage(privKey, payload);
     auto expected = "edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ";
-    ASSERT_EQ(result, expected);
-    ASSERT_TRUE(Tezos::MessageSigner::verifyMessage(privKey.getPublicKey(TWPublicKeyTypeED25519), payload, result));
+    ASSERT_TRUE(result.isSuccess());
+    ASSERT_EQ(result.payload(), expected);
+    ASSERT_TRUE(Tezos::MessageSigner::verifyMessage(privKey.getPublicKey(TWPublicKeyTypeED25519), payload, result.payload()));
+}
+
+TEST(TezosMessageSigner, SignMessageAcceptsSinglePrefix) {
+    PrivateKey privKey(parse_hex("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a"));
+    const auto payload = "0x05010000004254657a6f73205369676e6564204d6573736167653a207465737455726c20323032332d30322d30385431303a33363a31382e3435345a2048656c6c6f20576f726c64";
+    const auto expected = "edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ";
+    const auto result = Tezos::MessageSigner::signMessage(privKey, payload);
+    ASSERT_TRUE(result.isSuccess());
+    EXPECT_EQ(result.payload(), expected);
+}
+
+TEST(TezosMessageSigner, SignMessageInvalidPayload) {
+    PrivateKey privKey(parse_hex("91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a"));
+    const auto expectError = [&](const std::string& payload, const std::string& error) {
+        const auto result = Tezos::MessageSigner::signMessage(privKey, payload);
+        ASSERT_TRUE(result.isFailure()) << payload;
+        EXPECT_EQ(result.error(), error) << payload;
+    };
+    expectError("03deadbeef", "Message must start with the 0x05 watermark");
+    expectError("0x03deadbeef", "Message must start with the 0x05 watermark");
+    expectError("0x0x03deadbeef", "Invalid hex string");
+    expectError("0x0x05deadbeef", "Invalid hex string");
+    expectError("05zz", "Invalid hex string");
+    expectError("", "Message must start with the 0x05 watermark");
+    expectError("0x", "Message must start with the 0x05 watermark");
 }
 
 TEST(TWTezosMessageSigner, formatMessage) {
@@ -55,5 +81,18 @@ TEST(TWTezosMessageSigner, SignAndVerify) {
     const auto signature = WRAPS(TWTezosMessageSignerSignMessage(privateKey.get(), message.get()));
     EXPECT_EQ(std::string(TWStringUTF8Bytes(signature.get())), "edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ");
     EXPECT_TRUE(TWTezosMessageSignerVerifyMessage(pubKey.get(), message.get(), signature.get()));
+}
+
+TEST(TWTezosMessageSigner, SignAndVerifyInvalidPayload) {
+    const auto privKeyData = "91b4fb8d7348db2e7de2693f58ce1cceb966fa960739adac1d9dba2cbaa0940a";
+    const auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA(privKeyData).get()));
+    const auto pubKey = WRAP(TWPublicKey, TWPrivateKeyGetPublicKey(privateKey.get(), TWCoinTypeTezos));
+    const auto validSignature = STRING("edsigu3se2fcEJUCm1aqxjzbHdf7Wsugr4mLaA9YM2UVZ9Yy5meGv87VqHN3mmDeRwApTj1JKDaYjqmLZifSFdWCqBoghqaowwJ");
+
+    for (const auto* payload : {"03deadbeef", "0x0x03deadbeef", "not hex"}) {
+        const auto message = STRING(payload);
+        EXPECT_EQ(TWTezosMessageSignerSignMessage(privateKey.get(), message.get()), nullptr) << payload;
+        EXPECT_FALSE(TWTezosMessageSignerVerifyMessage(pubKey.get(), message.get(), validSignature.get())) << payload;
+    }
 }
 } // namespace TW::Tezos::tests

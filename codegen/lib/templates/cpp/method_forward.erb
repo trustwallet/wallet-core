@@ -3,24 +3,26 @@
   arguments = locals[:arguments] || ['instance'] + WasmCppHelper.arguments(method.parameters.drop(1))
   call = render('cpp/method_call.erb', { method: method, arguments: arguments })
 
-  # Method returns data
-  if should_return_data(method)
-    if method.return_type.is_nullable -%>
+  # Method returns data (a null result becomes JS null)
+  if should_return_data(method) -%>
     return TWDataToVal(<%= call %>);
-<%  else -%>
-    return TWDataToVal(<%= call %>);
-<%  end
-  # Method returns a string
+<%
+  # Method returns a string (a null result becomes JS null)
   elsif should_return_string(method)
     if method.return_type.is_nullable -%>
-    return TWStringToStd(<%= call %>);
+    return TWStringToVal(<%= call %>);
 <%  else -%>
     return TWStringToStd(<%= call %>);
-<% end
-  # Method returns a class or struct
+<%  end
+
+  # Method returns a class or struct (a null result becomes JS null)
   elsif method.return_type.is_class || method.return_type.is_struct
     if method.return_type.is_nullable -%>
-    return new Wasm<%= method.return_type.name %>(<%= call %>);
+    auto* twResult = <%= call %>;
+    if (twResult == nullptr) {
+        return static_cast<Wasm<%= method.return_type.name %>*>(nullptr);
+    }
+    return new Wasm<%= method.return_type.name %>(twResult);
 <%  else -%>
     return new Wasm<%= method.return_type.name %>(<%= call %>);
 <%  end

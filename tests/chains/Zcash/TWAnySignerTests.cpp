@@ -45,6 +45,7 @@ TEST(TWAnySignerZcash, SignSapplingV2) {
 
     auto& extraData = *builder.mutable_zcash_extra_data();
     extraData.set_branch_id(SaplingBranchID.data(), SaplingBranchID.size());
+    extraData.set_tx_version(Zcash::Proto::TransactionVersion::V4);
 
     auto& in = *builder.add_inputs();
     auto& inOutPoint = *in.mutable_out_point();

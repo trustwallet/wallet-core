@@ -43,6 +43,7 @@ describe("Zcash", () => {
                 // Set ZCash specific extra parameters.
                 zcashExtraData: {
                     branchId: sapplingBranchId,
+                    txVersion: TW.Zcash.Proto.TransactionVersion.V4,
                 },
             },
             privateKeys: [privateKeyData],

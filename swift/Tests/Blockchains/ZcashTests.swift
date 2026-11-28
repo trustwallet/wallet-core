@@ -106,6 +106,7 @@ class ZcashTests: XCTestCase {
                 $0.fixedDustThreshold = dustAmount
                 $0.zcashExtraData = ZcashTransactionBuilderExtraData.with {
                     $0.branchID = sapplingBranchId
+                    $0.txVersion = .v4
                 }
             }
             $0.privateKeys = [privateKeyData]

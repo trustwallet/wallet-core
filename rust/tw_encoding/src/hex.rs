@@ -40,16 +40,20 @@ where
     }
 }
 
+/// Strips at most one leading `0x` prefix.
+fn strip_hex_prefix(data: &str) -> &str {
+    data.strip_prefix("0x").unwrap_or(data)
+}
+
 /// Decodes the given hexadecimal string.
 pub fn decode(data: &str) -> FromHexResult<Data> {
-    let hex_string = data.trim_start_matches("0x");
-    hex::decode(hex_string)
+    hex::decode(strip_hex_prefix(data))
 }
 
 /// Decodes the given hexadecimal string leniently allowing to pass odd number of chars.
 /// For example, `0x0` is extended to `0x00`, `0x123` is extended to `0x0123`.
 pub fn decode_lenient(data: &str) -> FromHexResult<Data> {
-    let hex_string = data.trim_start_matches("0x");
+    let hex_string = strip_hex_prefix(data);
     if hex_string.len().is_multiple_of(2) {
         hex::decode(hex_string)
     } else {
@@ -68,7 +72,7 @@ pub fn encode<T: AsRef<[u8]>>(data: T, prefixed: bool) -> String {
 }
 
 pub fn hex_to_bits(str: &str) -> FromHexResult<String> {
-    let hex_str = str.trim_start_matches("0x");
+    let hex_str = strip_hex_prefix(str);
     let mut bits = String::new();
     for (index, c) in hex_str.chars().enumerate() {
         let val = c
@@ -233,6 +237,15 @@ mod tests {
             decode("0x2db500ac919cdde351ac36e3711d832c6db97669"),
             Ok(expected)
         );
+    }
+
+    #[test]
+    fn test_decode_strips_single_prefix_only() {
+        assert_eq!(decode("0x03ab"), Ok(vec![0x03, 0xab]));
+        assert_eq!(decode("03ab"), Ok(vec![0x03, 0xab]));
+        assert!(decode("0x0x03ab").is_err());
+        assert!(decode_lenient("0x0x3ab").is_err());
+        assert!(hex_to_bits("0x0x03").is_err());
     }
 
     #[test]

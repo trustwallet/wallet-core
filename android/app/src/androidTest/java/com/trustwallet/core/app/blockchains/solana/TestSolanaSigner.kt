@@ -134,6 +134,26 @@ class TestSolanaSigner {
     }
 
     @Test
+    fun testTransferCoreAssetSign() {
+        val transferMessage = Solana.TransferCoreAsset.newBuilder().apply {
+            assetAddress = "DdC5i5AFrHCvcaEUEcCktFBiytHoGbMgUQ7JBwfRGihL"
+            recipientAddress = "ArgPLJSF7ujjPZgooHGpRcnFDmftpDSzvhLRNsH94zmo"
+            collectionAddress = "CCryptUfeFSZ3Fgc9FLeKrhLVAP67FSqi1GuVoj9CRac"
+        }.build()
+        val signingInput = Solana.SigningInput.newBuilder().apply {
+            transferCoreAssetTransaction = transferMessage
+            recentBlockhash = "4G8PGaBMdz3Sqi43W9xL1rQHqhorF1ZbVZoabVejs7uv"
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("EhdjS476DfVStvrEa7waGoi81o8KvQGEMkRsXbE6TkgP"))
+        }.build()
+
+        val output = AnySigner.sign(signingInput, SOLANA, SigningOutput.parser())
+
+        // Successfully broadcasted tx - https://solscan.io/tx/3DxmEtgGHpY8mm1QfzgRzBLL4TLQ1Q96mcYE2LdKG6gZuyWQQjnDCAXFqrhKvGvmEQriZuLpZWHsAkXcLJRSAiMC
+        val expectedString = "hq79tP91qTbzV6Qbe7FKZ8ru8wba2gVEN48LBaARqTLZGVZMja8xj9S8v7gKuUpQk6EgaWTk3t8znG9Z7qKvWdNujkJjUbtVmffnkyMi8GdjhgTRc4i1wSytyZpgJaUD8vhCRAJEmcZBzrq4kTCi3iJT776jYuAgB1u3KPC3pPzEpk8ktpz8ocSkKo1A9oXiU6hkhgs8bj8FbCEoLbvAmg67Ut7GoyK8kb9gAYD8SZYNKPN39oerw5EaP3md3DBDGDJ1aLaHPsUwtbG66PyoLYnCWGbgbcRW2WPTBqDc8RdJWUR28VdAj7wTEJ7jSeBaHLiFtYexNCPon8omyVV5KU5eqwHMGNCWMLkWjd6RrwB1p92M42E1M"
+        assertEquals(output.encoded, expectedString)
+    }
+
+    @Test
     fun testCreateAndTransferTokenSign() {
         val createAndTransferTokenMessage = Solana.CreateAndTransferToken.newBuilder().apply {
             recipientMainAddress = "71e8mDsh3PR6gN64zL1HjwuxyKpgRXrPDUJT7XXojsVd"

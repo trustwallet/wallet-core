@@ -16,7 +16,7 @@ env:
 jobs:
   scan-and-flag:
     if: github.event_name == 'pull_request' && github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       # scan-and-flag only reads the tree and posts a comment on the PR. Commenting on a
       # pull request needs pull-requests: write — issues: write covers real issues only,
@@ -175,7 +175,7 @@ jobs:
             });
 
   verify-bc-check-comment:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: always()
     permissions:
       # verify-bc-check-comment only reads: pulls.get, issues.listComments,

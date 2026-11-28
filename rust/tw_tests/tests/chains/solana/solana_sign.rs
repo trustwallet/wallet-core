@@ -1047,3 +1047,97 @@ fn test_solana_sign_sponsored_transfer() {
     // https://solscan.io/tx/52s8gt34WfZyJv1cDdadwA3V9PeRwazNqhVKDJ43F9JyxTE7ncqMSmqYAi1u4TsG2AyXNPbswG7krBHqWAhstCtL
     assert_eq!(output.encoded, "Acms/WrZj/mOpUTTBFHLtBFKrMSAJPBBkD8qYK+oqgE0gFT5aoEfw5dlJZZl1edVde325gi0qVPai7ddgoP2WQUBAAMHgKRCBGe2W59ezw1CyHDoV4KZVuJFTtmsN0F25EL3I8228PMELJSiAl2nvEzyY4v/LfSQnxkFNlH4pjU2F3nMpcBeC+e4AaQzF6GCh63HW7KnhG+YuIbF1AvkM6nwOXMjzDg4vU3/xSfZJTqguxQVNsgitkm5dHCm6V6l4NCCDp7OAQ5gr+2yJxe9YxkvVBRaP5ZaM7uC0scCnrLOHiCCZAbd9uHXZaGT2cvhRs7reawctIXtX1s3kTqM9YV+/wCpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACbeRZf0sbtT6rwdYyf6Z9h66lKwNsb48euTgiPa0h+WAIFBAEEAgAKDBAnAAAAAAAABgYCAAMMAgAAAEANAwAAAAAA");
 }
+
+const CORE_ASSET: &str = "DdC5i5AFrHCvcaEUEcCktFBiytHoGbMgUQ7JBwfRGihL";
+const CORE_COLLECTION: &str = "CCryptUfeFSZ3Fgc9FLeKrhLVAP67FSqi1GuVoj9CRac";
+// Throwaway keys, they hold no funds after the Core asset transfers below.
+const CORE_OWNER_1_KEY: &str = "cb90b1e7b2c559088c5ff6acbbb588ae392e221492046113a62eac0ab254cdf8";
+const CORE_OWNER_1: &str = "HRqBqsfppNgzcb5EfCKoFWXXz9Y5tru9ZMg1R1WtJCcw";
+const CORE_OWNER_2_KEY: &str = "fcce99cf0ccb96f689f01f54abc70c3ebf4a0007a0b40bea7b1c1ba8e690fcf1";
+const CORE_OWNER_2: &str = "ArgPLJSF7ujjPZgooHGpRcnFDmftpDSzvhLRNsH94zmo";
+
+#[test]
+fn test_solana_sign_transfer_core_asset() {
+    let transfer = Proto::TransferCoreAsset {
+        asset_address: CORE_ASSET.into(),
+        recipient_address: CORE_OWNER_2.into(),
+        collection_address: CORE_COLLECTION.into(),
+        ..Proto::TransferCoreAsset::default()
+    };
+    let input = Proto::SigningInput {
+        private_key: CORE_OWNER_1_KEY.decode_hex().unwrap().into(),
+        recent_blockhash: "4G8PGaBMdz3Sqi43W9xL1rQHqhorF1ZbVZoabVejs7uv".into(),
+        transaction_type: TransactionType::transfer_core_asset_transaction(transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx - https://solscan.io/tx/3DxmEtgGHpY8mm1QfzgRzBLL4TLQ1Q96mcYE2LdKG6gZuyWQQjnDCAXFqrhKvGvmEQriZuLpZWHsAkXcLJRSAiMC
+    assert_eq!(output.encoded, "hq79tP91qTbzV6Qbe7FKZ8ru8wba2gVEN48LBaARqTLZGVZMja8xj9S8v7gKuUpQk6EgaWTk3t8znG9Z7qKvWdNujkJjUbtVmffnkyMi8GdjhgTRc4i1wSytyZpgJaUD8vhCRAJEmcZBzrq4kTCi3iJT776jYuAgB1u3KPC3pPzEpk8ktpz8ocSkKo1A9oXiU6hkhgs8bj8FbCEoLbvAmg67Ut7GoyK8kb9gAYD8SZYNKPN39oerw5EaP3md3DBDGDJ1aLaHPsUwtbG66PyoLYnCWGbgbcRW2WPTBqDc8RdJWUR28VdAj7wTEJ7jSeBaHLiFtYexNCPon8omyVV5KU5eqwHMGNCWMLkWjd6RrwB1p92M42E1M");
+}
+
+#[test]
+fn test_solana_sign_transfer_core_asset_with_external_fee_payer() {
+    let transfer = Proto::TransferCoreAsset {
+        asset_address: CORE_ASSET.into(),
+        recipient_address: CORE_OWNER_1.into(),
+        collection_address: CORE_COLLECTION.into(),
+        ..Proto::TransferCoreAsset::default()
+    };
+    // The asset owner signs, another account pays the fee.
+    let input = Proto::SigningInput {
+        private_key: CORE_OWNER_2_KEY.decode_hex().unwrap().into(),
+        fee_payer_private_key: CORE_OWNER_1_KEY.decode_hex().unwrap().into(),
+        recent_blockhash: "4oAHcxtSmNHddwHPT8dvRyfLRmuE2gUoVYsPStTD2Dyy".into(),
+        transaction_type: TransactionType::transfer_core_asset_transaction(transfer),
+        ..Proto::SigningInput::default()
+    };
+
+    let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+    let output = signer.sign(CoinType::Solana, input);
+
+    assert_eq!(output.error, SigningError::OK);
+    // Successfully broadcasted tx - https://solscan.io/tx/2uQ79PnqUQNMd8okN2qLnxr5AE6MLER7eA4LHDYhJ3WwJg6zJGhGBPZDQLzY1oEgyGvM4J3jQSUeawE3e5eEPgp8
+    assert_eq!(output.encoded, "6xZ26VwD4b46ZTqDTGQLbmQwtVmh3xzqUhJq2f6hEJ1jmc2ZkbD3hafuZxsiKLXyM6NbPGsjWwCW7n6adHh46XYcJ6EQZFzHbzkovQGvyccZZoJ2VgnWM1PKZqSXNVG7kbPu8JecZY6fhwDcSNdVjUE64Lmkr1EcikKNgNFTUUz4YhBJ3QQy7MVX1N3KxAfsnHQsthc1ruybsMiHuZ23teogeEFu7MDBQSuS927yEGZa4hwKJ7fSvB4aP5AxgS2TtT3LtNvwJWnwc6gwVT95LXbXEadrxHYpC7DNz4rjeV2PRxmS1vmK2VTGtUpHfPxqPvsixtuCakoHALKujYwabR51gvQZAxtzzLmzsu8VQgt2h123HZH2ovoBRFHrYv1rUs617SgmXpdhv7T1i554zHyqWcfV8hcw5ebAi83StbdxrfRhCj3jSLvvv47BQd6EDBnQgiapemfBM");
+}
+
+#[test]
+fn test_solana_sign_transfer_core_asset_invalid_address() {
+    let valid = Proto::TransferCoreAsset {
+        asset_address: CORE_ASSET.into(),
+        recipient_address: CORE_OWNER_2.into(),
+        collection_address: CORE_COLLECTION.into(),
+        ..Proto::TransferCoreAsset::default()
+    };
+    let invalid_transfers = [
+        Proto::TransferCoreAsset {
+            asset_address: "invalid".into(),
+            ..valid.clone()
+        },
+        Proto::TransferCoreAsset {
+            recipient_address: "invalid".into(),
+            ..valid.clone()
+        },
+        Proto::TransferCoreAsset {
+            collection_address: "invalid".into(),
+            ..valid.clone()
+        },
+    ];
+
+    for transfer in invalid_transfers {
+        let input = Proto::SigningInput {
+            private_key: CORE_OWNER_1_KEY.decode_hex().unwrap().into(),
+            recent_blockhash: "4G8PGaBMdz3Sqi43W9xL1rQHqhorF1ZbVZoabVejs7uv".into(),
+            transaction_type: TransactionType::transfer_core_asset_transaction(transfer),
+            ..Proto::SigningInput::default()
+        };
+
+        let mut signer = AnySignerHelper::<Proto::SigningOutput>::default();
+        let output = signer.sign(CoinType::Solana, input);
+
+        assert_eq!(output.error, SigningError::Error_invalid_address);
+    }
+}

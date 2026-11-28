@@ -6,6 +6,7 @@ use crate::address::SolanaAddress;
 use crate::instruction::Instruction;
 
 pub mod compute_budget_instruction;
+pub mod mpl_core_instruction;
 pub mod stake_instruction;
 pub mod system_instruction;
 pub mod token_instruction;

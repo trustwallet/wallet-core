@@ -32,6 +32,8 @@ module WasmCppHelper
           "&#{param.name}Data"
         elsif param.type.name == :string
           '&' + param.name
+        elsif (param.type.is_struct || param.type.is_class) && param.type.is_nullable
+          "(#{param.name} != nullptr ? #{param.name}->instance : nullptr)"
         elsif param.type.is_struct || param.type.is_class
           param.name + '->instance'
         else
